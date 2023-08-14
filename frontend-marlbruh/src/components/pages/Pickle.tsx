@@ -1,4 +1,4 @@
-import ComingSoon from "./ReusablePages/ComingSoon";
+import ComingSoon from "./reusablePages/ComingSoon";
 
 const Pickle = () => {
   return (
