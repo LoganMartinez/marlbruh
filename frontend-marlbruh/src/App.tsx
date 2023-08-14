@@ -1,12 +1,11 @@
-
-import MarlbruhShell from './shell/MarlbruhShell';
+import MarlbruhShell from "./components/shell/MarlbruhShell";
 
 function App() {
   return (
     <>
-      <MarlbruhShell/>
+      <MarlbruhShell />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
