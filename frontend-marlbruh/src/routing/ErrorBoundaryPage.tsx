@@ -4,6 +4,7 @@ import Home from "../pages/Home";
 import Chores from "../pages/Chores";
 import Bookclub from "../pages/Bookclub";
 import Pickle from "../pages/Pickle";
+import Fish from "../pages/Fish";
 
 interface Props {
   page: JSX.Element;
@@ -27,6 +28,10 @@ export const BookclubErrorBoundary = () => {
 
 export const PickleErrorBoundary = () => {
   return <ErrorBoundaryPage page={<Pickle />} />;
+};
+
+export const FishErrorBoundary = () => {
+  return <ErrorBoundaryPage page={<Fish />} />;
 };
 
 export default ErrorBoundaryPage;

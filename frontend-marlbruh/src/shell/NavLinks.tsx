@@ -5,7 +5,13 @@ import {
   createStyles,
   rem,
 } from "@mantine/core";
-import { IconBook, IconDog, IconHome2, IconTool } from "@tabler/icons-react";
+import {
+  IconBook,
+  IconDog,
+  IconFish,
+  IconHome2,
+  IconTool,
+} from "@tabler/icons-react";
 import { FunctionComponent, useState } from "react";
 import { useNavigate, useNavigation } from "react-router-dom";
 
@@ -78,27 +84,33 @@ type NavLinksProps = {
 
 const NavLinks: FunctionComponent<NavLinksProps> = ({ direction }) => {
   const [active, setActive] = useState(0);
+  const iconProps = { size: "1.2rem", stroke: 1.5 };
 
   const data = [
     {
-      icon: <IconHome2 size="1.2rem" stroke={1.5} />,
+      icon: <IconHome2 {...iconProps} />,
       label: "home",
       link: "/",
     },
     {
-      icon: <IconTool size="1.2rem" stroke={1.5} />,
+      icon: <IconTool {...iconProps} />,
       label: "chores",
       link: "/chores",
     },
     {
-      icon: <IconBook size="1.2rem" stroke={1.5} />,
+      icon: <IconBook {...iconProps} />,
       label: "bookclub",
       link: "/bookclub",
     },
     {
-      icon: <IconDog size="1.2rem" stroke={1.5} />,
+      icon: <IconDog {...iconProps} />,
       label: "pickle",
       link: "/pickle",
+    },
+    {
+      icon: <IconFish {...iconProps} />,
+      label: "fish",
+      link: "/fish",
     },
   ];
 
