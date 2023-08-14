@@ -12,8 +12,7 @@ import {
   IconHome2,
   IconTool,
 } from "@tabler/icons-react";
-import { FunctionComponent, useState } from "react";
-import { useNavigate, useNavigation } from "react-router-dom";
+import { FunctionComponent, useEffect, useState } from "react";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -82,37 +81,47 @@ type NavLinksProps = {
   direction: "row" | "column";
 };
 
+const iconProps = { size: "1.2rem", stroke: 1.5 };
+
+const data = [
+  {
+    icon: <IconHome2 {...iconProps} />,
+    label: "home",
+    link: "/",
+  },
+  {
+    icon: <IconTool {...iconProps} />,
+    label: "chores",
+    link: "/chores",
+  },
+  {
+    icon: <IconBook {...iconProps} />,
+    label: "bookclub",
+    link: "/bookclub",
+  },
+  {
+    icon: <IconDog {...iconProps} />,
+    label: "pickle",
+    link: "/pickle",
+  },
+  {
+    icon: <IconFish {...iconProps} />,
+    label: "fish",
+    link: "/fish",
+  },
+];
+
 const NavLinks: FunctionComponent<NavLinksProps> = ({ direction }) => {
   const [active, setActive] = useState(0);
-  const iconProps = { size: "1.2rem", stroke: 1.5 };
 
-  const data = [
-    {
-      icon: <IconHome2 {...iconProps} />,
-      label: "home",
-      link: "/",
-    },
-    {
-      icon: <IconTool {...iconProps} />,
-      label: "chores",
-      link: "/chores",
-    },
-    {
-      icon: <IconBook {...iconProps} />,
-      label: "bookclub",
-      link: "/bookclub",
-    },
-    {
-      icon: <IconDog {...iconProps} />,
-      label: "pickle",
-      link: "/pickle",
-    },
-    {
-      icon: <IconFish {...iconProps} />,
-      label: "fish",
-      link: "/fish",
-    },
-  ];
+  // set active page depending on url
+  useEffect(() => {
+    const currentPage = window.location.hash.replace("/", "").replace("#", "");
+    const currentIndex = data.findIndex((page) => page.label === currentPage);
+    if (currentIndex !== -1) {
+      setActive(currentIndex);
+    }
+  });
 
   const links = data.map((link, index) => (
     <NavBarLink
