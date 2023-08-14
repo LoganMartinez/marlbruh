@@ -1,7 +1,8 @@
-import { ActionIcon, AppShell, Avatar, ColorScheme, ColorSchemeProvider, Group, Header, MantineProvider, Navbar, Text, Title } from "@mantine/core";
+import { ActionIcon, AppShell, Avatar, ColorScheme, ColorSchemeProvider, Group, Header, MantineProvider, Navbar, Title } from "@mantine/core";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import NavLinks from "./NavLinks";
 import { IconHome } from "@tabler/icons-react";
+import MarlbruhRoutes from "../routing/MarlbruhRoutes";
 
 
 const MarlbruhShell = () => {
@@ -57,7 +58,7 @@ const MarlbruhShell = () => {
             },
           })}
         >
-          <Text>Website goes here</Text>
+          <MarlbruhRoutes/>
         </AppShell>
       </MantineProvider>
     </ColorSchemeProvider>
