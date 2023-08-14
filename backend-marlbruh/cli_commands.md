@@ -20,3 +20,11 @@
 -- Admin stuff
   - create admin user
     > python manage.py createsuperuser
+
+-- Testing
+  - running tests:
+    > python manage.py test <appname>
+  - can use django test environment in python cli
+    > python manage.py shell
+    > from django.test.utils import setup_test_environment
+    > from django.test import Client
