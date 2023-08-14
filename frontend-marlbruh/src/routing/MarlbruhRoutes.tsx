@@ -4,7 +4,7 @@ import Bookclub from "../pages/Bookclub";
 import Pickle from "../pages/Pickle";
 // import { ErrorBoundaryHome } from "./ErrorBoundaries";
 import Home from "../pages/Home";
-import { ErrorBoundaryPage } from "./ErrorBoundaries";
+import ErrorBoundaryPage from "./ErrorBoundaryPage";
 
 const MarlbruhRoutes = () => {
   return (

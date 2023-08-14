@@ -5,6 +5,8 @@ interface Props {
   page: JSX.Element;
 }
 
-export const ErrorBoundaryPage = ({ page }: Props) => {
+const ErrorBoundaryPage = ({ page }: Props) => {
   return <ErrorBoundary fallback={<ErrorPage />}>{page}</ErrorBoundary>;
 };
+
+export default ErrorBoundaryPage;
