@@ -1,5 +1,5 @@
-import './App.css'
-import MarlbruhShell from './MarlbruhShell';
+
+import MarlbruhShell from './shell/MarlbruhShell';
 
 function App() {
   return (

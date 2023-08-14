@@ -1,5 +1,7 @@
-import { ActionIcon, AppShell, Avatar, ColorScheme, ColorSchemeProvider, Group, Header, MantineProvider, MediaQuery, Navbar, Text, Title } from "@mantine/core";
+import { ActionIcon, AppShell, Avatar, ColorScheme, ColorSchemeProvider, Group, Header, MantineProvider, Navbar, Text, Title } from "@mantine/core";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import NavLinks from "./NavLinks";
+import { IconHome } from "@tabler/icons-react";
 
 
 const MarlbruhShell = () => {
@@ -27,18 +29,20 @@ const MarlbruhShell = () => {
         <AppShell
           navbar={
             <Navbar
-              hiddenBreakpoint={1000000}
-              hidden={true}
-              width={{ sm: 200, lg: 200 }}
-              
+              width={ { base: 80 }}
+              p={"sm"}
             >
-              <Text>Navbar content</Text>
-            </Navbar>       
+              <NavLinks direction="column"/>
+            </Navbar> 
           }
           header={
             <Header height={70}>
               <Group position="apart" p="sm">
-                <Title order={1}>Marlbruh</Title>
+                <Group position="center">
+                  <IconHome size="2rem"/>
+                  <Title order={1}>Marlbruh</Title>
+                </Group>
+                
                 <ActionIcon variant="unstyled">
                   <Avatar src={null} color="blue"/>
                 </ActionIcon>
