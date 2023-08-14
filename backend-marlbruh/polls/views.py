@@ -1,5 +1,9 @@
-from django.http import HttpResponse, Http404
-from .models import Question
+from django.http import HttpResponse, Http404, HttpResponseRedirect
+from .models import Choice, Question
+from django.urls import reverse
+from django.shortcuts import get_object_or_404
+import json
+
 
 def index(request):
     latest_question_list = Question.objects.order_by("-pub_date")[:5]
@@ -15,11 +19,28 @@ def detail(request, question_id):
     return HttpResponse(f"Question {question.id}: {question.question_text}")
 
 def results(request, question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+    choices = [f"{choice.choice_text}: {choice.votes}" 
+               for choice in question.choice_set.all()]
+    response = {
+        "question": question.question_text, 
+        "choices": choices
+    }
+    return HttpResponse(json.dumps(response))
 
+# this example doesn't work bc I don't feel like making the form that allows you to select a choice
+# forms will be made on front end anyway
 def vote(request, question_id):
-    return HttpResponse("You're voting on question %s." % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+    try:
+       selected_choice = question.choice_set.get(pk=request.POST["choice"])
+    except (KeyError, Choice.DoesNotExist):
+       return HttpResponse("You didn't select a choice")
+    else:
+       selected_choice.votes += 1
+       selected_choice.save()
+       # always use redirect after successful post
+       return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
 
 
 
