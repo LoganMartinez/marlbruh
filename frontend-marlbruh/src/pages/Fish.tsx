@@ -1,7 +1,8 @@
 import { Text } from "@mantine/core";
+import ComingSoon from "./ReusablePages/ComingSoon";
 
 const Fish = () => {
-  return <Text>This is the fish page</Text>;
+  return <ComingSoon />;
 };
 
 export default Fish;

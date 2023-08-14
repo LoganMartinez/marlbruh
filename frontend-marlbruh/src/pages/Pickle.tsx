@@ -1,11 +1,11 @@
-import { Text } from "@mantine/core";
+import ComingSoon from "./ReusablePages/ComingSoon";
 
 const Pickle = () => {
   return (
     <>
-      <Text>This is the pickle page</Text>
+      <ComingSoon />
     </>
   );
-}
- 
+};
+
 export default Pickle;

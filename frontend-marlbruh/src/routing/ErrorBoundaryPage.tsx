@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "react-error-boundary";
-import ErrorPage from "../pages/ErrorPage";
+import ErrorPage from "../pages/ReusablePages/ErrorPage";
 import Home from "../pages/Home";
 import Chores from "../pages/Chores";
 import Bookclub from "../pages/Bookclub";

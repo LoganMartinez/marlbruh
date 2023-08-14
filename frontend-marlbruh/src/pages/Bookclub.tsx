@@ -1,11 +1,11 @@
-import { Text } from "@mantine/core";
+import ComingSoon from "./ReusablePages/ComingSoon";
 
 const Bookclub = () => {
   return (
     <>
-      <Text>This is the bookclub page</Text>
+      <ComingSoon />
     </>
   );
-}
- 
+};
+
 export default Bookclub;
