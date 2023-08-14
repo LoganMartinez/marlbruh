@@ -1,28 +1,19 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
-import Chores from "../pages/Chores";
-import Bookclub from "../pages/Bookclub";
-import Pickle from "../pages/Pickle";
-// import { ErrorBoundaryHome } from "./ErrorBoundaries";
-import Home from "../pages/Home";
-import ErrorBoundaryPage from "./ErrorBoundaryPage";
+import {
+  BookclubErrorBoundary,
+  ChoresErrorBoundary,
+  HomeErrorBoundary,
+  PickleErrorBoundary,
+} from "./ErrorBoundaryPage";
 
 const MarlbruhRoutes = () => {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<ErrorBoundaryPage page={<Home />} />} />
-        <Route
-          path="/chores"
-          element={<ErrorBoundaryPage page={<Chores />} />}
-        />
-        <Route
-          path="/bookclub"
-          element={<ErrorBoundaryPage page={<Bookclub />} />}
-        />
-        <Route
-          path="/pickle"
-          element={<ErrorBoundaryPage page={<Pickle />} />}
-        />
+        <Route path="/" element={<HomeErrorBoundary />} />
+        <Route path="/chores" element={<ChoresErrorBoundary />} />
+        <Route path="/bookclub" element={<BookclubErrorBoundary />} />
+        <Route path="/pickle" element={<PickleErrorBoundary />} />
       </Routes>
     </HashRouter>
   );
