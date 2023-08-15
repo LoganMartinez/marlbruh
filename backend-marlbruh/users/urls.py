@@ -4,6 +4,6 @@ from django.urls import path
 
 urlpatterns = [
     path("", views.UserCreationView.as_view()),
+    path("token/", obtain_auth_token),
     path("<str:username>/", views.UserView.as_view()),
-    path("api-token-auth/", obtain_auth_token),
 ]
