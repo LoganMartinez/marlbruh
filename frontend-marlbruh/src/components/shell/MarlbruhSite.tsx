@@ -1,8 +1,9 @@
-import Login from "../pages/Login";
+import Login from "../pages/login/Login";
 import MarlbruhShell from "./MarlbruhShell";
 import { getUserGivenToken } from "../../api/apiCalls";
 import { useAuth } from "../../authentication/AuthContext";
 import { useEffect, useState } from "react";
+import LoginControl from "../pages/login/LoginControl";
 
 const MarlbruhSite = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -25,7 +26,7 @@ const MarlbruhSite = () => {
     }
   }, [auth.authToken]);
 
-  return <>{isAuthorized ? <MarlbruhShell /> : <Login />}</>;
+  return <>{isAuthorized ? <MarlbruhShell /> : <LoginControl />}</>;
 };
 
 export default MarlbruhSite;

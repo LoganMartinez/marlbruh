@@ -12,10 +12,16 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconHome } from "@tabler/icons-react";
-import { getToken } from "../../api/apiCalls";
-import { useAuth } from "../../authentication/AuthContext";
+import { getToken } from "../../../api/apiCalls";
+import { useAuth } from "../../../authentication/AuthContext";
+import imageUrl from "../../../assets/marlborough.png";
 
 const useStyles = createStyles((theme) => ({
+  wrapper: {
+    minHeight: rem(900),
+    backgroundSize: "cover",
+    backgroundImage: `url(${imageUrl})`,
+  },
   form: {
     borderRight: `${rem(1)} solid ${
       theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.colors.gray[3]
@@ -40,7 +46,11 @@ interface Form {
   password: string;
 }
 
-export function Login() {
+interface Props {
+  setShowRegistration: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const Login = ({ setShowRegistration }: Props) => {
   const { classes } = useStyles();
   const auth = useAuth();
 
@@ -71,43 +81,44 @@ export function Login() {
   };
 
   return (
-    <Paper className={classes.form} radius={0} p={30}>
-      <Group position="center">
-        <IconHome size="2rem" />
-        <Title order={1}>Marlbruh</Title>
-      </Group>
+    <div className={classes.wrapper}>
+      <Paper className={classes.form} radius={0} p={30}>
+        <Group position="center">
+          <IconHome size="2rem" />
+          <Title order={1}>Marlbruh</Title>
+        </Group>
 
-      <form onSubmit={form.onSubmit((values) => submitForm(values))}>
-        <TextInput
-          label="Username"
-          placeholder="Username"
-          size="md"
-          {...form.getInputProps("username")}
-        />
-        <PasswordInput
-          label="Password"
-          placeholder="Password"
-          mt="md"
-          size="md"
-          {...form.getInputProps("password")}
-        />
-        <Button type="submit" fullWidth mt="xl" size="md">
-          Logan
-        </Button>
-      </form>
+        <form onSubmit={form.onSubmit((values) => submitForm(values))}>
+          <TextInput
+            label="Username"
+            placeholder="Username"
+            size="md"
+            {...form.getInputProps("username")}
+          />
+          <PasswordInput
+            label="Password"
+            placeholder="Password"
+            mt="md"
+            size="md"
+            {...form.getInputProps("password")}
+          />
+          <Button type="submit" fullWidth mt="xl" size="md">
+            Logan
+          </Button>
+        </form>
 
-      <Text ta="center" mt="md">
-        Don&apos;t have an account?{" "}
-        <Anchor<"a">
-          href="#"
-          weight={700}
-          onClick={(event) => event.preventDefault()}
-        >
-          Register
-        </Anchor>
-      </Text>
-    </Paper>
+        <Text ta="center" mt="md">
+          Don&apos;t have an account?{" "}
+          <Anchor<"button">
+            weight={700}
+            onClick={() => setShowRegistration(true)}
+          >
+            Register
+          </Anchor>
+        </Text>
+      </Paper>
+    </div>
   );
-}
+};
 
 export default Login;

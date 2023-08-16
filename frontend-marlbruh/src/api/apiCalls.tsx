@@ -17,3 +17,17 @@ export function getToken(
     password: password,
   });
 }
+
+type CreateUserResponse = {
+  username: string;
+  token: string;
+};
+export function createUser(
+  username: string,
+  password: string
+): Promise<AxiosResponse<CreateUserResponse>> {
+  return apiPost("users/", undefined, {
+    username,
+    password,
+  });
+}
