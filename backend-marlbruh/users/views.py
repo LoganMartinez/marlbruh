@@ -68,3 +68,16 @@ class UserView(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         user.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class UserViewWithToken(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        response = {
+            "user-id": request.user.pk,
+            "username": request.user.username,
+            "date_joined": request.user.date_joined,
+            "is_superuser": request.user.is_superuser,
+        }
+        return Response(response, status=status.HTTP_200_OK)
