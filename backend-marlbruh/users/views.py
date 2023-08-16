@@ -1,4 +1,4 @@
-from users.serializers import PostUserSerializer
+from users.serializers import PostUserSerializer, PutUserSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
@@ -45,3 +45,21 @@ class UserView(APIView):
             "date_joined": user.date_joined,
         }
         return Response(response, status=status.HTTP_200_OK)
+
+    # can only change username and password rn
+    def put(self, request, username):
+        user = get_object_or_404(User, username=username)
+        if request.user.pk != user.pk and not request.user.is_superuser:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        serializer = PutUserSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if "username" in serializer.validated_data:
+            try:
+                user.username = serializer.validated_data["username"]
+            except IntegrityError:
+                return Response(status=status.HTTP_409_CONFLICT)
+        if "password" in serializer.validated_data:
+            user.set_password(serializer.validated_data["password"])
+        user.save()
+        return Response(status=status.HTTP_200_OK)
