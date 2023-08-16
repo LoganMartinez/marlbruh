@@ -63,3 +63,10 @@ class UserView(APIView):
             user.set_password(serializer.validated_data["password"])
         user.save()
         return Response(status=status.HTTP_200_OK)
+
+    def delete(self, request, username):
+        user = get_object_or_404(User, username=username)
+        if request.user.pk != user.pk and not request.user.is_superuser:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        user.delete()
+        return Response(status=status.HTTP_200_OK)
