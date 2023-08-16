@@ -74,13 +74,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseurl}}/users/{{username}}",
+							"raw": "{{baseurl}}/users/{{username}}/",
 							"host": [
 								"{{baseurl}}"
 							],
 							"path": [
 								"users",
-								"{{username}}"
+								"{{username}}",
+								""
 							]
 						}
 					},

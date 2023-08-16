@@ -21,11 +21,10 @@ class UserCreationView(APIView):
         try:
             user = User.objects.create_user(
                 username=serializer.validated_data["username"],
-                email=serializer.validated_data["email"],
                 password=serializer.validated_data["password"],
             )
         except IntegrityError:
-            # username or email already in use in db
+            # username already in use in db
             return Response(status=status.HTTP_409_CONFLICT)
 
         token = Token.objects.create(user=user)
@@ -41,7 +40,6 @@ class UserView(APIView):
         response = {
             "user_id": user.pk,
             "username": user.username,
-            "email": user.email,
             "date_joined": user.date_joined,
         }
         return Response(response, status=status.HTTP_200_OK)
