@@ -1,4 +1,3 @@
-import Login from "../pages/login/Login";
 import MarlbruhShell from "./MarlbruhShell";
 import { getUserGivenToken } from "../../api/apiCalls";
 import { useAuth } from "../../authentication/AuthContext";

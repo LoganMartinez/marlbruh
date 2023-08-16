@@ -68,7 +68,6 @@ export const Register = ({ setShowRegistration }: Props) => {
           return "Confirm your password";
         }
         if (value !== values.password) {
-          form.setFieldError("password", "Passwords don't match");
           return "Passwords don't match";
         }
         return null;
