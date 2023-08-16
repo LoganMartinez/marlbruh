@@ -12,6 +12,8 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconHome } from "@tabler/icons-react";
+import { getToken } from "../../api/apiCalls";
+import { useAuth } from "../../authentication/AuthContext";
 
 const useStyles = createStyles((theme) => ({
   form: {
@@ -40,16 +42,32 @@ interface Form {
 
 export function Login() {
   const { classes } = useStyles();
+  const auth = useAuth();
 
   const form = useForm({
     initialValues: {
       username: "",
       password: "",
     },
+    validate: {
+      username: (value) => (value ? null : "Enter a username"),
+      password: (value) => (value ? null : "Enter a password"),
+    },
   });
 
-  const submitForm = (values: Form) => {
-    console.log(values);
+  const submitForm = ({ username, password }: Form) => {
+    getToken(username, password)
+      .then(({ data: { token } }) => {
+        auth.setAuthToken(token);
+      })
+      .catch((err) => {
+        console.error(err);
+        auth.clearAuthToken();
+        form.setErrors({
+          username: "invalid username or password",
+          password: "invalid username or password",
+        });
+      });
   };
 
   return (
@@ -74,7 +92,7 @@ export function Login() {
           {...form.getInputProps("password")}
         />
         <Button type="submit" fullWidth mt="xl" size="md">
-          Login
+          Logan
         </Button>
       </form>
 

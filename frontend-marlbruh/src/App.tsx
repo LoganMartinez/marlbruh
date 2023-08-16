@@ -3,16 +3,11 @@ import {
   ColorSchemeProvider,
   MantineProvider,
 } from "@mantine/core";
-import Login from "./components/pages/Login";
-import MarlbruhShell from "./components/shell/MarlbruhShell";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { AuthProvider } from "./authentication/AuthContext";
+import MarlbruhSite from "./components/shell/MarlbruhSite";
 
 function App() {
-  const [authToken] = useLocalStorage({
-    key: "marlbruh-auth",
-  });
-  // should check that auth is valid
-
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "mantine-color-scheme",
     defaultValue: "dark",
@@ -34,7 +29,9 @@ function App() {
         withGlobalStyles
         withNormalizeCSS
       >
-        {authToken ? <MarlbruhShell /> : <Login />}
+        <AuthProvider>
+          <MarlbruhSite />
+        </AuthProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );

@@ -1,15 +1,8 @@
-import {
-  ActionIcon,
-  AppShell,
-  Avatar,
-  Group,
-  Header,
-  Navbar,
-  Title,
-} from "@mantine/core";
+import { AppShell, Group, Header, Navbar, Title } from "@mantine/core";
 import NavLinks from "./NavLinks";
 import { IconHome } from "@tabler/icons-react";
 import MarlbruhRoutes from "../routing/MarlbruhRoutes";
+import ProfileMenu from "./ProfileMenu";
 
 const MarlbruhShell = () => {
   return (
@@ -26,10 +19,7 @@ const MarlbruhShell = () => {
               <IconHome size="2rem" />
               <Title order={1}>Marlbruh</Title>
             </Group>
-
-            <ActionIcon variant="unstyled">
-              <Avatar src={null} color="blue" />
-            </ActionIcon>
+            <ProfileMenu />
           </Group>
         </Header>
       }
