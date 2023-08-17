@@ -1,10 +1,39 @@
-import MarlbruhShell from "./components/shell/MarlbruhShell";
+import {
+  ColorScheme,
+  ColorSchemeProvider,
+  MantineProvider,
+} from "@mantine/core";
+import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { AuthProvider } from "./authentication/AuthContext";
+import MarlbruhSite from "./components/shell/MarlbruhSite";
 
 function App() {
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: "mantine-color-scheme",
+    defaultValue: "dark",
+    getInitialValueInEffect: true,
+  });
+
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+
+  useHotkeys([["mod+J", () => toggleColorScheme()]]);
+
   return (
-    <>
-      <MarlbruhShell />
-    </>
+    <ColorSchemeProvider
+      colorScheme={colorScheme}
+      toggleColorScheme={toggleColorScheme}
+    >
+      <MantineProvider
+        theme={{ colorScheme: colorScheme }}
+        withGlobalStyles
+        withNormalizeCSS
+      >
+        <AuthProvider>
+          <MarlbruhSite />
+        </AuthProvider>
+      </MantineProvider>
+    </ColorSchemeProvider>
   );
 }
 

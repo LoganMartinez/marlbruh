@@ -121,7 +121,7 @@ const NavLinks: FunctionComponent<NavLinksProps> = ({ direction }) => {
     if (currentIndex !== -1) {
       setActive(currentIndex);
     }
-  });
+  }, []);
 
   const links = data.map((link, index) => (
     <NavBarLink
