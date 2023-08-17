@@ -1,27 +1,36 @@
 from users.serializers import PostUserSerializer, PutUserSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.models import User
+
+# from django.contrib.auth.models import User
+
+# from users.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
+from users import models
 
 
 class UserCreationView(APIView):
     permission_classes = [AllowAny]
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
+        if "profilePic" in request.FILES:
+            request.data["profilePic"] = request.FILES["profilePic"]
         serializer = PostUserSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
         try:
-            user = User.objects.create_user(
+            user = models.User.objects.create(
                 username=serializer.validated_data["username"],
                 password=serializer.validated_data["password"],
+                profilePic=serializer.validated_data.get("profilePic"),
             )
         except IntegrityError:
             # username already in use in db
@@ -34,21 +43,27 @@ class UserCreationView(APIView):
 
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = [JSONParser, FormParser, MultiPartParser]
 
     def get(self, request, username):
-        user = get_object_or_404(User, username=username)
+        user = get_object_or_404(models.User, username=username)
         response = {
-            "user_id": user.pk,
+            "userId": user.pk,
             "username": user.username,
-            "date_joined": user.date_joined,
+            "dateJoined": user.date_joined,
+            "profilePic": user.profilePic.url,
+            "isSuperuser": user.is_superuser,
         }
         return Response(response, status=status.HTTP_200_OK)
 
     # can only change username and password rn
     def put(self, request, username):
-        user = get_object_or_404(User, username=username)
+        user = get_object_or_404(models.User, username=username)
         if request.user.pk != user.pk and not request.user.is_superuser:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if "profilePic" in request.FILES:
+            request.data["profilePic"] = request.FILES["profilePic"]
+        print(request.data)
         serializer = PutUserSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -57,13 +72,16 @@ class UserView(APIView):
                 user.username = serializer.validated_data["username"]
             except IntegrityError:
                 return Response(status=status.HTTP_409_CONFLICT)
+        if "profilePic" in serializer.validated_data:
+            user.profilePic = serializer.validated_data["profilePic"]
         if "password" in serializer.validated_data:
             user.set_password(serializer.validated_data["password"])
+
         user.save()
         return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, username):
-        user = get_object_or_404(User, username=username)
+        user = get_object_or_404(models, username=username)
         if request.user.pk != user.pk and not request.user.is_superuser:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         user.delete()
@@ -75,9 +93,10 @@ class UserViewWithToken(APIView):
 
     def get(self, request):
         response = {
-            "user-id": request.user.pk,
+            "userId": request.user.pk,
             "username": request.user.username,
-            "date_joined": request.user.date_joined,
-            "is_superuser": request.user.is_superuser,
+            "dateJoined": request.user.date_joined,
+            "profilePic": request.user.profilePic.url,
+            "isSuperuser": request.user.is_superuser,
         }
         return Response(response, status=status.HTTP_200_OK)
