@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import { apiGet, apiPost } from "./apiUtils";
+import { FileWithPath } from "@mantine/dropzone";
 
 export function getUserGivenToken(token: string): Promise<AxiosResponse<User>> {
   return apiGet("users/me/", token);
@@ -12,7 +13,7 @@ export function getToken(
   username: string,
   password: string
 ): Promise<AxiosResponse<GetTokenResponse>> {
-  return apiPost("users/token/", undefined, {
+  return apiPost("users/token/", {
     username: username,
     password: password,
   });
@@ -24,10 +25,17 @@ type CreateUserResponse = {
 };
 export function createUser(
   username: string,
-  password: string
+  password: string,
+  profilePic: FileWithPath | null
 ): Promise<AxiosResponse<CreateUserResponse>> {
-  return apiPost("users/", undefined, {
-    username,
-    password,
-  });
+  return apiPost(
+    "users/",
+    {
+      username,
+      password,
+      ...(profilePic ? { profilePic } : {}),
+    },
+    undefined,
+    "form"
+  );
 }

@@ -9,12 +9,18 @@ import {
   Anchor,
   rem,
   Group,
+  Space,
+  Image,
+  CloseButton,
+  Stack,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconHome } from "@tabler/icons-react";
 import { createUser } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import imageUrl from "../../../assets/marlborough.png";
+import PfpDropzone from "./PfpDropzone";
+import { FileWithPath } from "@mantine/dropzone";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -44,6 +50,7 @@ const useStyles = createStyles((theme) => ({
 interface Form {
   username: string;
   password: string;
+  pfp: FileWithPath | null;
 }
 
 interface Props {
@@ -59,6 +66,7 @@ export const Register = ({ setShowRegistration }: Props) => {
       username: "",
       password: "",
       confirmPassword: "",
+      pfp: null as FileWithPath | null,
     },
     validate: {
       username: (value) => (value ? null : "Enter a username"),
@@ -75,8 +83,8 @@ export const Register = ({ setShowRegistration }: Props) => {
     },
   });
 
-  const submitForm = ({ username, password }: Form) => {
-    createUser(username, password)
+  const submitForm = ({ username, password, pfp }: Form) => {
+    createUser(username, password, pfp)
       .then(({ data: { token } }) => {
         auth.setAuthToken(token);
       })
@@ -115,6 +123,25 @@ export const Register = ({ setShowRegistration }: Props) => {
             size="md"
             {...form.getInputProps("confirmPassword")}
           />
+          <Space h="xs" />
+          <Text>
+            <b>Profile Picture</b>
+          </Text>
+          {form.values.pfp ? (
+            <Stack align="flex-end">
+              <CloseButton onClick={() => form.setFieldValue("pfp", null)} />
+              <Image
+                src={URL.createObjectURL(form.values.pfp)}
+                alt={form.values.pfp.name}
+              />
+            </Stack>
+          ) : (
+            <PfpDropzone
+              setValue={(pfp: FileWithPath | null) =>
+                form.setFieldValue("pfp", pfp)
+              }
+            />
+          )}
           <Button type="submit" fullWidth mt="xl" size="md">
             Register
           </Button>

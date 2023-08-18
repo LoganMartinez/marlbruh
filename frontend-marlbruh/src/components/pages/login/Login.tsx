@@ -72,6 +72,7 @@ export const Login = ({ setShowRegistration }: Props) => {
       })
       .catch((err) => {
         console.error(err);
+        // should probably check that it's invalid credentials and not some other error
         auth.clearAuthToken();
         form.setErrors({
           username: "invalid username or password",

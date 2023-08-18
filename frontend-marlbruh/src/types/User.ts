@@ -1,6 +1,7 @@
 type User = {
-  user_id: number;
+  userId: number;
   username: string;
-  date_joined: string;
-  is_superuser: boolean;
+  dateJoined: string;
+  isSuperuser: boolean;
+  profilePic?: string;
 };
