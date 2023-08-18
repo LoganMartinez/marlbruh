@@ -104,12 +104,14 @@ export const Register = ({ setShowRegistration }: Props) => {
 
         <form onSubmit={form.onSubmit((values) => submitForm(values))}>
           <TextInput
+            withAsterisk
             label="Username"
             placeholder="Username"
             size="md"
             {...form.getInputProps("username")}
           />
           <PasswordInput
+            withAsterisk
             label="Password"
             placeholder="Password"
             mt="md"
@@ -117,6 +119,7 @@ export const Register = ({ setShowRegistration }: Props) => {
             {...form.getInputProps("password")}
           />
           <PasswordInput
+            withAsterisk
             label="Confirm password"
             placeholder="Confirm password"
             mt="md"
