@@ -1,10 +1,6 @@
 from users.serializers import PostUserSerializer, PutUserSerializer
 from rest_framework.response import Response
 from rest_framework import status
-
-# from django.contrib.auth.models import User
-
-# from users.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,7 +8,6 @@ from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-
 from users import models
 
 
@@ -27,7 +22,7 @@ class UserCreationView(APIView):
         if not serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = models.User.objects.create(
+            user = models.User.objects.create_user(
                 username=serializer.validated_data["username"],
                 password=serializer.validated_data["password"],
                 profilePic=serializer.validated_data.get("profilePic"),
@@ -51,7 +46,7 @@ class UserView(APIView):
             "userId": user.pk,
             "username": user.username,
             "dateJoined": user.date_joined,
-            "profilePic": user.profilePic.url,
+            "profilePic": user.profilePic.url if user.profilePic else None,
             "isSuperuser": user.is_superuser,
         }
         return Response(response, status=status.HTTP_200_OK)
@@ -63,21 +58,19 @@ class UserView(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         if "profilePic" in request.FILES:
             request.data["profilePic"] = request.FILES["profilePic"]
-        print(request.data)
         serializer = PutUserSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if "username" in serializer.validated_data:
-            try:
-                user.username = serializer.validated_data["username"]
-            except IntegrityError:
-                return Response(status=status.HTTP_409_CONFLICT)
+            user.username = serializer.validated_data["username"]
         if "profilePic" in serializer.validated_data:
             user.profilePic = serializer.validated_data["profilePic"]
         if "password" in serializer.validated_data:
             user.set_password(serializer.validated_data["password"])
-
-        user.save()
+        try:
+            user.save()
+        except IntegrityError:
+            return Response(status=status.HTTP_409_CONFLICT)
         return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, username):
@@ -96,7 +89,9 @@ class UserViewWithToken(APIView):
             "userId": request.user.pk,
             "username": request.user.username,
             "dateJoined": request.user.date_joined,
-            "profilePic": request.user.profilePic.url,
+            "profilePic": request.user.profilePic.url
+            if request.user.profilePic
+            else None,
             "isSuperuser": request.user.is_superuser,
         }
         return Response(response, status=status.HTTP_200_OK)
