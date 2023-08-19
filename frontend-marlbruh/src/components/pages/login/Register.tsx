@@ -10,14 +10,11 @@ import {
   rem,
   Group,
   Space,
-  Image,
-  CloseButton,
-  Stack,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconHome } from "@tabler/icons-react";
 import { createUser } from "../../../api/apiCalls";
-import { useAuth } from "../../../authentication/AuthContext";
+import { useAuthWithoutToken } from "../../../authentication/AuthContext";
 import imageUrl from "../../../assets/marlborough.png";
 import PfpDropzone from "./PfpDropzone";
 import { FileWithPath } from "@mantine/dropzone";
@@ -59,7 +56,7 @@ interface Props {
 
 export const Register = ({ setShowRegistration }: Props) => {
   const { classes } = useStyles();
-  const auth = useAuth();
+  const auth = useAuthWithoutToken();
 
   const form = useForm({
     initialValues: {
@@ -130,21 +127,12 @@ export const Register = ({ setShowRegistration }: Props) => {
           <Text>
             <b>Profile Picture</b>
           </Text>
-          {form.values.pfp ? (
-            <Stack align="flex-end">
-              <CloseButton onClick={() => form.setFieldValue("pfp", null)} />
-              <Image
-                src={URL.createObjectURL(form.values.pfp)}
-                alt={form.values.pfp.name}
-              />
-            </Stack>
-          ) : (
-            <PfpDropzone
-              setValue={(pfp: FileWithPath | null) =>
-                form.setFieldValue("pfp", pfp)
-              }
-            />
-          )}
+          <PfpDropzone
+            value={form.values.pfp}
+            setValue={(pfp: FileWithPath | null) =>
+              form.setFieldValue("pfp", pfp)
+            }
+          />
           <Button type="submit" fullWidth mt="xl" size="md">
             Register
           </Button>

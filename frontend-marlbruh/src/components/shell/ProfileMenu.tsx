@@ -1,6 +1,6 @@
 import { Avatar, Menu } from "@mantine/core";
 import { useAuth } from "../../authentication/AuthContext";
-import { IconLogout } from "@tabler/icons-react";
+import { IconLogout, IconUser } from "@tabler/icons-react";
 import { API_URL } from "../../utilities/constants";
 
 const ProfileMenu = () => {
@@ -20,6 +20,15 @@ const ProfileMenu = () => {
         <Menu.Dropdown>
           <Menu.Label>{auth.currentUser?.username}</Menu.Label>
           <Menu.Item
+            component="a"
+            href={`#/users/${auth.currentUser?.username}`}
+            icon={<IconUser size="1rem" />}
+          >
+            View Profile
+          </Menu.Item>
+          <Menu.Item
+            component="a"
+            href={"/"}
             icon={<IconLogout size="1rem" />}
             onClick={() => auth.clearAuthToken()}
           >

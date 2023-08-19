@@ -13,7 +13,7 @@ import {
 import { useForm } from "@mantine/form";
 import { IconHome } from "@tabler/icons-react";
 import { getToken } from "../../../api/apiCalls";
-import { useAuth } from "../../../authentication/AuthContext";
+import { useAuthWithoutToken } from "../../../authentication/AuthContext";
 import imageUrl from "../../../assets/marlborough.png";
 
 const useStyles = createStyles((theme) => ({
@@ -52,7 +52,7 @@ interface Props {
 
 export const Login = ({ setShowRegistration }: Props) => {
   const { classes } = useStyles();
-  const auth = useAuth();
+  const auth = useAuthWithoutToken();
 
   const form = useForm({
     initialValues: {
