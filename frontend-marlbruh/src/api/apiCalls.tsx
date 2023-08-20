@@ -79,3 +79,21 @@ export function createChore(
 export function deleteChore(choreId: number, token: string) {
   return apiDelete(`chores/${choreId}`, token);
 }
+
+export function updateChore(
+  choreId: number,
+  token: string,
+  name: string | undefined,
+  icon: string | undefined,
+  userId: number | undefined
+) {
+  return apiPut(
+    `chores/${choreId}/`,
+    {
+      name: name,
+      icon: icon,
+      userId: userId,
+    },
+    token
+  );
+}

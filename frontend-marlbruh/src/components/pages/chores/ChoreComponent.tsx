@@ -12,6 +12,7 @@ import DeleteChoreConfirmation from "./DeleteChoreConfimation";
 import { stringToIcon } from "../../../utilities/helperFunctions";
 import { IconEdit } from "@tabler/icons-react";
 import { API_URL } from "../../../utilities/constants";
+import ChoreEditModal from "./ChoreEditModal";
 
 type Props = {
   chore: Chore;
@@ -20,6 +21,7 @@ type Props = {
 
 const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
+  const [editModalOpened, editModalHandlers] = useDisclosure(false);
 
   return (
     <>
@@ -29,13 +31,19 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
         openHandlers={deleteModalHandlers}
         setChoresUpdated={setChoresUpdated}
       />
+      <ChoreEditModal
+        chore={chore}
+        opened={editModalOpened}
+        openHandlers={editModalHandlers}
+        setChoresUpdated={setChoresUpdated}
+      />
       <Card p="xl">
         <Card.Section>
           <Group position="apart" noWrap align="flex-start">
             {stringToIcon(chore.icon)}
 
             <Group position="right" spacing="xs" noWrap>
-              <ActionIcon>
+              <ActionIcon onClick={editModalHandlers.open}>
                 <IconEdit size="1rem" />
               </ActionIcon>
               <CloseButton onClick={deleteModalHandlers.open} />
