@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from users.models import User
-from users.serializers import UserSerializer
 
 
 # Create your views here.
@@ -46,3 +45,19 @@ class TargetChoreView(APIView):
         chore = get_object_or_404(models.Chore, id=choreId)
         chore.delete()
         return Response(status=status.HTTP_200_OK)
+
+    def put(self, request, choreId):
+        chore = get_object_or_404(models.Chore, id=choreId)
+        serializer = serializers.PutChoreSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if "name" in serializer.validated_data:
+            chore.name = serializer.validated_data["name"]
+        if "icon" in serializer.validated_data:
+            chore.icon = serializer.validated_data["icon"]
+        if "userId" in serializer.validated_data:
+            user = get_object_or_404(User, id=serializer.validated_data["userId"])
+            chore.user = user
+        chore.save()
+        response = serializers.ChoreSerializer(chore)
+        return Response(response.data)
