@@ -118,9 +118,7 @@ const NavLinks: FunctionComponent<NavLinksProps> = ({ direction }) => {
   useEffect(() => {
     const currentPage = window.location.hash.replace("/", "").replace("#", "");
     const currentIndex = data.findIndex((page) => page.label === currentPage);
-    if (currentIndex !== -1) {
-      setActive(currentIndex);
-    }
+    setActive(currentIndex);
   }, []);
 
   const links = data.map((link, index) => (

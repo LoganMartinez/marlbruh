@@ -6,6 +6,7 @@ import {
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { AuthProvider } from "./authentication/AuthContext";
 import MarlbruhSite from "./components/shell/MarlbruhSite";
+import { Notifications } from "@mantine/notifications";
 
 function App() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -30,6 +31,7 @@ function App() {
         withNormalizeCSS
       >
         <AuthProvider>
+          <Notifications />
           <MarlbruhSite />
         </AuthProvider>
       </MantineProvider>

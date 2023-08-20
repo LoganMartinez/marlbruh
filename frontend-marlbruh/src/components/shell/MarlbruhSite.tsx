@@ -1,13 +1,13 @@
 import MarlbruhShell from "./MarlbruhShell";
 import { getUserGivenToken } from "../../api/apiCalls";
-import { useAuth } from "../../authentication/AuthContext";
+import { useAuthWithoutToken } from "../../authentication/AuthContext";
 import { useEffect, useState } from "react";
 import LoginControl from "../pages/login/LoginControl";
 
 const MarlbruhSite = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
-  const auth = useAuth();
+  const auth = useAuthWithoutToken();
 
   useEffect(() => {
     if (auth.authToken) {

@@ -1,15 +1,26 @@
 import { useLocalStorage } from "@mantine/hooks";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 
-type AuthContextType = {
+export type AuthContextBaseType = {
   authToken: string | undefined;
   setAuthToken: React.Dispatch<React.SetStateAction<string>>;
   clearAuthToken: () => void;
-  currentUser: User | undefined;
   setCurrentUser: React.Dispatch<React.SetStateAction<User | undefined>>;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export type AuthContextTokenNotRequired = {
+  authToken: string | undefined;
+  currentUser: User | undefined;
+} & AuthContextBaseType;
+
+export type AuthContextTokenRequired = {
+  authToken: string;
+  currentUser: User;
+} & AuthContextBaseType;
+
+const AuthContext = createContext<AuthContextTokenNotRequired | undefined>(
+  undefined
+);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [authToken, setAuthToken, clearAuthToken] = useLocalStorage({
@@ -32,10 +43,28 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   );
 };
 
+export function useAuthWithoutToken() {
+  const auth = useContext(AuthContext);
+  if (!auth) {
+    throw new Error("useAuthWithoutToken must be used within AuthContext");
+  }
+  return auth;
+}
+
 export function useAuth() {
   const auth = useContext(AuthContext);
   if (!auth) {
     throw new Error("useAuth must be used within AuthContext");
   }
-  return auth;
+  if (!auth.authToken) {
+    throw new Error(
+      "useAuth was used but authToken is not set. Maybe you meant to use useAuthWithoutToken?"
+    );
+  }
+  if (!auth.currentUser) {
+    throw new Error(
+      "useAuth was used but currentUser is not set. Maybe you meant to use useAuthWithoutToken?"
+    );
+  }
+  return auth as AuthContextTokenRequired;
 }

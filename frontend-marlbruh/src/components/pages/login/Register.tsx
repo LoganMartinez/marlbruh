@@ -9,12 +9,15 @@ import {
   Anchor,
   rem,
   Group,
+  Space,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconHome } from "@tabler/icons-react";
 import { createUser } from "../../../api/apiCalls";
-import { useAuth } from "../../../authentication/AuthContext";
+import { useAuthWithoutToken } from "../../../authentication/AuthContext";
 import imageUrl from "../../../assets/marlborough.png";
+import PfpDropzone from "./PfpDropzone";
+import { FileWithPath } from "@mantine/dropzone";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -44,6 +47,7 @@ const useStyles = createStyles((theme) => ({
 interface Form {
   username: string;
   password: string;
+  pfp: FileWithPath | null;
 }
 
 interface Props {
@@ -52,13 +56,14 @@ interface Props {
 
 export const Register = ({ setShowRegistration }: Props) => {
   const { classes } = useStyles();
-  const auth = useAuth();
+  const auth = useAuthWithoutToken();
 
   const form = useForm({
     initialValues: {
       username: "",
       password: "",
       confirmPassword: "",
+      pfp: null as FileWithPath | null,
     },
     validate: {
       username: (value) => (value ? null : "Enter a username"),
@@ -75,8 +80,8 @@ export const Register = ({ setShowRegistration }: Props) => {
     },
   });
 
-  const submitForm = ({ username, password }: Form) => {
-    createUser(username, password)
+  const submitForm = ({ username, password, pfp }: Form) => {
+    createUser(username, password, pfp)
       .then(({ data: { token } }) => {
         auth.setAuthToken(token);
       })
@@ -96,12 +101,14 @@ export const Register = ({ setShowRegistration }: Props) => {
 
         <form onSubmit={form.onSubmit((values) => submitForm(values))}>
           <TextInput
+            withAsterisk
             label="Username"
             placeholder="Username"
             size="md"
             {...form.getInputProps("username")}
           />
           <PasswordInput
+            withAsterisk
             label="Password"
             placeholder="Password"
             mt="md"
@@ -109,11 +116,22 @@ export const Register = ({ setShowRegistration }: Props) => {
             {...form.getInputProps("password")}
           />
           <PasswordInput
+            withAsterisk
             label="Confirm password"
             placeholder="Confirm password"
             mt="md"
             size="md"
             {...form.getInputProps("confirmPassword")}
+          />
+          <Space h="xs" />
+          <Text>
+            <b>Profile Picture</b>
+          </Text>
+          <PfpDropzone
+            value={form.values.pfp}
+            setValue={(pfp: FileWithPath | null) =>
+              form.setFieldValue("pfp", pfp)
+            }
           />
           <Button type="submit" fullWidth mt="xl" size="md">
             Register

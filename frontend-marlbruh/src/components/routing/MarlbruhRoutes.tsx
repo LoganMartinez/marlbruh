@@ -6,6 +6,7 @@ import {
   HomeErrorBoundary,
   PickleErrorBoundary,
 } from "./ErrorBoundaryPage";
+import UserPage from "../pages/UserPages/UserPage";
 
 const MarlbruhRoutes = () => {
   return (
@@ -16,6 +17,7 @@ const MarlbruhRoutes = () => {
         <Route path="/bookclub" element={<BookclubErrorBoundary />} />
         <Route path="/pickle" element={<PickleErrorBoundary />} />
         <Route path="/fish" element={<FishErrorBoundary />} />
+        <Route path="/users/:username" element={<UserPage />} />
       </Routes>
     </HashRouter>
   );
