@@ -58,3 +58,20 @@ export function updateUser(
     "form"
   );
 }
+
+export function getChores(token: string) {
+  return apiGet("chores/", token);
+}
+
+export function getAllUsers(token: string) {
+  return apiGet("users/", token);
+}
+
+export function createChore(
+  name: string,
+  icon: string,
+  userId: number | undefined,
+  token: string
+) {
+  return apiPost("chores/", { name: name, icon: icon, userId: userId }, token);
+}

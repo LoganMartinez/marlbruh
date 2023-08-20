@@ -1,7 +1,7 @@
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorPage from "../pages/reusablePages/ErrorPage";
 import Home from "../pages/Home";
-import Chores from "../pages/Chores";
+import Chores from "../pages/chores/Chores";
 import Bookclub from "../pages/Bookclub";
 import Pickle from "../pages/Pickle";
 import Fish from "../pages/Fish";

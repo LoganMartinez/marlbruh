@@ -1,4 +1,6 @@
 import { notifications } from "@mantine/notifications";
+import { stringToIconObject } from "./constants";
+import { IconHome } from "@tabler/icons-react";
 
 export const errorNotification = (error: string | undefined) => {
   notifications.show({
@@ -18,4 +20,14 @@ export const successNotification = (message: string) => {
     color: "green",
     withCloseButton: true,
   });
+};
+
+export const stringToIcon = (iconString: string): JSX.Element => {
+  let ret = <IconHome />;
+  Object.keys(stringToIconObject).forEach((key) => {
+    if (key === iconString) {
+      ret = stringToIconObject[key];
+    }
+  });
+  return ret;
 };
