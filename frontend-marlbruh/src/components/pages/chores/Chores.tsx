@@ -1,10 +1,10 @@
 import {
   ActionIcon,
   Group,
-  Loader,
   SimpleGrid,
   Space,
   Text,
+  Title,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { getChores } from "../../../api/apiCalls";
@@ -44,7 +44,7 @@ const Chores = () => {
       </Group>
       <Space h="xs" />
 
-      {allChores ? (
+      {allChores && allChores.length > 0 ? (
         <SimpleGrid
           cols={3}
           breakpoints={[
@@ -54,11 +54,17 @@ const Chores = () => {
           ]}
         >
           {allChores.map((chore) => (
-            <ChoreComponent chore={chore} key={chore.id} />
+            <ChoreComponent
+              chore={chore}
+              key={chore.id}
+              setChoresUpdated={setChoresUpdated}
+            />
           ))}
         </SimpleGrid>
       ) : (
-        <Loader />
+        <>
+          <Title align="center">There are no chores</Title>
+        </>
       )}
     </>
   );

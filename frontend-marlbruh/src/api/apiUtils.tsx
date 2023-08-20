@@ -82,3 +82,11 @@ export const apiPut = (
     });
   }
 };
+
+export const apiDelete = (path: string, token: string) => {
+  return axios.delete(`${API_URL}/${path}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

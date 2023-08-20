@@ -15,9 +15,10 @@ import { API_URL } from "../../../utilities/constants";
 
 type Props = {
   chore: Chore;
+  setChoresUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ChoreComponent = ({ chore }: Props) => {
+const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
   const [deleteModalOpened, deleteModalHandlers] = useDisclosure(false);
 
   return (
@@ -26,6 +27,7 @@ const ChoreComponent = ({ chore }: Props) => {
         chore={chore}
         opened={deleteModalOpened}
         openHandlers={deleteModalHandlers}
+        setChoresUpdated={setChoresUpdated}
       />
       <Card p="xl">
         <Card.Section>

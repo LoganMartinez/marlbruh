@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { apiGet, apiPost, apiPut } from "./apiUtils";
+import { apiDelete, apiGet, apiPost, apiPut } from "./apiUtils";
 import { FileWithPath } from "@mantine/dropzone";
 
 export function getUserGivenToken(token: string): Promise<AxiosResponse<User>> {
@@ -74,4 +74,8 @@ export function createChore(
   token: string
 ) {
   return apiPost("chores/", { name: name, icon: icon, userId: userId }, token);
+}
+
+export function deleteChore(choreId: number, token: string) {
+  return apiDelete(`chores/${choreId}`, token);
 }
