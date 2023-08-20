@@ -1,4 +1,4 @@
-from users.serializers import PostUserSerializer, PutUserSerializer
+from users.serializers import PostUserSerializer, PutUserSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -11,9 +11,18 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from users import models
 
 
-class UserCreationView(APIView):
+class UserView(APIView):
     permission_classes = [AllowAny]
     parser_classes = [MultiPartParser, FormParser]
+
+    def get(self, request):
+        users = models.User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        renamedData = []
+        for item in serializer.data:
+            item["userId"] = item.pop("id")
+            renamedData.append(item)
+        return Response(renamedData)
 
     def post(self, request):
         if "profilePic" in request.FILES:
@@ -36,8 +45,8 @@ class UserCreationView(APIView):
         return Response(response, status=status.HTTP_201_CREATED)
 
 
-class UserView(APIView):
-    permission_classes = [IsAuthenticated]
+class TargetUserView(APIView):
+    permission_classes = []
     parser_classes = [JSONParser, FormParser, MultiPartParser]
 
     def get(self, request, username):
