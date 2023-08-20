@@ -37,3 +37,12 @@ class ChoreView(APIView):
             responseSerializer.data,
             status=status.HTTP_201_CREATED,
         )
+
+
+class TargetChoreView(APIView):
+    permissions_classes = [IsAuthenticated]
+
+    def delete(self, request, choreId):
+        chore = get_object_or_404(models.Chore, id=choreId)
+        chore.delete()
+        return Response(status=status.HTTP_200_OK)
