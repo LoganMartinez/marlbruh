@@ -1,16 +1,25 @@
 from rest_framework import serializers
+from users.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "profilePic"]
 
 
 class PostUserSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
+    profilePic = serializers.ImageField(required=False)
 
 
 class PutUserSerializer(serializers.Serializer):
     username = serializers.CharField(required=False)
     password = serializers.CharField(required=False)
+    profilePic = serializers.ImageField(required=False)
 
     def validate(self, data):
-        if "username" not in data and "password" not in data:
+        if len(data.keys()) == 0:
             raise serializers.ValidationError("Must include at least one field")
         return data
