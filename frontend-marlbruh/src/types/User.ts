@@ -4,4 +4,5 @@ type User = {
   dateJoined: string;
   isSuperuser: boolean;
   profilePic?: string;
+  profileColor: string;
 };

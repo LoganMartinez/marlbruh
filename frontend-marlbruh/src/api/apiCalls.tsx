@@ -49,11 +49,17 @@ export function updateUser(
   token: string,
   newUsername: string | undefined,
   newPassword: string | undefined,
-  newPfp: File | undefined
+  newPfp: File | undefined,
+  newColor: string | undefined
 ) {
   return apiPut(
     `users/${username}/`,
-    { username: newUsername, password: newPassword, profilePic: newPfp },
+    {
+      username: newUsername,
+      password: newPassword,
+      profilePic: newPfp,
+      profileColor: newColor,
+    },
     token,
     "form"
   );
