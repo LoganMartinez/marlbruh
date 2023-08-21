@@ -1,4 +1,3 @@
-import { Text } from "@mantine/core";
 import ComingSoon from "./reusablePages/ComingSoon";
 
 const Fish = () => {
