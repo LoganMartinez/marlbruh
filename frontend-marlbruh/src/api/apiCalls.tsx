@@ -93,7 +93,8 @@ export function updateChore(
   token: string,
   name: string | undefined,
   icon: string | undefined,
-  userId: number | undefined
+  userId: number | undefined,
+  complete: boolean | undefined
 ) {
   return apiPut(
     `chores/${choreId}/`,
@@ -101,6 +102,7 @@ export function updateChore(
       name: name,
       icon: icon,
       userId: userId,
+      complete: complete,
     },
     token
   );

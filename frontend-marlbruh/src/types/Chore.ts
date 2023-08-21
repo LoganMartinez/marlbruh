@@ -3,4 +3,5 @@ type Chore = {
   name: string;
   icon: string;
   user: User;
+  complete: boolean;
 };
