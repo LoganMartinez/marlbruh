@@ -35,6 +35,7 @@ class UserView(APIView):
                 username=serializer.validated_data["username"],
                 password=serializer.validated_data["password"],
                 profilePic=serializer.validated_data.get("profilePic"),
+                profileColor=serializer.validated_data["profileColor"],
             )
         except IntegrityError:
             # username already in use in db
@@ -56,6 +57,7 @@ class TargetUserView(APIView):
             "username": user.username,
             "dateJoined": user.date_joined,
             "profilePic": user.profilePic.url if user.profilePic else None,
+            "profileColor": user.profileColor,
             "isSuperuser": user.is_superuser,
         }
         return Response(response, status=status.HTTP_200_OK)
@@ -74,6 +76,8 @@ class TargetUserView(APIView):
             user.username = serializer.validated_data["username"]
         if "profilePic" in serializer.validated_data:
             user.profilePic = serializer.validated_data["profilePic"]
+        if "profileColor" in serializer.validated_data:
+            user.profileColor = serializer.validated_data["profileColor"]
         if "password" in serializer.validated_data:
             user.set_password(serializer.validated_data["password"])
         try:
@@ -98,6 +102,7 @@ class UserViewWithToken(APIView):
             "userId": request.user.pk,
             "username": request.user.username,
             "dateJoined": request.user.date_joined,
+            "profileColor": request.user.profileColor,
             "profilePic": request.user.profilePic.url
             if request.user.profilePic
             else None,
