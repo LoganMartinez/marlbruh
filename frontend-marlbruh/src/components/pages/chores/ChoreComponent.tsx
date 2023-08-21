@@ -74,6 +74,7 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
           backgroundColor: chore.user
             ? profileColors[chore.user.profileColor]
             : theme.colors.dark[6],
+          borderRadius: theme.radius.lg,
         })}
       >
         <Container p="md">
