@@ -11,7 +11,6 @@ import { useForm } from "@mantine/form";
 import { useAuth } from "../../../authentication/AuthContext";
 import PfpDropzone from "../login/PfpDropzone";
 import { FileWithPath } from "@mantine/dropzone";
-import { API_URL } from "../../../utilities/constants";
 import { useEffect, useState } from "react";
 import { useViewportSize } from "@mantine/hooks";
 import { updateUser } from "../../../api/apiCalls";
@@ -21,7 +20,7 @@ import {
   successNotification,
 } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
-import ProfileColorSwatches from "../../reusableComponents/profileColorSwatches";
+import ProfileColorSwatches from "../../reusableComponents/ProfileColorSwatches";
 
 type Form = {
   username: string | undefined;
@@ -40,9 +39,6 @@ const EditUserPage = ({ setEditProfile }: Props) => {
   const navigate = useNavigate();
   const [currentPfp, setCurrentPfp] = useState(
     undefined as FileWithPath | undefined
-  );
-  const [selectedColor, setSelectedColor] = useState(
-    auth.currentUser.profileColor
   );
   const windowWidth = useViewportSize().width;
   const form = useForm({
@@ -72,8 +68,8 @@ const EditUserPage = ({ setEditProfile }: Props) => {
 
   // get current profile pic
   useEffect(() => {
-    if (auth.currentUser?.profilePic) {
-      fetch(`${API_URL}${auth.currentUser?.profilePic}`)
+    if (auth.currentUser.profilePic) {
+      fetch(auth.currentUser.profilePic)
         .then((res) => res.blob())
         .then((blob) => {
           const file = new File([blob], "current-pfp92837", {

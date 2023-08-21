@@ -15,7 +15,6 @@ import {
 } from "@mantine/dropzone";
 import { IconPhoto, IconUpload, IconX } from "@tabler/icons-react";
 import { errorNotification } from "../../../utilities/helperFunctions";
-import { API_URL } from "../../../utilities/constants";
 
 type PfpDropzoneProps = {
   value: FileWithPath | string | undefined;
@@ -32,9 +31,7 @@ function PfpDropzone({ value, setValue, ...rest }: PfpDropzoneProps) {
             <CloseButton onClick={() => setValue(undefined)} />
             <Image
               src={
-                typeof value === "string"
-                  ? `${API_URL}${value}`
-                  : URL.createObjectURL(value)
+                typeof value === "string" ? value : URL.createObjectURL(value)
               }
               alt={typeof value === "string" ? value : value.name}
             />
