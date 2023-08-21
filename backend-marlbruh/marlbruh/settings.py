@@ -100,10 +100,14 @@ WSGI_APPLICATION = "marlbruh.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+BACKEND_DB_PATH = os.getenv('BACKEND_DB_PATH')
+if not BACKEND_DB_PATH:
+    BACKEND_DB_PATH = BASE_DIR
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BACKEND_DB_PATH / "db.sqlite3",
     }
 }
 
