@@ -55,6 +55,8 @@ class TargetChoreView(APIView):
             chore.name = serializer.validated_data["name"]
         if "icon" in serializer.validated_data:
             chore.icon = serializer.validated_data["icon"]
+        if "complete" in serializer.validated_data:
+            chore.complete = serializer.validated_data["complete"]
         if "userId" in serializer.validated_data:
             user = get_object_or_404(User, id=serializer.validated_data["userId"])
             chore.user = user
