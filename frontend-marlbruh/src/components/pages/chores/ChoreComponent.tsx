@@ -91,7 +91,9 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
                 </Group>
               </Group>
 
-              <Title order={2}>{chore.name}</Title>
+              <Title order={2} strikethrough={chore.complete}>
+                {chore.name}
+              </Title>
             </div>
             <Group position="apart">
               {chore.user ? (
