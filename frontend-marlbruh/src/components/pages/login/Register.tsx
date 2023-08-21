@@ -18,7 +18,7 @@ import { useAuthWithoutToken } from "../../../authentication/AuthContext";
 import imageUrl from "../../../assets/marlborough.png";
 import PfpDropzone from "./PfpDropzone";
 import { FileWithPath } from "@mantine/dropzone";
-import ProfileColorSwatches from "../../reusableComponents/profileColorSwatches";
+import ProfileColorSwatches from "../../reusableComponents/ProfileColorSwatches";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
