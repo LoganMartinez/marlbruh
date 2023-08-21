@@ -1,7 +1,6 @@
 import { Avatar, Menu } from "@mantine/core";
 import { useAuth } from "../../authentication/AuthContext";
 import { IconLogout, IconUser } from "@tabler/icons-react";
-import { API_URL } from "../../utilities/constants";
 
 const ProfileMenu = () => {
   const auth = useAuth();
@@ -11,7 +10,7 @@ const ProfileMenu = () => {
       <Menu>
         <Menu.Target>
           <Avatar
-            src={`${API_URL}${auth.currentUser?.profilePic}`}
+            src={auth.currentUser.profilePic}
             color="blue"
             style={{ cursor: "pointer" }}
             radius="xl"

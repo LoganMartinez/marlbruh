@@ -13,4 +13,5 @@ backend setup
 - pip install djangorestframework
 - pip install django-cors-headers
 - go to backend-marlbruh directory
+- python manage.py migrate
 - python manage.py runserver

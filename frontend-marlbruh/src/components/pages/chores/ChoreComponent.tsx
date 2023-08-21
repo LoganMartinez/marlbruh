@@ -17,7 +17,7 @@ import {
   successNotification,
 } from "../../../utilities/helperFunctions";
 import { IconCheck, IconEdit, IconHourglassHigh } from "@tabler/icons-react";
-import { API_URL, profileColors } from "../../../utilities/constants";
+import { profileColors } from "../../../utilities/constants";
 import ChoreEditModal from "./ChoreEditModal";
 import { updateChore } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
@@ -100,7 +100,7 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
                     <Group spacing="xs">
                       <Avatar
                         size="sm"
-                        src={`${API_URL}${chore.user.profilePic}`}
+                        src={chore.user.profilePic}
                         radius="xl"
                       />
                       <a href={`#/users/${chore.user.username}`}>

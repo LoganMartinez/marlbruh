@@ -1,10 +1,7 @@
 import {
   Avatar,
-  Box,
   Button,
-  Card,
   Center,
-  Container,
   Paper,
   Space,
   Stack,
@@ -17,7 +14,7 @@ import { useAuth } from "../../../authentication/AuthContext";
 import { getUser } from "../../../api/apiCalls";
 import { AxiosError } from "axios";
 import { errorNotification } from "../../../utilities/helperFunctions";
-import { API_URL, profileColors } from "../../../utilities/constants";
+import { profileColors } from "../../../utilities/constants";
 import { useViewportSize } from "@mantine/hooks";
 import EditUserPage from "./EditUserPage";
 
@@ -67,7 +64,7 @@ const UserPage = () => {
                     <Avatar
                       size="100%"
                       radius="xl"
-                      src={`${API_URL}${user.profilePic}`}
+                      src={auth.currentUser.profilePic}
                       color={profileColors[user.profileColor]}
                     />
                     <Text>
