@@ -103,6 +103,8 @@ WSGI_APPLICATION = "marlbruh.wsgi.application"
 BACKEND_DB_PATH = os.getenv('BACKEND_DB_PATH')
 if not BACKEND_DB_PATH:
     BACKEND_DB_PATH = BASE_DIR
+else:
+    BACKEND_DB_PATH = Path(BACKEND_DB_PATH)
 
 DATABASES = {
     "default": {
