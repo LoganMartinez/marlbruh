@@ -1,13 +1,21 @@
 import {
   IconBed,
+  IconBiohazard,
   IconBone,
   IconBong,
   IconBook,
   IconCar,
+  IconCash,
+  IconDroplet,
+  IconFlame,
   IconHome,
   IconPlant,
+  IconPoo,
+  IconSpray,
   IconToiletPaper,
   IconToolsKitchen,
+  IconTrash,
+  IconWashMachine,
 } from "@tabler/icons-react";
 
 export const API_URL = import.meta.env.VITE_API_URL;
@@ -21,6 +29,14 @@ export const stringToIconObject = {
   book: <IconBook />,
   car: <IconCar />,
   plant: <IconPlant />,
+  trash: <IconTrash />,
+  water: <IconDroplet />,
+  poop: <IconPoo />,
+  biohazard: <IconBiohazard />,
+  fire: <IconFlame />,
+  money: <IconCash />,
+  laundry: <IconWashMachine />,
+  spray: <IconSpray />,
 } as Record<string, any>;
 
 export const profileColors = {

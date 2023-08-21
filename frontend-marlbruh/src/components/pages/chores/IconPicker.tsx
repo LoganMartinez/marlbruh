@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { createStyles, UnstyledButton, Menu, Group, rem } from "@mantine/core";
+import {
+  createStyles,
+  UnstyledButton,
+  Menu,
+  Group,
+  rem,
+  ScrollArea,
+} from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
 import { stringToIconObject } from "../../../utilities/constants";
 
@@ -81,7 +88,10 @@ export function IconPicker({ selected, setSelected }: Props) {
           <IconChevronDown size="1rem" className={classes.icon} stroke={1.5} />
         </UnstyledButton>
       </Menu.Target>
-      <Menu.Dropdown>{items}</Menu.Dropdown>
+
+      <Menu.Dropdown>
+        <ScrollArea h={500}>{items}</ScrollArea>
+      </Menu.Dropdown>
     </Menu>
   );
 }
