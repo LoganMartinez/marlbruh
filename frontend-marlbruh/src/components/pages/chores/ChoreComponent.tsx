@@ -2,7 +2,6 @@ import {
   ActionIcon,
   Avatar,
   Box,
-  Card,
   CloseButton,
   Container,
   Group,
