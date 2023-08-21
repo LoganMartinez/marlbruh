@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  marlbruh:
+    image: marlbruh
+    restart: unless-stopped
+    ports:
+      - 8100:8100
+    volumes:
+      - $HOME/marlbruh/db:/db
