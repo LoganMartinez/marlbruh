@@ -9,9 +9,9 @@ frontend setup
 
 backend setup
 
-- python -m pip install Django
-- pip install djangorestframework
-- pip install django-cors-headers
+- python3 -m venv venv
+- source ./venv/bin/activate
+- python3 -m pip install -r backend-marlbruh/requirements.txt
 - go to backend-marlbruh directory
-- python manage.py migrate
-- python manage.py runserver
+- python3 manage.py migrate
+- python3 manage.py runserver
