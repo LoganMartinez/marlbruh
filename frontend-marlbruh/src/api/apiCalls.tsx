@@ -26,7 +26,8 @@ type CreateUserResponse = {
 export function createUser(
   username: string,
   password: string,
-  profilePic: FileWithPath | null
+  profilePic: FileWithPath | undefined,
+  profileColor: string
 ): Promise<AxiosResponse<CreateUserResponse>> {
   return apiPost(
     "users/",
@@ -34,6 +35,7 @@ export function createUser(
       username,
       password,
       ...(profilePic ? { profilePic } : {}),
+      profileColor,
     },
     undefined,
     "form"

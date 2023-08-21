@@ -9,7 +9,7 @@ type Props = {
 const ProfileColorSwatches = ({ selectedColor, setSelectedColor }: Props) => {
   return (
     <>
-      <Group position="center" spacing="xs">
+      <Group position="left" spacing="xs">
         {Object.keys(profileColorsSolid).map((color) => (
           <ActionIcon key={color} onClick={() => setSelectedColor(color)}>
             <ColorSwatch

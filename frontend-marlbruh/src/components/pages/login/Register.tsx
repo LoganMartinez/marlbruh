@@ -18,6 +18,7 @@ import { useAuthWithoutToken } from "../../../authentication/AuthContext";
 import imageUrl from "../../../assets/marlborough.png";
 import PfpDropzone from "./PfpDropzone";
 import { FileWithPath } from "@mantine/dropzone";
+import ProfileColorSwatches from "../../reusableComponents/profileColorSwatches";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -47,7 +48,8 @@ const useStyles = createStyles((theme) => ({
 interface Form {
   username: string;
   password: string;
-  pfp: FileWithPath | null;
+  pfp: FileWithPath | undefined;
+  profileColor: string;
 }
 
 interface Props {
@@ -63,7 +65,8 @@ export const Register = ({ setShowRegistration }: Props) => {
       username: "",
       password: "",
       confirmPassword: "",
-      pfp: null as FileWithPath | null,
+      pfp: undefined as FileWithPath | undefined,
+      profileColor: "blue",
     },
     validate: {
       username: (value) => (value ? null : "Enter a username"),
@@ -80,8 +83,8 @@ export const Register = ({ setShowRegistration }: Props) => {
     },
   });
 
-  const submitForm = ({ username, password, pfp }: Form) => {
-    createUser(username, password, pfp)
+  const submitForm = ({ username, password, pfp, profileColor }: Form) => {
+    createUser(username, password, pfp, profileColor)
       .then(({ data: { token } }) => {
         auth.setAuthToken(token);
       })
@@ -129,8 +132,18 @@ export const Register = ({ setShowRegistration }: Props) => {
           </Text>
           <PfpDropzone
             value={form.values.pfp}
-            setValue={(pfp: FileWithPath | null) =>
+            setValue={(pfp: FileWithPath | undefined) =>
               form.setFieldValue("pfp", pfp)
+            }
+          />
+          <Space h="xs" />
+          <Text>
+            <b>Profile Color</b>
+          </Text>
+          <ProfileColorSwatches
+            selectedColor={form.values.profileColor}
+            setSelectedColor={(color) =>
+              form.setFieldValue("profileColor", color)
             }
           />
           <Button type="submit" fullWidth mt="xl" size="md">
