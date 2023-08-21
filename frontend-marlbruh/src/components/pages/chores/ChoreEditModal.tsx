@@ -28,6 +28,7 @@ type Form = {
   name: string | undefined;
   icon: string | undefined;
   username: string | undefined;
+  complete: boolean | undefined;
 };
 
 const ChoreEditModal = ({
@@ -46,6 +47,7 @@ const ChoreEditModal = ({
       name: undefined,
       icon: undefined,
       username: undefined,
+      complete: undefined,
     } as Form,
     validate: {
       name: (value) => {
@@ -75,7 +77,14 @@ const ChoreEditModal = ({
     );
     const userId =
       usersWithUsername.length === 1 ? usersWithUsername[0].userId : undefined;
-    updateChore(chore.id, auth.authToken, values.name, values.icon, userId)
+    updateChore(
+      chore.id,
+      auth.authToken,
+      values.name,
+      values.icon,
+      userId,
+      values.complete
+    )
       .then(({ data: updatedChore }) => {
         successNotification(`Chore "${updatedChore.name} updated!`);
         setChoresUpdated(true);
