@@ -21,12 +21,14 @@ import {
   successNotification,
 } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
+import ProfileColorSwatches from "../../reusableComponents/profileColorSwatches";
 
 type Form = {
   username: string | undefined;
   password: string | undefined;
   confirmPassword: string | undefined;
   profilePic: FileWithPath | undefined;
+  profileColor: string | undefined;
 };
 
 type Props = {
@@ -39,6 +41,9 @@ const EditUserPage = ({ setEditProfile }: Props) => {
   const [currentPfp, setCurrentPfp] = useState(
     undefined as FileWithPath | undefined
   );
+  const [selectedColor, setSelectedColor] = useState(
+    auth.currentUser.profileColor
+  );
   const windowWidth = useViewportSize().width;
   const form = useForm({
     initialValues: {
@@ -46,6 +51,7 @@ const EditUserPage = ({ setEditProfile }: Props) => {
       password: undefined,
       confirmPassword: undefined,
       profilePic: undefined,
+      profileColor: undefined,
     } as Form,
 
     validate: {
@@ -87,7 +93,8 @@ const EditUserPage = ({ setEditProfile }: Props) => {
       auth.authToken,
       values.username,
       values.password,
-      values.profilePic
+      values.profilePic,
+      values.profileColor
     )
       .then(() => {
         setEditProfile(false);
@@ -112,79 +119,92 @@ const EditUserPage = ({ setEditProfile }: Props) => {
     <>
       <form onSubmit={form.onSubmit((values) => submitForm(values))}>
         <Center>
-          <Stack
-            spacing="md"
-            align="center"
-            w={windowWidth >= 600 ? "50%" : "100%"}
-          >
+          <Stack w={windowWidth >= 600 ? "50%" : "100%"}>
             <Title align="center">Edit Profile</Title>
-            <TextInput
-              label="Username"
-              placeholder="Username"
-              style={{ width: "100%" }}
-              {...form.getInputProps("username")}
-              value={form.values.username || auth.currentUser?.username}
-              onChange={(event) => {
-                const usernameValue =
-                  event.target.value === auth.currentUser.username
-                    ? undefined
-                    : event.target.value;
-                form.setFieldValue("username", usernameValue);
-              }}
-            />
-            <PasswordInput
-              w="100%"
-              label="Password"
-              {...form.getInputProps("password")}
-              value={form.values.password || ""}
-              onChange={(event) => {
-                if (event.target.value === "") {
-                  form.setFieldValue("password", undefined);
-                } else {
-                  form.setFieldValue("password", event.target.value);
+            <Stack spacing="md" align="flex-start">
+              <TextInput
+                label="Username"
+                placeholder="Username"
+                style={{ width: "100%" }}
+                {...form.getInputProps("username")}
+                value={form.values.username || auth.currentUser?.username}
+                onChange={(event) => {
+                  const usernameValue =
+                    event.target.value === auth.currentUser.username
+                      ? undefined
+                      : event.target.value;
+                  form.setFieldValue("username", usernameValue);
+                }}
+              />
+              <PasswordInput
+                w="100%"
+                label="Password"
+                {...form.getInputProps("password")}
+                value={form.values.password || ""}
+                onChange={(event) => {
+                  if (event.target.value === "") {
+                    form.setFieldValue("password", undefined);
+                  } else {
+                    form.setFieldValue("password", event.target.value);
+                  }
+                }}
+              />
+              <PasswordInput
+                withAsterisk={form.values.password !== undefined}
+                w="100%"
+                label="Confirm Password"
+                {...form.getInputProps("confirmPassword")}
+                value={form.values.confirmPassword || ""}
+              />
+              <Text>
+                <b>Profile Picture</b>
+              </Text>
+              <PfpDropzone
+                value={form.values.profilePic || currentPfp}
+                setValue={(pfp) => {
+                  setCurrentPfp(undefined);
+                  form.setFieldValue("profilePic", pfp);
+                }}
+              />
+              <Text>
+                <b>Profile Color</b>
+              </Text>
+              <ProfileColorSwatches
+                selectedColor={
+                  form.values.profileColor || auth.currentUser.profileColor
                 }
-              }}
-            />
-            <PasswordInput
-              withAsterisk={form.values.password !== undefined}
-              w="100%"
-              label="Confirm Password"
-              {...form.getInputProps("confirmPassword")}
-              value={form.values.confirmPassword || ""}
-            />
-            <Text>
-              <b>Profile Picture</b>
-            </Text>
-            <PfpDropzone
-              value={form.values.profilePic || currentPfp}
-              setValue={(pfp) => {
-                setCurrentPfp(undefined);
-                form.setFieldValue("profilePic", pfp);
-              }}
-            />
-            {Object.values(form.values).every(
-              (value) => value === undefined
-            ) ? (
-              <Button w="100%" onClick={() => setEditProfile(false)}>
-                Cancel
-              </Button>
-            ) : (
-              <>
-                <Button
-                  w="100%"
-                  color="red"
-                  onClick={() => {
-                    form.reset();
-                    setEditProfile(false);
-                  }}
-                >
-                  Discard Changes
+                setSelectedColor={(color) => {
+                  form.setFieldValue(
+                    "profileColor",
+                    auth.currentUser.profileColor === color ? undefined : color
+                  );
+                }}
+              />
+
+              {Object.values(form.values).every(
+                (value) => value === undefined
+              ) ? (
+                <Button w="100%" onClick={() => setEditProfile(false)}>
+                  Cancel
                 </Button>
-                <Button type="submit" w="100%">
-                  Save Changes
-                </Button>
-              </>
-            )}
+              ) : (
+                <>
+                  <Button
+                    w="100%"
+                    color="red"
+                    onClick={() => {
+                      form.reset();
+                      setEditProfile(false);
+                    }}
+                  >
+                    Discard Changes
+                  </Button>
+                  <Button type="submit" w="100%">
+                    Save Changes
+                  </Button>
+                </>
+              )}
+            </Stack>
           </Stack>
         </Center>
       </form>

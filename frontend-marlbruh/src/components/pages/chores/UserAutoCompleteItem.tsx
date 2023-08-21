@@ -15,6 +15,7 @@ export const UserAutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
       dateJoined,
       isSuperuser,
       userId,
+      profileColor,
       ...others
     }: ItemProps,
     ref
