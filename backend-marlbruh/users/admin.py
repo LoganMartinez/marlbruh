@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ["username", "profilePic", "date_joined", "is_staff"]
+    list_display = ["username", "profilePic", "profileColor", "date_joined", "is_staff"]
 
 
 admin.site.register(User, UserAdmin)
