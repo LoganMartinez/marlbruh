@@ -7,4 +7,5 @@
         path /media*
     }
     reverse_proxy @api localhost:8000
+    reverse_proxy @media localhost:8000
 }
