@@ -3,4 +3,4 @@
 python3 /app/backend-marlbruh/manage.py migrate
 cd /app/backend-marlbruh && gunicorn marlbruh.wsgi &
 
-cd /app/frontend-marlbruh && npm run dev
+cd /app/frontend-marlbruh/dist && caddy run

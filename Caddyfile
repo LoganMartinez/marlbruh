@@ -1,0 +1,10 @@
+:8100 {
+    file_server
+    @api {
+        path /api*
+    }
+    @media {
+        path /media*
+    }
+    reverse_proxy @api localhost:8000
+}

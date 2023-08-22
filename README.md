@@ -3,7 +3,7 @@
 to build docker container:
 * preferred: ```make```
 * or:
-    - git submodule update --remote
+    - ```git submodule update --remote```
     - ```docker build -t marlbruh .```
 
 running:
