@@ -20,7 +20,7 @@ class ChoreView(APIView):
     def post(self, request):
         serializer = serializers.PostChoreSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         user = (
             get_object_or_404(User, pk=serializer.validated_data["userId"])
             if "userId" in serializer.validated_data
@@ -30,6 +30,7 @@ class ChoreView(APIView):
             name=serializer.validated_data["name"],
             icon=serializer.validated_data["icon"],
             user=user,
+            description=serializer.validated_data.get("description"),
         )
         responseSerializer = serializers.ChoreSerializer(chore)
         return Response(
@@ -60,6 +61,8 @@ class TargetChoreView(APIView):
         if "userId" in serializer.validated_data:
             user = get_object_or_404(User, id=serializer.validated_data["userId"])
             chore.user = user
+        if "description" in serializer.validated_data:
+            chore.description = serializer.validated_data["description"]
         chore.save()
         response = serializers.ChoreSerializer(chore)
         return Response(response.data)
