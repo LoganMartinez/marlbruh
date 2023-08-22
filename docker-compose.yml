@@ -4,7 +4,9 @@ services:
   marlbruh:
     image: marlbruh
     restart: unless-stopped
+    environment:
+      - BACKEND_DB_PATH=/db/
     ports:
       - 8100:8100
     volumes:
-      - $HOME/marlbruh/db:/db
+      - /home/marigold/src/marlbruh-docker/db/:/db
