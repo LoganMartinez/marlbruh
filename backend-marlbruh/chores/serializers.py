@@ -15,6 +15,7 @@ class PostChoreSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=50)
     icon = serializers.CharField(max_length=20)
     userId = serializers.IntegerField(required=False)
+    description = serializers.CharField(required=False, allow_null=True, max_length=150)
 
 
 class PutChoreSerializer(serializers.Serializer):
@@ -22,6 +23,7 @@ class PutChoreSerializer(serializers.Serializer):
     icon = serializers.CharField(required=False)
     userId = serializers.IntegerField(required=False)
     complete = serializers.BooleanField(required=False)
+    description = serializers.CharField(required=False, allow_null=True)
 
     def validate(self, data):
         if len(data.keys()) == 0:

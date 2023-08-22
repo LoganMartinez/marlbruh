@@ -7,3 +7,4 @@ class Chore(models.Model):
     icon = models.CharField(max_length=20)
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     complete = models.BooleanField(default=False)
+    description = models.CharField(blank=True, null=True, max_length=150)

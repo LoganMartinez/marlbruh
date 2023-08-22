@@ -79,9 +79,14 @@ export function createChore(
   name: string,
   icon: string,
   userId: number | undefined,
+  description: string | undefined,
   token: string
 ) {
-  return apiPost("chores/", { name: name, icon: icon, userId: userId }, token);
+  return apiPost(
+    "chores/",
+    { name: name, icon: icon, userId: userId, description: description },
+    token
+  );
 }
 
 export function deleteChore(choreId: number, token: string) {
@@ -94,7 +99,8 @@ export function updateChore(
   name: string | undefined,
   icon: string | undefined,
   userId: number | undefined,
-  complete: boolean | undefined
+  complete: boolean | undefined,
+  description: string | undefined | null
 ) {
   return apiPut(
     `chores/${choreId}/`,
@@ -103,6 +109,7 @@ export function updateChore(
       icon: icon,
       userId: userId,
       complete: complete,
+      description: description,
     },
     token
   );
