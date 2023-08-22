@@ -34,8 +34,27 @@ AUTH_USER_MODEL = "users.User"
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Set data path from environment variable, usually passed via Docker
+# If there is no environment variable, then use ./data at root dir BASE_DIR
+DATA_PATH = os.getenv('DATA_PATH')
+if not DATA_PATH:
+    DATA_PATH = BASE_DIR / Path('data')
+else:
+    DATA_PATH = Path(DATA_PATH)
+# Create data folder if it doesn't already exist
+DATA_PATH.mkdir(parents=True, exist_ok=True)
+
+# Migrate existing sqlite3 and media folders to new data folder
+# Delete this in next commit after Logan has run it once
+if 'db.sqlite3' in os.listdir(BASE_DIR):
+    if not 'db.sqlite3' in os.listdir(DATA_PATH):
+        os.rename((BASE_DIR / "db.sqlite3"), (DATA_PATH / "db.sqlite3"))
+if 'media' in os.listdir(BASE_DIR):
+    if not 'media' in os.listdir(DATA_PATH):
+        os.rename((BASE_DIR / "media"), (DATA_PATH / "media"))
+
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(DATA_PATH, "media")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -100,16 +119,10 @@ WSGI_APPLICATION = "marlbruh.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-BACKEND_DB_PATH = os.getenv('BACKEND_DB_PATH')
-if not BACKEND_DB_PATH:
-    BACKEND_DB_PATH = BASE_DIR
-else:
-    BACKEND_DB_PATH = Path(BACKEND_DB_PATH)
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BACKEND_DB_PATH / "db.sqlite3",
+        "NAME": DATA_PATH / "db.sqlite3",
     }
 }
 
