@@ -1,10 +1,15 @@
 # marlbruh docker
 
-to compile as docker container:
-* docker build -t marlbruh .
+to build docker container:
+* preferred: ```make```
+* or:
+    - git submodule update --remote
+    - ```docker build -t marlbruh .```
 
 running:
-* docker run -p 0.0.0.0:8100:8100 -e BACKEND_DB_PATH=/db/ -v /home/marigold/src/marlbruh-docker/db:/db --name marlbruh marlbruh
+* ```docker run -p 0.0.0.0:8100:8100 -e DATA_PATH=/data/ -v /home/marigold/src/marlbruh-docker/data:/data --name marlbruh marlbruh```
+* or just: ```docker compose up -d```
 
 ## todo:
 * decrease size of image
+* run frontend with discrete webserver

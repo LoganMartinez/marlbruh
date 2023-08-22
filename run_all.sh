@@ -1,6 +1,6 @@
 #!/bin/sh
 
-python3 src/backend-marlbruh/manage.py migrate
-cd /app/src/backend-marlbruh && gunicorn marlbruh.wsgi &
+python3 /app/backend-marlbruh/manage.py migrate
+cd /app/backend-marlbruh && gunicorn marlbruh.wsgi &
 
-cd /app/src/frontend-marlbruh && npm run dev
+cd /app/frontend-marlbruh && npm run dev
