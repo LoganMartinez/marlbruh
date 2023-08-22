@@ -2,6 +2,7 @@ import {
   ActionIcon,
   Avatar,
   Box,
+  Button,
   CloseButton,
   Container,
   Group,
@@ -99,21 +100,36 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
             </div>
             <Group position="apart">
               {chore.user ? (
-                <Text>
-                  Assigned to:{" "}
+                <Stack spacing=".5rem">
+                  <Text>Assigned to: </Text>
                   {
-                    <Group spacing="xs">
-                      <Avatar
-                        size="sm"
-                        src={chore.user.profilePic}
-                        radius="xl"
-                      />
-                      <a href={`#/users/${chore.user.username}`}>
-                        {chore.user.username}
-                      </a>
-                    </Group>
+                    <Box
+                      sx={(theme) => ({
+                        backgroundColor: profileColors[chore.user.profileColor],
+                        borderRadius: theme.radius.lg,
+                      })}
+                    >
+                      <Button
+                        variant="unstyled"
+                        p={0}
+                        component="a"
+                        href={`#/users/${chore.user.username}`}
+                      >
+                        <Container p=".5rem">
+                          <Group spacing="xs" noWrap>
+                            <Avatar
+                              size="sm"
+                              src={chore.user.profilePic}
+                              radius="xl"
+                              color="blue"
+                            />
+                            <Text>{chore.user.username}</Text>
+                          </Group>
+                        </Container>
+                      </Button>
+                    </Box>
                   }
-                </Text>
+                </Stack>
               ) : (
                 <Text>Not Assigned</Text>
               )}
