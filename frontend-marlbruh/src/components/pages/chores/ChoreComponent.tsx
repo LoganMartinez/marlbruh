@@ -43,7 +43,8 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
       undefined,
       undefined,
       undefined,
-      !chore.complete
+      !chore.complete,
+      undefined
     )
       .then(({ data: updatedChore }) => {
         if (updatedChore.complete) {
@@ -94,6 +95,7 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
               <Title order={2} strikethrough={chore.complete}>
                 {chore.name}
               </Title>
+              {chore.description ? <Text>{chore.description}</Text> : <></>}
             </div>
             <Group position="apart">
               {chore.user ? (

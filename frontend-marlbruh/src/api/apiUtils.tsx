@@ -51,14 +51,14 @@ export const apiPut = (
   const url = `${API_URL}/${path}`;
   let cleanedUpBody = {} as Record<string, any>;
   Object.keys(body).forEach((key) => {
-    if (body[key] !== null && body[key] !== undefined) {
+    if (body[key] !== undefined) {
       cleanedUpBody[key] = body[key];
     }
   });
   if (Object.keys(cleanedUpBody).length === 0) {
     throw new AxiosError("Empty put request");
   }
-
+  console.log(cleanedUpBody);
   if (contentType === "json") {
     // JSON request
     const jsonBody = JSON.stringify(cleanedUpBody);

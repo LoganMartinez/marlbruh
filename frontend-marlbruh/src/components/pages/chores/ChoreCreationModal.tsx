@@ -5,6 +5,7 @@ import {
   Stack,
   Text,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
@@ -27,6 +28,7 @@ type Form = {
   name: string;
   icon: string;
   username: string;
+  description: string | undefined;
 };
 
 const ChoreCreationModal = ({
@@ -41,6 +43,7 @@ const ChoreCreationModal = ({
       name: "",
       icon: "home",
       username: "",
+      description: undefined,
     } as Form,
     validate: {
       name: (value) => {
@@ -52,6 +55,10 @@ const ChoreCreationModal = ({
         }
         return null;
       },
+      description: (value) =>
+        value && value.length > 150
+          ? "description must be 150 characters or less"
+          : null,
     },
   });
 
@@ -67,7 +74,13 @@ const ChoreCreationModal = ({
     );
     const userId =
       usersWithUsername.length === 1 ? usersWithUsername[0].userId : undefined;
-    createChore(values.name, values.icon, userId, auth.authToken)
+    createChore(
+      values.name,
+      values.icon,
+      userId,
+      values.description,
+      auth.authToken
+    )
       .then(({ data: createdChore }) => {
         successNotification(`New chore "${createdChore.name}" created!`);
         setChoresUpdated(true);
@@ -81,7 +94,22 @@ const ChoreCreationModal = ({
     <Modal opened={opened} onClose={openHandlers.close} title="Create Chore">
       <form onSubmit={form.onSubmit((values) => submitForm(values))}>
         <Stack>
-          <TextInput label="Chore Name" {...form.getInputProps("name")} />
+          <TextInput
+            withAsterisk
+            label="Chore Name"
+            {...form.getInputProps("name")}
+          />
+          <Textarea
+            label="Description"
+            {...form.getInputProps("description")}
+            onChange={(event) => {
+              if (event.target.value === "") {
+                form.setFieldValue("description", undefined);
+              } else {
+                form.setFieldValue("description", event.target.value);
+              }
+            }}
+          />
           <div>
             <Text>Icon</Text>
             <IconPicker

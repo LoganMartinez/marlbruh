@@ -4,4 +4,5 @@ type Chore = {
   icon: string;
   user: User;
   complete: boolean;
+  description: string | undefined;
 };

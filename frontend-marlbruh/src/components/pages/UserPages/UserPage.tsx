@@ -64,7 +64,7 @@ const UserPage = () => {
                     <Avatar
                       size="100%"
                       radius="xl"
-                      src={auth.currentUser.profilePic}
+                      src={user.profilePic}
                       color={profileColors[user.profileColor]}
                     />
                     <Text>

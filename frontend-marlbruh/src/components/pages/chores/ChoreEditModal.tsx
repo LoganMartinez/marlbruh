@@ -5,6 +5,7 @@ import {
   Stack,
   Text,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
@@ -29,6 +30,7 @@ type Form = {
   icon: string | undefined;
   username: string | undefined;
   complete: boolean | undefined;
+  description: string | undefined;
 };
 
 const ChoreEditModal = ({
@@ -48,6 +50,7 @@ const ChoreEditModal = ({
       icon: undefined,
       username: undefined,
       complete: undefined,
+      description: undefined,
     } as Form,
     validate: {
       name: (value) => {
@@ -62,6 +65,10 @@ const ChoreEditModal = ({
         }
         return null;
       },
+      description: (value) =>
+        value && value.length > 150
+          ? "Description must be 150 characters or less"
+          : null,
     },
   });
 
@@ -83,7 +90,8 @@ const ChoreEditModal = ({
       values.name,
       values.icon,
       userId,
-      values.complete
+      values.complete,
+      values.description === "" ? null : values.description
     )
       .then(({ data: updatedChore }) => {
         successNotification(`Chore "${updatedChore.name} updated!`);
@@ -134,6 +142,24 @@ const ChoreEditModal = ({
               );
             }}
           />
+          <Textarea
+            label="Description"
+            value={
+              form.values.description === undefined
+                ? chore.description === null
+                  ? ""
+                  : chore.description
+                : form.values.description
+            }
+            onChange={(event) => {
+              form.setFieldValue(
+                "description",
+                event.target.value === chore.description
+                  ? undefined
+                  : event.target.value
+              );
+            }}
+          />
           <div>
             <Text>Icon</Text>
             <IconPicker
@@ -157,7 +183,7 @@ const ChoreEditModal = ({
             onChange={userChange}
           />
           {Object.values(form.values).every((val) => val === undefined) ? (
-            <Button>Cancel</Button>
+            <Button onClick={openHandlers.close}>Cancel</Button>
           ) : (
             <Stack>
               <Button
