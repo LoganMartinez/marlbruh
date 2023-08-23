@@ -26,6 +26,8 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:8000",
+    "https://marlbruh.com",
+    "http://localhost:8100"
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -63,10 +65,9 @@ MEDIA_ROOT = os.path.join(DATA_PATH, "media")
 SECRET_KEY = "django-insecure-8kw@i-7kaw%qmgg7-v8n7o-eyo89hxmq^cf(!=%^_*bz5%uvs5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
