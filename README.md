@@ -1,9 +1,15 @@
 # marlbruh docker
 
+you will need npm.
+
 to build docker container:
 * preferred: ```make```
 * or:
     - ```git submodule update --remote```
+    - ```mkdir build && cd build```
+    - ```cp -R ../src .```
+    - ```cd src/frontend-marlbruh; npm install; npm run build; mv dist ../..```
+    - ```mv src/backend-marlbruh . && rm -rf src```
     - ```docker build -t marlbruh .```
 
 running:
