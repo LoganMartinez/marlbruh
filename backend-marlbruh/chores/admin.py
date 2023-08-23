@@ -3,9 +3,8 @@ from chores import models
 
 
 class ChoreAdmin(admin.ModelAdmin):
-    list_display = ["name", "user", "description"]
+    list_display = ["name", "description"]
     search_fields = ["name", "description"]
-    list_filter = ["user"]
 
 
 # Register your models here.

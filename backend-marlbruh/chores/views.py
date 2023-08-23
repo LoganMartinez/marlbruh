@@ -21,17 +21,14 @@ class ChoreView(APIView):
         serializer = serializers.PostChoreSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        user = (
-            get_object_or_404(User, pk=serializer.validated_data["userId"])
-            if "userId" in serializer.validated_data
-            else None
-        )
+        users = User.objects.filter(id__in=serializer.validated_data["userIds"])
         chore = models.Chore.objects.create(
             name=serializer.validated_data["name"],
             icon=serializer.validated_data["icon"],
-            user=user,
             description=serializer.validated_data.get("description"),
         )
+        chore.users.set(users)
+
         responseSerializer = serializers.ChoreSerializer(chore)
         return Response(
             responseSerializer.data,
@@ -58,9 +55,9 @@ class TargetChoreView(APIView):
             chore.icon = serializer.validated_data["icon"]
         if "complete" in serializer.validated_data:
             chore.complete = serializer.validated_data["complete"]
-        if "userId" in serializer.validated_data:
-            user = get_object_or_404(User, id=serializer.validated_data["userId"])
-            chore.user = user
+        if "userIds" in serializer.validated_data:
+            users = User.objects.filter(id__in=serializer.validated_data["userIds"])
+            chore.users.set(users)
         if "description" in serializer.validated_data:
             chore.description = serializer.validated_data["description"]
         chore.save()

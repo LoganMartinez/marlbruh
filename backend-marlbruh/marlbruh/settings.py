@@ -36,9 +36,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Set data path from environment variable, usually passed via Docker
 # If there is no environment variable, then use ./data at root dir BASE_DIR
-DATA_PATH = os.getenv('DATA_PATH')
+DATA_PATH = os.getenv("DATA_PATH")
 if not DATA_PATH:
-    DATA_PATH = BASE_DIR / Path('data')
+    DATA_PATH = BASE_DIR / Path("data")
 else:
     DATA_PATH = Path(DATA_PATH)
 # Create data folder if it doesn't already exist
@@ -46,11 +46,11 @@ DATA_PATH.mkdir(parents=True, exist_ok=True)
 
 # Migrate existing sqlite3 and media folders to new data folder
 # Delete this in next commit after Logan has run it once
-if 'db.sqlite3' in os.listdir(BASE_DIR):
-    if not 'db.sqlite3' in os.listdir(DATA_PATH):
+if "db.sqlite3" in os.listdir(BASE_DIR):
+    if not "db.sqlite3" in os.listdir(DATA_PATH):
         os.rename((BASE_DIR / "db.sqlite3"), (DATA_PATH / "db.sqlite3"))
-if 'media' in os.listdir(BASE_DIR):
-    if not 'media' in os.listdir(DATA_PATH):
+if "media" in os.listdir(BASE_DIR):
+    if not "media" in os.listdir(DATA_PATH):
         os.rename((BASE_DIR / "media"), (DATA_PATH / "media"))
 
 MEDIA_URL = "/media/"
@@ -63,9 +63,9 @@ MEDIA_ROOT = os.path.join(DATA_PATH, "media")
 SECRET_KEY = "django-insecure-8kw@i-7kaw%qmgg7-v8n7o-eyo89hxmq^cf(!=%^_*bz5%uvs5"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
