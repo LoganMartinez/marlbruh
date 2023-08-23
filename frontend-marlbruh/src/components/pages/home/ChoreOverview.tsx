@@ -17,10 +17,12 @@ const ChoreOverview = () => {
   useEffect(() => {
     getChores(auth.authToken)
       .then(({ data: chores }: getChoresReturn) => {
-        const filteredChores = chores.filter((chore) =>
-          chore.users.some(
-            (user) => user.username === auth.currentUser.username
-          )
+        const filteredChores = chores.filter(
+          (chore) =>
+            !chore.complete &&
+            chore.users.some(
+              (user) => user.username === auth.currentUser.username
+            )
         );
         setUserChores(filteredChores);
       })
