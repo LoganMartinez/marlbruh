@@ -55,8 +55,8 @@ const Chores = () => {
         allChores.filter((chore) => {
           const meFilterFail =
             filter.users === "me" &&
-            chore.users.some(
-              ({ username }) => username === auth.currentUser.username
+            chore.users.every(
+              ({ username }) => username !== auth.currentUser.username
             );
           const unassignedFilterFail =
             filter.users === "unassigned" && chore.users.length > 0;
