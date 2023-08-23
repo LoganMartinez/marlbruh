@@ -45,7 +45,7 @@ const ChoreOverview = () => {
             <Group noWrap spacing="xs" position="left">
               {userChores.map((chore) => (
                 <UnstyledButton
-                  p="xs"
+                  p="0"
                   component="a"
                   href="#/chores"
                   key={chore.id}
