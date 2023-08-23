@@ -1,4 +1,11 @@
-import { Group, ScrollArea, Stack, Title } from "@mantine/core";
+import {
+  Group,
+  ScrollArea,
+  Space,
+  Stack,
+  Title,
+  UnstyledButton,
+} from "@mantine/core";
 import { useEffect, useState } from "react";
 import { getChores } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
@@ -17,7 +24,6 @@ const ChoreOverview = () => {
   useEffect(() => {
     getChores(auth.authToken)
       .then(({ data: chores }: getChoresReturn) => {
-        console.log(chores);
         const filteredChores = chores.filter((chore) =>
           chore.users.some(
             (user) => user.username === auth.currentUser.username
@@ -33,17 +39,22 @@ const ChoreOverview = () => {
       {userChores.length === 0 ? (
         <Title order={3}>You finished all your chores! </Title>
       ) : (
-        <Stack>
-          <div>
-            <Title order={3}>Your Unfinished Chores:</Title>
-            <a href="#/chores">Go to chore page</a>
-          </div>
+        <Stack spacing=".1rem">
+          <Title order={3}>Your Unfinished Chores:</Title>
           <ScrollArea type="hover">
             <Group noWrap spacing="xs" position="left">
               {userChores.map((chore) => (
-                <SimpleChoreComponent chore={chore} key={chore.id} />
+                <UnstyledButton
+                  p="xs"
+                  component="a"
+                  href="#/chores"
+                  key={chore.id}
+                >
+                  <SimpleChoreComponent chore={chore} />
+                </UnstyledButton>
               ))}
             </Group>
+            <Space h="md" />
           </ScrollArea>
         </Stack>
       )}
