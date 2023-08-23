@@ -1,11 +1,4 @@
-import {
-  Group,
-  ScrollArea,
-  Space,
-  Stack,
-  Title,
-  UnstyledButton,
-} from "@mantine/core";
+import { SimpleGrid, Stack, Title, UnstyledButton } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { getChores } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
@@ -41,21 +34,26 @@ const ChoreOverview = () => {
       ) : (
         <Stack spacing=".1rem">
           <Title order={3}>Your Unfinished Chores:</Title>
-          <ScrollArea type="hover">
-            <Group noWrap spacing="xs" position="left">
-              {userChores.map((chore) => (
-                <UnstyledButton
-                  p="0"
-                  component="a"
-                  href="#/chores"
-                  key={chore.id}
-                >
-                  <SimpleChoreComponent chore={chore} />
-                </UnstyledButton>
-              ))}
-            </Group>
-            <Space h="md" />
-          </ScrollArea>
+          <SimpleGrid
+            cols={3}
+            breakpoints={[
+              { maxWidth: "62rem", cols: 3, spacing: "md" },
+              { maxWidth: "48rem", cols: 2, spacing: "sm" },
+              { maxWidth: "36rem", cols: 1, spacing: "sm" },
+            ]}
+            spacing={"xs"}
+          >
+            {userChores.map((chore) => (
+              <UnstyledButton
+                p="0"
+                component="a"
+                href="#/chores"
+                key={chore.id}
+              >
+                <SimpleChoreComponent chore={chore} />
+              </UnstyledButton>
+            ))}
+          </SimpleGrid>
         </Stack>
       )}
     </>
