@@ -46,15 +46,6 @@ else:
 # Create data folder if it doesn't already exist
 DATA_PATH.mkdir(parents=True, exist_ok=True)
 
-# Migrate existing sqlite3 and media folders to new data folder
-# Delete this in next commit after Logan has run it once
-if 'db.sqlite3' in os.listdir(BASE_DIR):
-    if not 'db.sqlite3' in os.listdir(DATA_PATH):
-        os.rename((BASE_DIR / "db.sqlite3"), (DATA_PATH / "db.sqlite3"))
-if 'media' in os.listdir(BASE_DIR):
-    if not 'media' in os.listdir(DATA_PATH):
-        os.rename((BASE_DIR / "media"), (DATA_PATH / "media"))
-
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(DATA_PATH, "media")
 
