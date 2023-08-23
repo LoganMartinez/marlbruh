@@ -11,7 +11,7 @@ import { getChores } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import ChoreComponent from "./ChoreComponent";
 import { IconPlus } from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import ChoreCreationModal from "./ChoreCreationModal";
 
 const userFilterData = [
@@ -28,6 +28,7 @@ const statusFilterData = [
 
 const Chores = () => {
   const auth = useAuth();
+  const windowWidth = useViewportSize().width;
   const [choreCreationOpened, choreCreationHandlers] = useDisclosure(false);
   const [allChores, setAllChores] = useState(undefined as Chore[] | undefined);
   const [filteredChores, setFilteredChores] = useState([] as Chore[]);
@@ -78,8 +79,8 @@ const Chores = () => {
         openHandlers={choreCreationHandlers}
         setChoresUpdated={setChoresUpdated}
       />
-      <Group position="apart" noWrap>
-        <Group position="left" noWrap w="70%">
+      <Group position="apart" noWrap align="flex-start">
+        <Group position="left" noWrap={windowWidth >= 500} w="70%">
           <Select
             data={userFilterData}
             value={filter.users}
@@ -88,6 +89,7 @@ const Chores = () => {
                 setFilter((prev) => ({ ...prev, users: value }));
               }
             }}
+            // w="100%"
           />
           <Select
             data={statusFilterData}
@@ -97,6 +99,7 @@ const Chores = () => {
                 setFilter((prev) => ({ ...prev, completionStatus: value }));
               }
             }}
+            // w="100%"
           />
         </Group>
 
