@@ -9,7 +9,7 @@ to build docker container:
     - ```mkdir build && cd build```
     - ```cp -R ../src .```
     - ```cd src/frontend-marlbruh; npm install; npm run build; mv dist ../..```
-    - ```mv src/backend-marlbruh . && rm -rf src```
+    - ```cd ../.. && mv src/backend-marlbruh . && rm -rf src && cd ..```
     - ```docker build -t marlbruh .```
 
 running:
