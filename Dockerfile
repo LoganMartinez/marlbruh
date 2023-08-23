@@ -20,4 +20,4 @@ COPY Caddyfile ./frontend-marlbruh/dist/
 
 CMD ["/bin/sh", "run_all.sh"]
 
-EXPOSE 8200
+EXPOSE 8100
