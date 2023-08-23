@@ -26,6 +26,8 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:8000",
+    "https://marlbruh.com",
+    "http://localhost:8100"
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -44,15 +46,6 @@ else:
 # Create data folder if it doesn't already exist
 DATA_PATH.mkdir(parents=True, exist_ok=True)
 
-# Migrate existing sqlite3 and media folders to new data folder
-# Delete this in next commit after Logan has run it once
-if "db.sqlite3" in os.listdir(BASE_DIR):
-    if not "db.sqlite3" in os.listdir(DATA_PATH):
-        os.rename((BASE_DIR / "db.sqlite3"), (DATA_PATH / "db.sqlite3"))
-if "media" in os.listdir(BASE_DIR):
-    if not "media" in os.listdir(DATA_PATH):
-        os.rename((BASE_DIR / "media"), (DATA_PATH / "media"))
-
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(DATA_PATH, "media")
 
@@ -66,7 +59,6 @@ SECRET_KEY = "django-insecure-8kw@i-7kaw%qmgg7-v8n7o-eyo89hxmq^cf(!=%^_*bz5%uvs5
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
