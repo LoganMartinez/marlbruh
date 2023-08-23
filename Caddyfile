@@ -1,11 +1,20 @@
 :8100 {
+    encode zstd gzip
     file_server
+
     @api {
         path /api*
     }
     @media {
         path /media*
     }
+
+    handle_path /media/* {
+        file_server {
+            root "/db/media"
+        }
+    }
+
     reverse_proxy @api localhost:8000
     reverse_proxy @media localhost:8000
 }
