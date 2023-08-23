@@ -11,7 +11,7 @@
 
     handle_path /media/* {
         file_server {
-            root "/db/media"
+            root "/data/media/"
         }
     }
 
