@@ -11,5 +11,5 @@ running:
 * or just: ```docker compose up -d```
 
 ## todo:
-* decrease size of image
-* run frontend with discrete webserver
+* ~~decrease size of image~~
+* ~~run frontend with discrete webserver~~

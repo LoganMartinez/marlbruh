@@ -1,22 +1,18 @@
 # syntax=docker/dockerfile:1
    
-FROM node:20-alpine
+FROM alpine:latest
 
 VOLUME /data
 WORKDIR /app
 
-COPY src ./
+COPY build ./
 COPY run_all.sh ./
 
 RUN \
-    apk add python3 py3-pip caddy && \
-    python3 -m pip install -r backend-marlbruh/requirements.txt && \
-    cd /app/frontend-marlbruh && \
-    npm install && \
-    npm run build && \
-    rm -rf node_modules
+    apk add --no-cache python3 py3-pip caddy && \
+    python3 -m pip install -r backend-marlbruh/requirements.txt
 
-COPY Caddyfile ./frontend-marlbruh/dist/
+COPY Caddyfile ./dist/
 
 CMD ["/bin/sh", "run_all.sh"]
 
