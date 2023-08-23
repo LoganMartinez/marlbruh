@@ -58,7 +58,6 @@ export const apiPut = (
   if (Object.keys(cleanedUpBody).length === 0) {
     throw new AxiosError("Empty put request");
   }
-  console.log(cleanedUpBody);
   if (contentType === "json") {
     // JSON request
     const jsonBody = JSON.stringify(cleanedUpBody);
