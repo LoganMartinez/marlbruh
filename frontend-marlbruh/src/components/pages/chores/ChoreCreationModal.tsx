@@ -75,7 +75,6 @@ const ChoreCreationModal = ({
     const userIds = allUsers
       .filter((u) => values.usernames.includes(u.username))
       .map((user) => user.userId);
-    console.log(userIds);
     createChore(
       values.name,
       values.icon,
