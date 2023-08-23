@@ -6,13 +6,13 @@ VOLUME /data
 WORKDIR /app
 
 COPY build ./
-COPY run_all.sh ./
+COPY include/run_all.sh ./
 
 RUN \
     apk add --no-cache python3 py3-pip caddy && \
     python3 -m pip install -r backend-marlbruh/requirements.txt
 
-COPY Caddyfile ./dist/
+COPY include/Caddyfile ./dist/
 
 CMD ["/bin/sh", "run_all.sh"]
 
