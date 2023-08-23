@@ -13,6 +13,8 @@ import ChoreComponent from "./ChoreComponent";
 import { IconPlus } from "@tabler/icons-react";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import ChoreCreationModal from "./ChoreCreationModal";
+import { errorNotification } from "../../../utilities/helperFunctions";
+import { AxiosError } from "axios";
 
 const userFilterData = [
   { value: "all", label: "All users" },
@@ -41,9 +43,13 @@ const Chores = () => {
   // updated all chores
   useEffect(() => {
     if (choresUpdated) {
-      getChores(auth.authToken).then(({ data: chores }) => {
-        setAllChores(chores);
-      });
+      getChores(auth.authToken)
+        .then(({ data: chores }) => {
+          setAllChores(chores);
+        })
+        .catch((err: AxiosError) => {
+          errorNotification(err.message);
+        });
       setChoresUpdated(false);
     }
   }, [choresUpdated]);
