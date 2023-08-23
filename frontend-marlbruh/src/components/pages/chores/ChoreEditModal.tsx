@@ -1,7 +1,7 @@
 import {
-  Autocomplete,
   Button,
   Modal,
+  MultiSelect,
   Stack,
   Text,
   TextInput,
@@ -11,9 +11,13 @@ import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { getAllUsers, updateChore } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
-import { UserAutoCompleteItem } from "./UserAutoCompleteItem";
+import {
+  UserAutoCompleteItem,
+  UserAutoCompleteValue,
+} from "./UserAutoComplete";
 import { IconPicker } from "./IconPicker";
 import {
+  arraysEqual,
   errorNotification,
   successNotification,
 } from "../../../utilities/helperFunctions";
@@ -28,7 +32,7 @@ type Props = {
 type Form = {
   name: string | undefined;
   icon: string | undefined;
-  username: string | undefined;
+  usernames: string[] | undefined;
   complete: boolean | undefined;
   description: string | undefined;
 };
@@ -41,14 +45,14 @@ const ChoreEditModal = ({
 }: Props) => {
   const auth = useAuth();
   const [userDisplay, setUserDisplay] = useState(
-    chore.user ? chore.user.username : ""
+    chore.users.map((user) => user.username)
   );
   const [allUsers, setAllUsers] = useState([] as User[]);
   const form = useForm({
     initialValues: {
       name: undefined,
       icon: undefined,
-      username: undefined,
+      usernames: undefined,
       complete: undefined,
       description: undefined,
     } as Form,
@@ -79,17 +83,17 @@ const ChoreEditModal = ({
   }, []);
 
   const submitForm = (values: Form) => {
-    const usersWithUsername = allUsers.filter(
-      (u) => u.username === values.username
-    );
-    const userId =
-      usersWithUsername.length === 1 ? usersWithUsername[0].userId : undefined;
+    const userIds = values.usernames
+      ? allUsers
+          .filter((u) => values.usernames?.includes(u.username))
+          .map((user) => user.userId)
+      : undefined;
     updateChore(
       chore.id,
       auth.authToken,
       values.name,
       values.icon,
-      userId,
+      userIds,
       values.complete,
       values.description === "" ? null : values.description
     )
@@ -101,21 +105,12 @@ const ChoreEditModal = ({
       .catch((err) => errorNotification(err));
   };
 
-  const userChange = (username: string) => {
-    if (chore.user && username === chore.user.username) {
-      form.setFieldValue("username", undefined);
-    } else {
-      const usersWithUsername = allUsers.filter(
-        (user) => user.username === username
-      );
-      if (usersWithUsername.length === 1) {
-        form.setFieldValue("username", username);
-      } else {
-        form.setFieldValue("username", undefined);
-      }
+  const userChange = (usernames: string[]) => {
+    if (arraysEqual(usernames, chore.users)) {
+      form.setFieldValue("usernames", undefined);
     }
-
-    setUserDisplay(username);
+    form.setFieldValue("usernames", usernames);
+    setUserDisplay(usernames);
   };
 
   return (
@@ -172,7 +167,27 @@ const ChoreEditModal = ({
               }}
             />
           </div>
-          <Autocomplete
+          <MultiSelect
+            label="Assigned user(s)"
+            data={allUsers.map((user) => ({
+              value: user.username,
+              profilePic: user.profilePic,
+              profileColor: user.profileColor,
+            }))}
+            itemComponent={UserAutoCompleteItem}
+            valueComponent={UserAutoCompleteValue}
+            dropdownPosition="bottom"
+            withinPortal
+            searchable
+            filter={(value, selected, user) =>
+              !selected &&
+              user.value.toLowerCase().includes(value.toLowerCase().trim())
+            }
+            {...form.getInputProps("usernames")}
+            value={userDisplay}
+            onChange={userChange}
+          />
+          {/* <Autocomplete
             label="Assigned user"
             itemComponent={UserAutoCompleteItem}
             data={allUsers.map((user) => ({ value: user.username, ...user }))}
@@ -181,7 +196,7 @@ const ChoreEditModal = ({
             {...form.getInputProps("username")}
             value={userDisplay}
             onChange={userChange}
-          />
+          /> */}
           {Object.values(form.values).every((val) => val === undefined) ? (
             <Button onClick={openHandlers.close}>Cancel</Button>
           ) : (
@@ -190,6 +205,7 @@ const ChoreEditModal = ({
                 color="red"
                 onClick={() => {
                   openHandlers.close();
+                  setUserDisplay(chore.users.map((user) => user.username));
                   form.reset();
                 }}
               >

@@ -1,7 +1,7 @@
 import {
-  Autocomplete,
   Button,
   Modal,
+  MultiSelect,
   Stack,
   Text,
   TextInput,
@@ -11,7 +11,10 @@ import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import { createChore, getAllUsers } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
-import { UserAutoCompleteItem } from "./UserAutoCompleteItem";
+import {
+  UserAutoCompleteItem,
+  UserAutoCompleteValue,
+} from "./UserAutoComplete";
 import { IconPicker } from "./IconPicker";
 import {
   errorNotification,
@@ -27,7 +30,7 @@ type Props = {
 type Form = {
   name: string;
   icon: string;
-  username: string;
+  usernames: string[];
   description: string | undefined;
 };
 
@@ -42,7 +45,7 @@ const ChoreCreationModal = ({
     initialValues: {
       name: "",
       icon: "home",
-      username: "",
+      usernames: [],
       description: undefined,
     } as Form,
     validate: {
@@ -69,15 +72,13 @@ const ChoreCreationModal = ({
   }, []);
 
   const submitForm = (values: Form) => {
-    const usersWithUsername = allUsers.filter(
-      (u) => u.username === values.username
-    );
-    const userId =
-      usersWithUsername.length === 1 ? usersWithUsername[0].userId : undefined;
+    const userIds = allUsers
+      .filter((u) => values.usernames.includes(u.username))
+      .map((user) => user.userId);
     createChore(
       values.name,
       values.icon,
-      userId,
+      userIds,
       values.description,
       auth.authToken
     )
@@ -117,14 +118,32 @@ const ChoreCreationModal = ({
               setSelected={(icon) => form.setFieldValue("icon", icon)}
             />
           </div>
-          <Autocomplete
+          <MultiSelect
+            label="Assigned user(s)"
+            data={allUsers.map((user) => ({
+              value: user.username,
+              profilePic: user.profilePic,
+              profileColor: user.profileColor,
+            }))}
+            itemComponent={UserAutoCompleteItem}
+            valueComponent={UserAutoCompleteValue}
+            dropdownPosition="bottom"
+            withinPortal
+            searchable
+            filter={(value, selected, user) =>
+              !selected &&
+              user.value.toLowerCase().includes(value.toLowerCase().trim())
+            }
+            {...form.getInputProps("usernames")}
+          />
+          {/* <Autocomplete
             label="Assigned user"
             itemComponent={UserAutoCompleteItem}
             data={allUsers.map((user) => ({ value: user.username, ...user }))}
             dropdownPosition="bottom"
             withinPortal
             {...form.getInputProps("username")}
-          />
+          /> */}
           <Button type="submit">Create</Button>
         </Stack>
       </form>

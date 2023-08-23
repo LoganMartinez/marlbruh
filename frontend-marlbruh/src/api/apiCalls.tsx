@@ -78,13 +78,13 @@ export function getAllUsers(token: string) {
 export function createChore(
   name: string,
   icon: string,
-  userId: number | undefined,
+  userIds: number[],
   description: string | undefined,
   token: string
 ) {
   return apiPost(
     "chores/",
-    { name: name, icon: icon, userId: userId, description: description },
+    { name: name, icon: icon, userIds: userIds, description: description },
     token
   );
 }
@@ -98,7 +98,7 @@ export function updateChore(
   token: string,
   name: string | undefined,
   icon: string | undefined,
-  userId: number | undefined,
+  userIds: number[] | undefined,
   complete: boolean | undefined,
   description: string | undefined | null
 ) {
@@ -107,7 +107,7 @@ export function updateChore(
     {
       name: name,
       icon: icon,
-      userId: userId,
+      userIds: userIds,
       complete: complete,
       description: description,
     },

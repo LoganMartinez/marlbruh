@@ -38,9 +38,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Set data path from environment variable, usually passed via Docker
 # If there is no environment variable, then use ./data at root dir BASE_DIR
-DATA_PATH = os.getenv('DATA_PATH')
+DATA_PATH = os.getenv("DATA_PATH")
 if not DATA_PATH:
-    DATA_PATH = BASE_DIR / Path('data')
+    DATA_PATH = BASE_DIR / Path("data")
 else:
     DATA_PATH = Path(DATA_PATH)
 # Create data folder if it doesn't already exist
@@ -58,7 +58,7 @@ SECRET_KEY = "django-insecure-8kw@i-7kaw%qmgg7-v8n7o-eyo89hxmq^cf(!=%^_*bz5%uvs5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 

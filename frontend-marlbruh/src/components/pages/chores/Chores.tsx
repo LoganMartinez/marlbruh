@@ -55,9 +55,11 @@ const Chores = () => {
         allChores.filter((chore) => {
           const meFilterFail =
             filter.users === "me" &&
-            (!chore.user || chore.user.username !== auth.currentUser.username);
+            chore.users.some(
+              ({ username }) => username === auth.currentUser.username
+            );
           const unassignedFilterFail =
-            filter.users === "unassigned" && chore.user;
+            filter.users === "unassigned" && chore.users.length > 0;
           const incompleteFilterFail =
             filter.completionStatus === "incomplete" && chore.complete;
           const completeFilterFail =
@@ -89,7 +91,6 @@ const Chores = () => {
                 setFilter((prev) => ({ ...prev, users: value }));
               }
             }}
-            // w="100%"
           />
           <Select
             data={statusFilterData}
@@ -99,7 +100,6 @@ const Chores = () => {
                 setFilter((prev) => ({ ...prev, completionStatus: value }));
               }
             }}
-            // w="100%"
           />
         </Group>
 
