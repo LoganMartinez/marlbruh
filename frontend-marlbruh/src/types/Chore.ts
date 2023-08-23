@@ -2,7 +2,7 @@ type Chore = {
   id: number;
   name: string;
   icon: string;
-  user: User;
+  users: User[];
   complete: boolean;
   description: string | undefined;
 };

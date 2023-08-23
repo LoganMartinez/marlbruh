@@ -73,9 +73,18 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
       />
       <Box
         sx={(theme) => ({
-          backgroundColor: chore.user
-            ? profileColors[chore.user.profileColor]
-            : theme.colors.dark[6],
+          background:
+            chore.users.length > 1
+              ? `linear-gradient(45deg, ${
+                  profileColors[chore.users[0].profileColor]
+                }, ${profileColors[chore.users[1].profileColor]})`
+              : undefined,
+          backgroundColor:
+            chore.users.length === 1
+              ? profileColors[chore.users[0].profileColor]
+              : chore.users.length === 0
+              ? theme.colors.dark[6]
+              : undefined,
           borderRadius: theme.radius.lg,
         })}
       >
@@ -98,14 +107,15 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
               </Title>
               {chore.description ? <Text>{chore.description}</Text> : <></>}
             </div>
-            <Group position="apart">
-              {chore.user ? (
+            <Group position="apart" align="flex-start">
+              {chore.users.length > 0 ? (
                 <Stack spacing=".5rem">
                   <Text>Assigned to: </Text>
-                  {
+                  {chore.users.map((user, index) => (
                     <Box
+                      key={index}
                       sx={(theme) => ({
-                        backgroundColor: profileColors[chore.user.profileColor],
+                        backgroundColor: profileColors[user.profileColor],
                         borderRadius: theme.radius.lg,
                       })}
                     >
@@ -113,22 +123,22 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
                         variant="unstyled"
                         p={0}
                         component="a"
-                        href={`#/users/${chore.user.username}`}
+                        href={`#/users/${user.username}`}
                       >
                         <Container p=".5rem">
                           <Group spacing="xs" noWrap>
                             <Avatar
                               size="sm"
-                              src={chore.user.profilePic}
+                              src={user.profilePic}
                               radius="xl"
                               color="blue"
                             />
-                            <Text>{chore.user.username}</Text>
+                            <Text>{user.username}</Text>
                           </Group>
                         </Container>
                       </Button>
                     </Box>
-                  }
+                  ))}
                 </Stack>
               ) : (
                 <Text>Not Assigned</Text>
