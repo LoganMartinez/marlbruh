@@ -3,7 +3,7 @@ import ErrorPage from "../pages/reusablePages/ErrorPage";
 import Home from "../pages/home/Home";
 import Chores from "../pages/chores/Chores";
 import Bookclub from "../pages/Bookclub";
-import Pickle from "../pages/Pickle";
+import Pickle from "../pages/picle/Picle";
 import Fish from "../pages/Fish";
 
 interface Props {

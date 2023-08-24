@@ -114,3 +114,19 @@ export function updateChore(
     token
   );
 }
+
+export function getPiclePosts(token: string) {
+  return apiGet(`picle/`, token);
+}
+
+export function createPiclePost(
+  content: FileWithPath,
+  caption: string,
+  token: string
+) {
+  return apiPost(`picle/`, { content, caption }, token, "form");
+}
+
+export function likePiclePost(postId: number, token: string) {
+  return apiPut(`picle/${postId}/like/`, { junk: "JUNK" }, token);
+}
