@@ -3,9 +3,14 @@ from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    userId = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ["id", "username", "profilePic", "profileColor"]
+        fields = ["userId", "username", "profilePic", "profileColor"]
+
+    def get_userId(self, obj):
+        return obj.id
 
 
 class PostUserSerializer(serializers.Serializer):

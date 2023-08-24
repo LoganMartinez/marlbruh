@@ -27,7 +27,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:8000",
     "https://marlbruh.com",
-    "http://localhost:8100"
+    "http://localhost:8100",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "polls.apps.PollsConfig",
     "users.apps.UsersConfig",
     "chores.apps.ChoresConfig",
+    "picle.apps.PicleConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

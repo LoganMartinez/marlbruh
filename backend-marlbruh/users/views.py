@@ -18,11 +18,7 @@ class UserView(APIView):
     def get(self, request):
         users = models.User.objects.all()
         serializer = UserSerializer(users, many=True)
-        renamedData = []
-        for item in serializer.data:
-            item["userId"] = item.pop("id")
-            renamedData.append(item)
-        return Response(renamedData)
+        return Response(serializer.data)
 
     def post(self, request):
         if "profilePic" in request.FILES:
