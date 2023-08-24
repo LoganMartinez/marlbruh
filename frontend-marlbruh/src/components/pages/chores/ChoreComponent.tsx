@@ -1,8 +1,6 @@
 import {
   ActionIcon,
-  Avatar,
   Box,
-  Button,
   CloseButton,
   Container,
   Group,
@@ -25,6 +23,7 @@ import { useAuth } from "../../../authentication/AuthContext";
 import { AxiosError } from "axios";
 import ConfettiExplosion from "react-confetti-explosion";
 import { useState } from "react";
+import UserHandle from "../../reusableComponents/UserHandle";
 
 type Props = {
   chore: Chore;
@@ -112,32 +111,7 @@ const ChoreComponent = ({ chore, setChoresUpdated }: Props) => {
                 <Stack spacing=".5rem">
                   <Text>Assigned to: </Text>
                   {chore.users.map((user, index) => (
-                    <Box
-                      key={index}
-                      sx={(theme) => ({
-                        backgroundColor: profileColors[user.profileColor],
-                        borderRadius: theme.radius.lg,
-                      })}
-                    >
-                      <Button
-                        variant="unstyled"
-                        p={0}
-                        component="a"
-                        href={`#/users/${user.username}`}
-                      >
-                        <Container p=".5rem">
-                          <Group spacing="xs" noWrap>
-                            <Avatar
-                              size="sm"
-                              src={user.profilePic}
-                              radius="xl"
-                              color="blue"
-                            />
-                            <Text>{user.username}</Text>
-                          </Group>
-                        </Container>
-                      </Button>
-                    </Box>
+                    <UserHandle user={user} key={index} />
                   ))}
                 </Stack>
               ) : (
