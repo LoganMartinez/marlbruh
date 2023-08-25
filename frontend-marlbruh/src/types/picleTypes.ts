@@ -15,3 +15,5 @@ type PicleComment = {
   datePosted: Date;
   originalPostId: number;
 };
+
+type PiclePostView = "post" | "likes" | "comments";
