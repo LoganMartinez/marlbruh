@@ -130,3 +130,11 @@ export function createPiclePost(
 export function likePiclePost(postId: number, token: string) {
   return apiPut(`picle/${postId}/like/`, { junk: "JUNK" }, token);
 }
+
+export function createComment(postId: number, content: string, token: string) {
+  return apiPost(`picle/${postId}/comments/`, { content }, token);
+}
+
+export function getComments(postId: number, token: string) {
+  return apiGet(`picle/${postId}/comments/`, token);
+}
