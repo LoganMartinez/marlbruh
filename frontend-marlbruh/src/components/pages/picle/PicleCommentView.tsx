@@ -5,9 +5,9 @@ import {
   Container,
   Group,
   ScrollArea,
-  Space,
   Stack,
   Textarea,
+  Title,
 } from "@mantine/core";
 import { profileColors } from "../../../utilities/constants";
 import PicleUserText from "./PicleUserText";
@@ -21,8 +21,7 @@ import { errorNotification } from "../../../utilities/helperFunctions";
 type Props = {
   post: PiclePost;
   comments: PicleComment[];
-  opened: boolean;
-  openHandlers: DisclosureHandler;
+  setCurrentView: React.Dispatch<React.SetStateAction<PiclePostView>>;
   height: number;
   setCommentsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -34,8 +33,7 @@ type Form = {
 const PicleCommentView = ({
   post,
   comments,
-  opened,
-  openHandlers,
+  setCurrentView,
   height,
   setCommentsUpdated,
 }: Props) => {
@@ -70,7 +68,7 @@ const PicleCommentView = ({
       });
   };
 
-  return opened ? (
+  return (
     <Box
       w="100%"
       h={height}
@@ -83,10 +81,10 @@ const PicleCommentView = ({
         <form onSubmit={form.onSubmit((values) => submitForm(values))}>
           <Stack spacing={0}>
             <Group position="apart">
-              <Space />
-              <CloseButton size="md" onClick={openHandlers.close} />
+              <Title>Comments</Title>
+              <CloseButton size="md" onClick={() => setCurrentView("post")} />
             </Group>
-            <ScrollArea h={height - 128}>
+            <ScrollArea h={height - 144}>
               <Stack>
                 {comments.map((comment) => (
                   <PicleUserText
@@ -119,8 +117,6 @@ const PicleCommentView = ({
         </form>
       </Container>
     </Box>
-  ) : (
-    <></>
   );
 };
 

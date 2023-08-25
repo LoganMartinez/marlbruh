@@ -6,6 +6,7 @@ import {
   Image,
   Stack,
   Text,
+  UnstyledButton,
 } from "@mantine/core";
 import {
   profileColors,
@@ -21,9 +22,10 @@ import { getComments, likePiclePost } from "../../../api/apiCalls";
 import { AxiosError } from "axios";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { useEffect, useState } from "react";
-import { useDisclosure, useElementSize } from "@mantine/hooks";
+import { useElementSize } from "@mantine/hooks";
 import PicleCommentView from "./PicleCommentView";
 import PicleUserText from "./PicleUserText";
+import PicleLikeList from "./PicleLikeList";
 
 type Props = {
   post: PiclePost;
@@ -34,7 +36,7 @@ type Props = {
 const PiclePost = ({ post, postsUpdated, setPostsUpdated }: Props) => {
   const auth = useAuth();
   const [comments, setComments] = useState([] as PicleComment[]);
-  const [commentsOpened, commentsOpenHandlers] = useDisclosure(false);
+  const [currentView, setCurrentView] = useState("post" as PiclePostView);
   const [commentsUpdated, setCommentsUpdated] = useState(true);
   const { ref: sizeRef, height: postHeight } = useElementSize();
 
@@ -65,14 +67,19 @@ const PiclePost = ({ post, postsUpdated, setPostsUpdated }: Props) => {
 
   return (
     <>
-      {commentsOpened ? (
+      {currentView === "comments" ? (
         <PicleCommentView
           post={post}
           comments={comments}
-          opened={commentsOpened}
-          openHandlers={commentsOpenHandlers}
+          setCurrentView={setCurrentView}
           height={postHeight}
           setCommentsUpdated={setCommentsUpdated}
+        />
+      ) : currentView === "likes" ? (
+        <PicleLikeList
+          height={postHeight}
+          post={post}
+          setCurrentView={setCurrentView}
         />
       ) : (
         <Box
@@ -103,9 +110,11 @@ const PiclePost = ({ post, postsUpdated, setPostsUpdated }: Props) => {
                       <IconHeart />
                     )}
                   </ActionIcon>
+                  <UnstyledButton onClick={() => setCurrentView("likes")}>
+                    <Text>{post.likes.length}</Text>
+                  </UnstyledButton>
 
-                  <Text>{post.likes.length}</Text>
-                  <ActionIcon onClick={commentsOpenHandlers.open}>
+                  <ActionIcon onClick={() => setCurrentView("comments")}>
                     <IconMessageCircle2 />
                   </ActionIcon>
                   <Text>{comments.length}</Text>
