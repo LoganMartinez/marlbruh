@@ -61,3 +61,27 @@ class LikePostView(APIView):
         else:
             post.likes.add(request.user)
         return Response(status=status.HTTP_200_OK)
+
+
+class PicleCommentView(APIView):
+    permissions_classes = [IsAuthenticated]
+
+    def post(self, request, postId):
+        post = get_object_or_404(models.PiclePost, pk=postId)
+        serializer = serializers.PostPicleCommentRequest(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        comment = models.PicleComment.objects.create(
+            originalPost=post,
+            content=serializer.validated_data["content"],
+            author=request.user,
+            datePosted=datetime.now().replace(tzinfo=pytz.timezone("US/Central")),
+        )
+        responseSerializer = serializers.PicleCommentSerializer(comment)
+        return Response(responseSerializer.data)
+
+    def get(self, request, postId):
+        comments = models.PicleComment.objects.filter(originalPost_id=postId)
+        responseSerializer = serializers.PicleCommentSerializer(comments, many=True)
+        print(comments)
+        return Response(responseSerializer.data)

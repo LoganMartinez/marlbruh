@@ -12,7 +12,9 @@ class PiclePost(models.Model):
 
 
 class PicleComment(models.Model):
-    originalPost = models.ForeignKey(PiclePost, on_delete=models.CASCADE)
+    originalPost = models.ForeignKey(
+        PiclePost, related_name="comments", on_delete=models.CASCADE
+    )
     content = models.TextField(max_length=250)
     author = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE)
     likes = models.ManyToManyField(User, related_name="likedComments")

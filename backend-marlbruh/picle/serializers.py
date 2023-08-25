@@ -12,12 +12,17 @@ class PiclePostSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PicleCommentSerializer(serializers.Serializer):
-    originalPost = PiclePostSerializer()
+class PicleCommentSerializer(serializers.ModelSerializer):
+    originalPostId = serializers.SerializerMethodField()
+    author = UserSerializer()
+    likes = UserSerializer(many=True)
 
     class Meta:
         model = models.PicleComment
-        fields = "__all__"
+        fields = ["id", "author", "likes", "content", "datePosted", "originalPostId"]
+
+    def get_originalPostId(self, obj):
+        return obj.id
 
 
 class PostPiclePostRequest(serializers.Serializer):
@@ -27,3 +32,11 @@ class PostPiclePostRequest(serializers.Serializer):
 
 class PutPiclePostRequest(serializers.Serializer):
     caption = serializers.CharField()
+
+
+class PostPicleCommentRequest(serializers.Serializer):
+    content = serializers.CharField()
+
+
+class PutPicleCommentRequest(serializers.Serializer):
+    content = serializers.CharField()
