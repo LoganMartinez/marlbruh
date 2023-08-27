@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "chores.apps.ChoresConfig",
     "picle.apps.PicleConfig",
+    "bookclub.apps.BookclubConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
