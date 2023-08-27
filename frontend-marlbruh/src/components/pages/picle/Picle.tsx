@@ -62,6 +62,7 @@ const Pickle = () => {
             <PiclePost
               post={post}
               key={post.id}
+              postsUpdated={postsUpdated}
               setPostsUpdated={setPostsUpdated}
             />
           ))}
