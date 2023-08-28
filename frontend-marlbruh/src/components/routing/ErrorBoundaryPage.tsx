@@ -2,7 +2,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import ErrorPage from "../pages/reusablePages/ErrorPage";
 import Home from "../pages/home/Home";
 import Chores from "../pages/chores/Chores";
-import Bookclub from "../pages/Bookclub";
+import Bookclub from "../pages/bookclub/Bookclub";
 import Pickle from "../pages/picle/Picle";
 import Fish from "../pages/Fish";
 

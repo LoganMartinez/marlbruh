@@ -138,3 +138,19 @@ export function createComment(postId: number, content: string, token: string) {
 export function getComments(postId: number, token: string) {
   return apiGet(`picle/${postId}/comments/`, token);
 }
+
+export function getBooks(token: string) {
+  return apiGet(`bookclub/`, token);
+}
+
+export function getBook(bookId: number, token: string) {
+  return apiGet(`bookclub/${bookId}/`, token);
+}
+
+export function getChapter(
+  bookId: number,
+  chapterNumber: number,
+  token: string
+) {
+  return apiGet(`bookclub/${bookId}/chapters/${chapterNumber}`, token);
+}
