@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from bookclub import models
+from users.serializers import UserSerializer
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -16,5 +17,20 @@ class ChapterSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class BookclubCommentSerializer(serializers.ModelSerializer):
+    author = UserSerializer()
+    likes = UserSerializer(many=True)
+
+    class Meta:
+        model = models.BookclubComment()
+        fields = "__all__"
+
+
 class PostBookSerializer(serializers.Serializer):
     bookfile = serializers.FileField()
+
+
+class PostBookclubCommentSerializer(serializers.Serializer):
+    passage = serializers.CharField()
+    comment = serializers.CharField()
+    highlighted = serializers.ListField(child=serializers.CharField())

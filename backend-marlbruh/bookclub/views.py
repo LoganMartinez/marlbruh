@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import io
 from django.core.files.images import ImageFile
 from django.shortcuts import get_object_or_404
+import json
 
 
 class BookView(APIView):
@@ -69,3 +70,49 @@ class TargetChapterView(APIView):
         )
         responseChapter = serializers.ChapterSerializer(chapter)
         return Response(responseChapter.data)
+
+
+class BookclubCommentsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, bookId, chapterNumber):
+        serializer = serializers.PostBookclubCommentSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        chapter = get_object_or_404(
+            models.Chapter, book__id=bookId, chapterNumber=chapterNumber
+        )
+        highlightedStr = json.dumps(serializer.validated_data["highlighted"])
+        bookclubComment = models.BookclubComment.objects.create(
+            passage=serializer.validated_data["passage"],
+            comment=serializer.validated_data["comment"],
+            highlighted=highlightedStr,
+            author=request.user,
+            book=chapter.book,
+            chapter=chapter,
+        )
+
+        responseComment = serializers.BookclubCommentSerializer(bookclubComment)
+
+        return Response(responseComment.data)
+
+    def get(self, request, bookId, chapterNumber):
+        comments = models.BookclubComment.objects.filter(
+            book__id=bookId, chapter__chapterNumber=chapterNumber
+        )
+
+        responseComments = serializers.BookclubCommentSerializer(comments, many=True)
+        return Response(responseComments.data)
+
+
+class LikeBookclubCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, commentId):
+        comment = get_object_or_404(models.BookclubComment, pk=commentId)
+        if request.user in comment.likes.all():
+            comment.likes.remove(request.user)
+        else:
+            comment.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
