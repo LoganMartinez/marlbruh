@@ -19,6 +19,7 @@ import BookSelectItem from "./BookSelectItem";
 import { IconPlus } from "@tabler/icons-react";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import CreateBookclubPostModal from "./CreateBookclubPostModal";
+import BookclubCommentView from "./BookclubCommentsView";
 
 const Bookclub = () => {
   const auth = useAuth();
@@ -33,6 +34,7 @@ const Bookclub = () => {
   const [selectedPage, setSelectedPage] = useState(0);
   const [selectedTab, setSelectedTab] = useState("full" as string | null);
   const [createModalOpen, createModelOpenHandlers] = useDisclosure(false);
+  const [commentsUpdated, setCommentsUpdated] = useState(false);
 
   useEffect(() => {
     getBooks(auth.authToken)
@@ -61,6 +63,7 @@ const Bookclub = () => {
       getChapter(selectedBook.id, selectedPage - 1, auth.authToken)
         .then(({ data: chapter }) => {
           setSelectedChapter(chapter);
+          setCommentsUpdated(true);
         })
         .catch((err: AxiosError) => {
           errorNotification(err.message);
@@ -74,6 +77,7 @@ const Bookclub = () => {
         chapter={selectedChapter}
         opened={createModalOpen}
         openHandlers={createModelOpenHandlers}
+        setCommentsUpdated={setCommentsUpdated}
       />
       <Group position="apart">
         <Select
@@ -113,6 +117,11 @@ const Bookclub = () => {
                     <IconPlus />
                   </ActionIcon>
                 </Group>
+                <BookclubCommentView
+                  chapter={selectedChapter}
+                  commentsUpdated={commentsUpdated}
+                  setCommentsUpdated={setCommentsUpdated}
+                />
               </>
             ) : (
               <Text>{selectedChapter.content}</Text>

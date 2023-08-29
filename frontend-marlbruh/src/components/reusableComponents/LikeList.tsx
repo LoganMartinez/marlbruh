@@ -7,22 +7,27 @@ import {
   Stack,
   Title,
 } from "@mantine/core";
-import { profileColors } from "../../../utilities/constants";
-import UserHandle from "../../reusableComponents/UserHandle";
+import UserHandle from "./UserHandle";
 
 type Props = {
   height: number;
-  post: PiclePost;
+  likes: User[];
   setCurrentView: React.Dispatch<React.SetStateAction<PiclePostView>>;
+  backgroundColor: string;
 };
 
-const PicleLikeList = ({ post, height, setCurrentView }: Props) => {
+const LikeList = ({
+  height,
+  likes,
+  setCurrentView,
+  backgroundColor,
+}: Props) => {
   return (
     <Box
       w="100%"
       h={height}
       sx={(theme) => ({
-        backgroundColor: profileColors[post.author.profileColor],
+        backgroundColor: backgroundColor,
         borderRadius: theme.radius.lg,
       })}
     >
@@ -33,7 +38,7 @@ const PicleLikeList = ({ post, height, setCurrentView }: Props) => {
         </Group>
         <ScrollArea h={height - 96}>
           <Stack>
-            {post.likes.map((user) => (
+            {likes.map((user) => (
               <UserHandle user={user} key={user.userId} />
             ))}
           </Stack>
@@ -43,4 +48,4 @@ const PicleLikeList = ({ post, height, setCurrentView }: Props) => {
   );
 };
 
-export default PicleLikeList;
+export default LikeList;

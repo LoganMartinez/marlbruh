@@ -154,3 +154,29 @@ export function getChapter(
 ) {
   return apiGet(`bookclub/${bookId}/chapters/${chapterNumber}`, token);
 }
+
+export function getBookclubComments(
+  bookId: number,
+  chapterNumber: number,
+  token: string
+) {
+  return apiGet(
+    `bookclub/${bookId}/chapters/${chapterNumber}/comments/`,
+    token
+  );
+}
+
+export function createBookclubComment(
+  bookId: number,
+  chapterNumber: number,
+  passage: string,
+  comment: string,
+  highlighted: string[],
+  token: string
+) {
+  return apiPost(
+    `bookclub/${bookId}/chapters/${chapterNumber}/comments/`,
+    { passage, comment, highlighted },
+    token
+  );
+}

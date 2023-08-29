@@ -14,11 +14,19 @@ import { useForm } from "@mantine/form";
 import { useListState, useTextSelection } from "@mantine/hooks";
 import { IconHighlight, IconHighlightOff } from "@tabler/icons-react";
 import { useState } from "react";
+import { createBookclubComment } from "../../../api/apiCalls";
+import { useAuth } from "../../../authentication/AuthContext";
+import {
+  errorNotification,
+  successNotification,
+} from "../../../utilities/helperFunctions";
+import { AxiosError } from "axios";
 
 type Props = {
   chapter: Chapter | undefined;
   opened: boolean;
   openHandlers: DisclosureHandler;
+  setCommentsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 type Form = {
@@ -26,7 +34,13 @@ type Form = {
   comment: string;
 };
 
-const CreateBookclubPostModal = ({ chapter, opened, openHandlers }: Props) => {
+const CreateBookclubPostModal = ({
+  chapter,
+  opened,
+  openHandlers,
+  setCommentsUpdated,
+}: Props) => {
+  const auth = useAuth();
   const [searchResults, setSearchResults] = useState([] as string[]);
   const textSelection = useTextSelection();
   const [highlight, highlightHandlers] = useListState([] as string[]);
@@ -38,13 +52,33 @@ const CreateBookclubPostModal = ({ chapter, opened, openHandlers }: Props) => {
     } as Form,
 
     validate: {
+      passage: (value) => (value ? null : "Passage is required"),
       comment: (value) => (value ? null : "Comment can not be blank"),
     },
   });
 
   const submitForm = (values: Form) => {
-    // make sure you include highlighted words
-    console.log(values);
+    if (chapter) {
+      createBookclubComment(
+        chapter.book.id,
+        chapter.chapterNumber,
+        values.passage,
+        values.comment,
+        highlight,
+        auth.authToken
+      )
+        .then(() => {
+          successNotification("Created new comment");
+          setCommentsUpdated(true);
+        })
+        .catch((err: AxiosError) => {
+          errorNotification(err.message);
+        })
+        .finally(() => {
+          form.reset();
+          openHandlers.close();
+        });
+    }
   };
 
   const searchChapter = (searchTerm: string) => {
