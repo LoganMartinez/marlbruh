@@ -180,3 +180,7 @@ export function createBookclubComment(
     token
   );
 }
+
+export function likeBookclubComment(commentId: number, token: string) {
+  return apiPut(`bookclub/likes/${commentId}/`, { junk: "junk" }, token);
+}

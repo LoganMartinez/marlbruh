@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getBook, getBooks, getChapter } from "../../../api/apiCalls";
+import {
+  getBook,
+  getBookclubComments,
+  getBooks,
+  getChapter,
+} from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import { AxiosError } from "axios";
 import { errorNotification } from "../../../utilities/helperFunctions";
@@ -10,6 +15,7 @@ import {
   Loader,
   Pagination,
   Select,
+  SimpleGrid,
   Space,
   Stack,
   Tabs,
@@ -35,6 +41,25 @@ const Bookclub = () => {
   const [selectedTab, setSelectedTab] = useState("full" as string | null);
   const [createModalOpen, createModelOpenHandlers] = useDisclosure(false);
   const [commentsUpdated, setCommentsUpdated] = useState(false);
+
+  const [comments, setComments] = useState([] as BookclubComment[]);
+
+  useEffect(() => {
+    if (commentsUpdated && selectedChapter) {
+      getBookclubComments(
+        selectedChapter.book.id,
+        selectedChapter.chapterNumber,
+        auth.authToken
+      )
+        .then(({ data: comments }) => {
+          setComments(comments);
+        })
+        .catch((err: AxiosError) => {
+          errorNotification(err.message);
+        });
+      setCommentsUpdated(false);
+    }
+  }, [commentsUpdated]);
 
   useEffect(() => {
     getBooks(auth.authToken)
@@ -117,11 +142,22 @@ const Bookclub = () => {
                     <IconPlus />
                   </ActionIcon>
                 </Group>
-                <BookclubCommentView
-                  chapter={selectedChapter}
-                  commentsUpdated={commentsUpdated}
-                  setCommentsUpdated={setCommentsUpdated}
-                />
+                <SimpleGrid
+                  cols={3}
+                  breakpoints={[
+                    { maxWidth: "62rem", cols: 3, spacing: "md" },
+                    { maxWidth: "48rem", cols: 2, spacing: "sm" },
+                    { maxWidth: "36rem", cols: 1, spacing: "sm" },
+                  ]}
+                >
+                  {comments.map((comment) => (
+                    <BookclubCommentView
+                      comment={comment}
+                      setCommentsUpdated={setCommentsUpdated}
+                      key={comment.id}
+                    />
+                  ))}
+                </SimpleGrid>
               </>
             ) : (
               <Text>{selectedChapter.content}</Text>
