@@ -11,6 +11,8 @@ import io
 from django.core.files.images import ImageFile
 from django.shortcuts import get_object_or_404
 import json
+from datetime import datetime
+import pytz
 
 
 class BookView(APIView):
@@ -116,3 +118,26 @@ class LikeBookclubCommentView(APIView):
         else:
             comment.likes.add(request.user)
         return Response(status=status.HTTP_200_OK)
+
+
+class BookclubRepliesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, commentId):
+        replies = models.BookclubReply.objects.filter(originalPost__id=commentId)
+        responseReplies = serializers.BookclubReplySerializer(replies, many=True)
+        return Response(data=responseReplies.data)
+
+    def post(self, request, commentId):
+        serializer = serializers.PostBookclubReplySerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        comment = get_object_or_404(models.BookclubComment, id=commentId)
+        reply = models.BookclubReply.objects.create(
+            originalPost=comment,
+            content=serializer.validated_data["content"],
+            author=request.user,
+            datePosted=datetime.now().replace(tzinfo=pytz.timezone("US/Central")),
+        )
+        responseReply = serializers.BookclubReplySerializer(reply)
+        return Response(responseReply.data)

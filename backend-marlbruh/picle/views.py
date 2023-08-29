@@ -83,5 +83,4 @@ class PicleCommentView(APIView):
     def get(self, request, postId):
         comments = models.PicleComment.objects.filter(originalPost_id=postId)
         responseSerializer = serializers.PicleCommentSerializer(comments, many=True)
-        print(comments)
         return Response(responseSerializer.data)
