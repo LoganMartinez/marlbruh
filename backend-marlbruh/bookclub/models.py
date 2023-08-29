@@ -35,3 +35,9 @@ class BookclubReply(models.Model):
     )
     likes = models.ManyToManyField(User, related_name="likedReplies")
     datePosted = models.DateTimeField()
+
+
+class BookUserRelation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    lastChapterComplete = models.IntegerField(default=-1)

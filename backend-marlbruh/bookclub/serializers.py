@@ -34,6 +34,12 @@ class BookclubReplySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class BookclubUserRelationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.BookUserRelation()
+        fields = "__all__"
+
+
 class PostBookSerializer(serializers.Serializer):
     bookfile = serializers.FileField()
 
@@ -46,3 +52,7 @@ class PostBookclubCommentSerializer(serializers.Serializer):
 
 class PostBookclubReplySerializer(serializers.Serializer):
     content = serializers.CharField()
+
+
+class PutBookclubUserRelationSerialzier(serializers.Serializer):
+    lastChapterComplete = serializers.IntegerField()

@@ -141,3 +141,28 @@ class BookclubRepliesView(APIView):
         )
         responseReply = serializers.BookclubReplySerializer(reply)
         return Response(responseReply.data)
+
+
+class BookclubUserRelationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, bookId):
+        book = get_object_or_404(models.Book, id=bookId)
+        relation, created = models.BookUserRelation.objects.get_or_create(
+            book=book, user=request.user
+        )
+        responseRelation = serializers.BookclubUserRelationSerializer(relation)
+        resStatus = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return Response(responseRelation.data, status=resStatus)
+
+    def put(self, request, bookId):
+        serializer = serializers.PutBookclubUserRelationSerialzier(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        relation = get_object_or_404(
+            models.BookUserRelation, user=request.user, book__id=bookId
+        )
+        relation.lastChapterComplete = serializer.validated_data["lastChapterComplete"]
+        relation.save()
+        responseRelation = serializers.BookclubUserRelationSerializer(relation)
+        return Response(responseRelation.data)
