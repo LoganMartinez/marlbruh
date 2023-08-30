@@ -196,7 +196,11 @@ const Bookclub = () => {
           value={selectedBook?.id.toString() || ""}
           onChange={selectChange}
         />
-        <Button onClick={addBookModalHandlers.open}>Add Book</Button>
+        {windowWidth >= 500 ? (
+          <Button onClick={addBookModalHandlers.open}>Add Book</Button>
+        ) : (
+          <></>
+        )}
       </Group>
 
       <Space h="xs" />
