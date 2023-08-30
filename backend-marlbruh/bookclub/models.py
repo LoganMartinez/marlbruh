@@ -23,3 +23,21 @@ class BookclubComment(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
     likes = models.ManyToManyField(User, related_name="likedBookclubComments")
+
+
+class BookclubReply(models.Model):
+    originalPost = models.ForeignKey(
+        BookclubComment, related_name="replies", on_delete=models.CASCADE
+    )
+    content = models.CharField(max_length=250)
+    author = models.ForeignKey(
+        User, related_name="bookclubReplies", on_delete=models.CASCADE
+    )
+    likes = models.ManyToManyField(User, related_name="likedReplies")
+    datePosted = models.DateTimeField()
+
+
+class BookUserRelation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    lastChapterComplete = models.IntegerField(default=-1)
