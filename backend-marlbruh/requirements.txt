@@ -5,3 +5,4 @@ Pillow
 gunicorn
 tzdata
 ebooklib
+bs4
