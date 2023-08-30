@@ -201,7 +201,7 @@ const Bookclub = () => {
         openHandlers={addBookModalHandlers}
         setBooksUpdated={setBooksUpdated}
       />
-      <Group position="apart">
+      <Group position="apart" noWrap>
         <Select
           itemComponent={BookSelectItem}
           data={books.map((book) => ({
