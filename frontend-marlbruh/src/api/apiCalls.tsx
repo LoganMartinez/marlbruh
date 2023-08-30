@@ -138,3 +138,81 @@ export function createComment(postId: number, content: string, token: string) {
 export function getComments(postId: number, token: string) {
   return apiGet(`picle/${postId}/comments/`, token);
 }
+
+export function getBooks(token: string) {
+  return apiGet(`bookclub/`, token);
+}
+
+export function getBook(bookId: number, token: string) {
+  return apiGet(`bookclub/${bookId}/`, token);
+}
+
+export function getChapter(
+  bookId: number,
+  chapterNumber: number,
+  token: string
+) {
+  return apiGet(`bookclub/${bookId}/chapters/${chapterNumber}`, token);
+}
+
+export function getBookclubComments(
+  bookId: number,
+  chapterNumber: number,
+  token: string
+) {
+  return apiGet(
+    `bookclub/${bookId}/chapters/${chapterNumber}/comments/`,
+    token
+  );
+}
+
+export function createBookclubComment(
+  bookId: number,
+  chapterNumber: number,
+  passage: string,
+  comment: string,
+  highlighted: string[],
+  token: string
+) {
+  return apiPost(
+    `bookclub/${bookId}/chapters/${chapterNumber}/comments/`,
+    { passage, comment, highlighted },
+    token
+  );
+}
+
+export function likeBookclubComment(commentId: number, token: string) {
+  return apiPut(`bookclub/likes/${commentId}/`, { junk: "junk" }, token);
+}
+
+export function createBookclubReply(
+  commentId: number,
+  content: string,
+  token: string
+) {
+  return apiPost(`bookclub/replies/${commentId}/`, { content }, token);
+}
+
+export function getBookclubReplies(commentId: number, token: string) {
+  return apiGet(`bookclub/replies/${commentId}/`, token);
+}
+
+export function getBookUserRelation(bookId: number, token: string) {
+  return apiPost(`bookclub/${bookId}/relations/`, { junk: "junk" }, token);
+}
+
+export function updateBookUserRelation(
+  bookId: number,
+  lastChapterComplete: number,
+  token: string
+) {
+  return apiPut(
+    `bookclub/${bookId}/relations/`,
+    { lastChapterComplete },
+    token
+  );
+}
+
+export function addBook(bookfile: FileWithPath, token: string) {
+  return apiPost(`bookclub/`, { bookfile }, token, "form");
+}

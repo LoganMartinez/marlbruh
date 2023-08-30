@@ -3,3 +3,7 @@ type DisclosureHandler = {
   readonly close: () => void;
   readonly toggle: () => void;
 };
+
+type SubmitCommentForm = {
+  commentText: string;
+};

@@ -92,7 +92,14 @@ const ChoreCreationModal = ({
   };
 
   return (
-    <Modal opened={opened} onClose={openHandlers.close} title="Create Chore">
+    <Modal
+      opened={opened}
+      onClose={() => {
+        form.reset();
+        openHandlers.close();
+      }}
+      title="Create Chore"
+    >
       <form onSubmit={form.onSubmit((values) => submitForm(values))}>
         <Stack>
           <TextInput

@@ -7,7 +7,7 @@ import {
   Stack,
   Text,
 } from "@mantine/core";
-import { profileColors } from "../../../utilities/constants";
+import { profileColors } from "../../utilities/constants";
 
 type Props = {
   user: User;
