@@ -236,7 +236,7 @@ const Bookclub = () => {
             selectedTab === "discussion" ? (
               <>
                 <Group position="apart" w="100%">
-                  {!lastCompletedChapter ||
+                  {lastCompletedChapter === undefined ||
                   selectedChapter.chapterNumber > lastCompletedChapter ? (
                     <div ref={hoverRef}>
                       <ActionIcon
@@ -268,7 +268,7 @@ const Bookclub = () => {
                       setCommentsUpdated={setCommentsUpdated}
                       key={comment.id}
                       locked={
-                        !lastCompletedChapter ||
+                        lastCompletedChapter === undefined ||
                         selectedChapter.chapterNumber > lastCompletedChapter
                       }
                       chapterNumber={selectedChapter.chapterNumber}
