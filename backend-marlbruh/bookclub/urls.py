@@ -7,11 +7,12 @@ urlpatterns = [
     path("replies/<int:commentId>/", views.BookclubRepliesView.as_view()),
     path("<int:bookId>/", views.TargetBookView.as_view()),
     path("<int:bookId>/relations/", views.BookclubUserRelationView.as_view()),
+    path("<int:bookId>/comments/", views.BookclubCommentsView.as_view()),
     path(
         "<int:bookId>/chapters/<int:chapterNumber>/", views.TargetChapterView.as_view()
     ),
     path(
         "<int:bookId>/chapters/<int:chapterNumber>/comments/",
-        views.BookclubCommentsView.as_view(),
+        views.BookclubChapterCommentsView.as_view(),
     ),
 ]

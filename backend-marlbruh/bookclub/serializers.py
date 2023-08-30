@@ -17,13 +17,23 @@ class ChapterSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ChapterNumberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Chapter
+        fields = "chapterNumber"
+
+
 class BookclubCommentSerializer(serializers.ModelSerializer):
     author = UserSerializer()
     likes = UserSerializer(many=True)
+    chapterNumber = serializers.SerializerMethodField()
 
     class Meta:
         model = models.BookclubComment()
         fields = "__all__"
+
+    def get_chapterNumber(self, obj):
+        return obj.chapter.chapterNumber
 
 
 class BookclubReplySerializer(serializers.ModelSerializer):

@@ -27,16 +27,14 @@ import {
   Text,
 } from "@mantine/core";
 import BookSelectItem from "./BookSelectItem";
-import { IconLock, IconLockOpen, IconPlus } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import {
   useDisclosure,
-  useHover,
   useLocalStorage,
   useViewportSize,
 } from "@mantine/hooks";
 import CreateBookclubPostModal from "./CreateBookclubPostModal";
-import BookclubCommentView from "./BookclubCommentsView";
-import ConfirmFinishChapterModal from "./ConfirmFinishChapterModal";
+import BookclubCommentView from "./BookclubCommentView";
 import AddBookModal from "./AddBookModal";
 
 const Bookclub = () => {
@@ -52,15 +50,13 @@ const Bookclub = () => {
   const [selectedPage, setSelectedPage] = useState(1);
   const [selectedTab, setSelectedTab] = useState("discussion" as string | null);
   const [createModalOpen, createModelOpenHandlers] = useDisclosure(false);
-  const [commentsUpdated, setCommentsUpdated] = useState(false);
+  const [commentsUpdated, setCommentsUpdated] = useState(true);
 
   const [comments, setComments] = useState([] as BookclubComment[]);
   const [lastCompletedChapter, setLastCompletedChapter] = useState(
     undefined as number | undefined
   );
   const [relationChanged, setRelationChanged] = useState(true);
-  const { hovered: lockHovered, ref: hoverRef } = useHover();
-  const [unlockModalOpen, unlockModalHandlers] = useDisclosure();
   const [addBookModalOpen, addBookModalHandlers] = useDisclosure(false);
   const [storedBookId, setStoredBookId] = useLocalStorage({
     key: "marlbruh-selected-book",
@@ -101,14 +97,10 @@ const Bookclub = () => {
 
   // update posts
   useEffect(() => {
-    if (commentsUpdated && selectedChapter) {
-      getBookclubComments(
-        selectedChapter.book.id,
-        selectedChapter.chapterNumber,
-        auth.authToken
-      )
-        .then(({ data: comments }: { data: BookclubCommentNotFormatted[] }) => {
-          const formattedComments = comments
+    if (commentsUpdated && selectedBook) {
+      getBookclubComments(selectedBook.id, auth.authToken)
+        .then(({ data: coms }: { data: BookclubCommentNotFormatted[] }) => {
+          const formattedComments = coms
             .map(({ highlighted, ...rest }) => ({
               highlighted: JSON.parse(highlighted),
               ...rest,
@@ -121,7 +113,7 @@ const Bookclub = () => {
         });
       setCommentsUpdated(false);
     }
-  }, [commentsUpdated]);
+  }, [commentsUpdated, selectedBook]);
 
   // get chapter
   useEffect(() => {
@@ -129,7 +121,6 @@ const Bookclub = () => {
       getChapter(selectedBook.id, Math.max(selectedPage - 1, 0), auth.authToken)
         .then(({ data: chapter }) => {
           setSelectedChapter(chapter);
-          setCommentsUpdated(true);
         })
         .catch((err: AxiosError) => {
           errorNotification(err.message);
@@ -164,17 +155,11 @@ const Bookclub = () => {
       });
   };
 
-  const unlockChapter = () => {
-    if (selectedChapter) {
-      updateBookUserRelation(
-        selectedChapter.book.id,
-        selectedChapter.chapterNumber,
-        auth.authToken
-      )
+  const unlockChapter = (chapterNumber: number) => {
+    if (selectedBook) {
+      updateBookUserRelation(selectedBook.id, chapterNumber, auth.authToken)
         .then(() => {
-          successNotification(
-            `Chapter ${selectedChapter.chapterNumber + 1} unlocked!`
-          );
+          successNotification(`Chapter ${chapterNumber + 1} unlocked!`);
           setRelationChanged(true);
         })
         .catch((err: AxiosError) => {
@@ -185,17 +170,16 @@ const Bookclub = () => {
 
   return (
     <>
-      <CreateBookclubPostModal
-        chapter={selectedChapter}
-        opened={createModalOpen}
-        openHandlers={createModelOpenHandlers}
-        setCommentsUpdated={setCommentsUpdated}
-      />
-      <ConfirmFinishChapterModal
-        opened={unlockModalOpen}
-        openHandlers={unlockModalHandlers}
-        unlockChapter={unlockChapter}
-      />
+      {selectedBook ? (
+        <CreateBookclubPostModal
+          opened={createModalOpen}
+          openHandlers={createModelOpenHandlers}
+          setCommentsUpdated={setCommentsUpdated}
+          book={selectedBook}
+        />
+      ) : (
+        <></>
+      )}
       <AddBookModal
         opened={addBookModalOpen}
         openHandlers={addBookModalHandlers}
@@ -212,7 +196,11 @@ const Bookclub = () => {
           value={selectedBook?.id.toString() || ""}
           onChange={selectChange}
         />
-        <Button onClick={addBookModalHandlers.open}>Add Book</Button>
+        {windowWidth >= 500 ? (
+          <Button onClick={addBookModalHandlers.open}>Add Book</Button>
+        ) : (
+          <></>
+        )}
       </Group>
 
       <Space h="xs" />
@@ -225,31 +213,12 @@ const Bookclub = () => {
               <Tabs.Tab value="full">Full Book</Tabs.Tab>
             </Tabs.List>
           </Tabs>
-          <Pagination
-            total={selectedBook.numChapters}
-            siblings={1}
-            size={windowWidth > 500 ? "md" : "xs"}
-            value={selectedPage}
-            onChange={(page) => setSelectedPage(page)}
-          />
+
           {selectedChapter ? (
             selectedTab === "discussion" ? (
               <>
                 <Group position="apart" w="100%">
-                  {lastCompletedChapter === undefined ||
-                  selectedChapter.chapterNumber > lastCompletedChapter ? (
-                    <div ref={hoverRef}>
-                      <ActionIcon
-                        variant="unstyled"
-                        onClick={unlockModalHandlers.open}
-                      >
-                        {lockHovered ? <IconLockOpen /> : <IconLock />}
-                      </ActionIcon>
-                    </div>
-                  ) : (
-                    <Space />
-                  )}
-
+                  <Space />
                   <ActionIcon onClick={createModelOpenHandlers.open}>
                     <IconPlus />
                   </ActionIcon>
@@ -269,16 +238,24 @@ const Bookclub = () => {
                       key={comment.id}
                       locked={
                         lastCompletedChapter === undefined ||
-                        selectedChapter.chapterNumber > lastCompletedChapter
+                        comment.chapterNumber > lastCompletedChapter
                       }
-                      chapterNumber={selectedChapter.chapterNumber}
                       unlockChapter={unlockChapter}
                     />
                   ))}
                 </SimpleGrid>
               </>
             ) : (
-              <Text>{selectedChapter.content}</Text>
+              <>
+                <Pagination
+                  total={selectedBook.numChapters}
+                  siblings={1}
+                  size={windowWidth > 500 ? "md" : "xs"}
+                  value={selectedPage}
+                  onChange={(page) => setSelectedPage(page)}
+                />
+                <Text>{selectedChapter.content}</Text>
+              </>
             )
           ) : (
             <Loader />

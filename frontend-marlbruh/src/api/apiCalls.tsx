@@ -155,15 +155,8 @@ export function getChapter(
   return apiGet(`bookclub/${bookId}/chapters/${chapterNumber}`, token);
 }
 
-export function getBookclubComments(
-  bookId: number,
-  chapterNumber: number,
-  token: string
-) {
-  return apiGet(
-    `bookclub/${bookId}/chapters/${chapterNumber}/comments/`,
-    token
-  );
+export function getBookclubComments(bookId: number, token: string) {
+  return apiGet(`bookclub/${bookId}/comments/`, token);
 }
 
 export function createBookclubComment(

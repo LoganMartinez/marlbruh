@@ -62,6 +62,11 @@ class TargetBookView(APIView):
         chapters = models.Chapter.objects.filter(book__id=bookId)
         return Response({**responseBook.data, "numChapters": len(chapters)})
 
+    def delete(self, request, bookId):
+        book = get_object_or_404(models, id=bookId)
+        book.delete()
+        return Response(status=status.HTTP_200_OK)
+
 
 class TargetChapterView(APIView):
     permission_classes = [IsAuthenticated]
@@ -74,7 +79,7 @@ class TargetChapterView(APIView):
         return Response(responseChapter.data)
 
 
-class BookclubCommentsView(APIView):
+class BookclubChapterCommentsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, bookId, chapterNumber):
@@ -166,3 +171,18 @@ class BookclubUserRelationView(APIView):
         relation.save()
         responseRelation = serializers.BookclubUserRelationSerializer(relation)
         return Response(responseRelation.data)
+
+
+class BookclubCommentsView(APIView):
+    permission_classes = [IsAuthenticated]
+    # should maybe refactor the post to happen here instead of chapter view
+
+    def get(
+        self,
+        request,
+        bookId,
+    ):
+        comments = models.BookclubComment.objects.filter(book__id=bookId)
+
+        responseComments = serializers.BookclubCommentSerializer(comments, many=True)
+        return Response(responseComments.data)

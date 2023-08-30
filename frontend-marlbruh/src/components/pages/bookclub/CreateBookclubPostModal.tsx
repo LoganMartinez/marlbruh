@@ -4,8 +4,8 @@ import {
   Button,
   Group,
   Highlight,
-  Loader,
   Modal,
+  Select,
   Space,
   Stack,
   Textarea,
@@ -14,7 +14,7 @@ import { useForm } from "@mantine/form";
 import { useListState, useTextSelection } from "@mantine/hooks";
 import { IconHighlight, IconHighlightOff } from "@tabler/icons-react";
 import { useState } from "react";
-import { createBookclubComment } from "../../../api/apiCalls";
+import { createBookclubComment, getChapter } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import {
   errorNotification,
@@ -23,10 +23,10 @@ import {
 import { AxiosError } from "axios";
 
 type Props = {
-  chapter: Chapter | undefined;
   opened: boolean;
   openHandlers: DisclosureHandler;
   setCommentsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+  book: BookWithNumChapters;
 };
 
 type Form = {
@@ -35,12 +35,13 @@ type Form = {
 };
 
 const CreateBookclubPostModal = ({
-  chapter,
   opened,
   openHandlers,
   setCommentsUpdated,
+  book,
 }: Props) => {
   const auth = useAuth();
+  const [chapter, setChapter] = useState(undefined as Chapter | undefined);
   const [searchResults, setSearchResults] = useState([] as string[]);
   const textSelection = useTextSelection();
   const [highlight, highlightHandlers] = useListState([] as string[]);
@@ -108,6 +109,13 @@ const CreateBookclubPostModal = ({
     return truncatedHits;
   };
 
+  const selectChapter = (chapterNumStr: string) => {
+    const chapterNum = parseInt(chapterNumStr);
+    getChapter(book.id, chapterNum, auth.authToken).then(({ data: ch }) => {
+      setChapter(ch);
+    });
+  };
+
   return (
     <Modal
       title="Create Bookclub Post"
@@ -119,85 +127,92 @@ const CreateBookclubPostModal = ({
           submitForm(values);
         })}
       >
-        {chapter ? (
-          <Stack>
-            {form.values.passage ? (
-              <Button
-                w="10rem"
-                variant="outline"
-                size="xs"
-                onClick={() => {
-                  form.setFieldValue("passage", "");
-                  highlightHandlers.setState([]);
-                }}
-              >
-                Change Passage
-              </Button>
-            ) : (
-              <Autocomplete
-                withAsterisk
-                label="Passage Select"
-                data={searchResults}
-                onChange={(value) => {
-                  setSearchResults(
-                    value && value.length >= 4 ? searchChapter(value) : []
-                  );
-                  if (searchResults.includes(value)) {
-                    form.setFieldValue("passage", value);
-                  }
-                }}
-                dropdownPosition="bottom"
-                withinPortal
-              />
-            )}
-
-            <div>
-              <Group position="apart">
-                <Space h="1.8rem" />
-                {textSelection &&
-                highlight.includes(textSelection.toString()) ? (
-                  <ActionIcon
-                    style={{
-                      display: textSelection?.toString() ? "" : "none",
-                    }}
-                    onClick={() =>
-                      highlightHandlers.filter(
-                        (item) => item !== textSelection.toString()
-                      )
-                    }
-                  >
-                    <IconHighlightOff />
-                  </ActionIcon>
-                ) : (
-                  <ActionIcon
-                    style={{
-                      display:
-                        textSelection?.toString() &&
-                        form.values.passage.includes(textSelection.toString())
-                          ? ""
-                          : "none",
-                    }}
-                    onClick={() =>
-                      highlightHandlers.append(textSelection?.toString() || "")
-                    }
-                  >
-                    <IconHighlight />
-                  </ActionIcon>
-                )}
-              </Group>
-              <Highlight highlight={highlight}>{form.values.passage}</Highlight>
-            </div>
-            <Textarea
+        <Stack>
+          <Select
+            data={[...Array(book.numChapters).keys()].map((chapterNum) => ({
+              value: chapterNum.toString(),
+              label: `Chapter ${chapterNum + 1}`,
+            }))}
+            onChange={(value) => {
+              if (value) {
+                selectChapter(value);
+              }
+            }}
+          />
+          {form.values.passage ? (
+            <Button
+              w="10rem"
+              variant="outline"
+              size="xs"
+              onClick={() => {
+                form.setFieldValue("passage", "");
+                highlightHandlers.setState([]);
+              }}
+            >
+              Change Passage
+            </Button>
+          ) : (
+            <Autocomplete
               withAsterisk
-              label="Comment"
-              minRows={5}
-              {...form.getInputProps("comment")}
+              label="Passage Select"
+              data={searchResults}
+              onChange={(value) => {
+                setSearchResults(
+                  value && value.length >= 4 ? searchChapter(value) : []
+                );
+                if (searchResults.includes(value)) {
+                  form.setFieldValue("passage", value);
+                }
+              }}
+              dropdownPosition="bottom"
+              withinPortal
+              disabled={chapter === undefined}
             />
-            <Button type="submit">Post</Button>
-          </Stack>
-        ) : (
-          <Loader />
-        )}
+          )}
+
+          <div>
+            <Group position="apart">
+              <Space h="1.8rem" />
+              {textSelection && highlight.includes(textSelection.toString()) ? (
+                <ActionIcon
+                  style={{
+                    display: textSelection?.toString() ? "" : "none",
+                  }}
+                  onClick={() =>
+                    highlightHandlers.filter(
+                      (item) => item !== textSelection.toString()
+                    )
+                  }
+                >
+                  <IconHighlightOff />
+                </ActionIcon>
+              ) : (
+                <ActionIcon
+                  style={{
+                    display:
+                      textSelection?.toString() &&
+                      form.values.passage.includes(textSelection.toString())
+                        ? ""
+                        : "none",
+                  }}
+                  onClick={() =>
+                    highlightHandlers.append(textSelection?.toString() || "")
+                  }
+                >
+                  <IconHighlight />
+                </ActionIcon>
+              )}
+            </Group>
+            <Highlight highlight={highlight}>{form.values.passage}</Highlight>
+          </div>
+          <Textarea
+            withAsterisk
+            label="Comment"
+            minRows={5}
+            {...form.getInputProps("comment")}
+          />
+          <Button type="submit">Post</Button>
+        </Stack>
       </form>
     </Modal>
   );

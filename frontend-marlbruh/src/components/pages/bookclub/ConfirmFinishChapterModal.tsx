@@ -3,17 +3,19 @@ import { Button, Modal, Stack, Text } from "@mantine/core";
 type Props = {
   opened: boolean;
   openHandlers: DisclosureHandler;
-  unlockChapter: () => void;
+  unlockChapter: (chapterNumber: number) => void;
+  comment: BookclubComment;
 };
 
 const ConfirmFinishChapterModal = ({
   opened,
   openHandlers,
   unlockChapter,
+  comment,
 }: Props) => {
   const confirm = () => {
     openHandlers.close();
-    unlockChapter();
+    unlockChapter(comment.chapterNumber);
   };
 
   return (

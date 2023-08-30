@@ -21,7 +21,7 @@ import ConfirmFinishChapterModal from "./ConfirmFinishChapterModal";
 type Props = {
   comment: BookclubComment;
   numberReplies: number;
-  unlockChapter: () => void;
+  unlockChapter: (chapterNum: number) => void;
 };
 
 const LockedBookclubComment = ({
@@ -37,6 +37,7 @@ const LockedBookclubComment = ({
         opened={confirmModalOpen}
         openHandlers={confirmModalHandlers}
         unlockChapter={unlockChapter}
+        comment={comment}
       />
       <Box
         sx={(theme) => ({
@@ -46,7 +47,9 @@ const LockedBookclubComment = ({
       >
         <Container p="md">
           <Stack align="center">
-            <Title>Locked</Title>
+            <Title order={2}>
+              Chapter {comment.chapterNumber + 1} (Locked)
+            </Title>
             <Text>
               This comment may contain spoilers! Click the lock to unlock the
               comments for this chapter.

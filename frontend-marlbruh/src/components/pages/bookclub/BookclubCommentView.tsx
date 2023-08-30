@@ -1,4 +1,4 @@
-import { Container, Highlight } from "@mantine/core";
+import { Container, Highlight, Title } from "@mantine/core";
 import { useAuth } from "../../../authentication/AuthContext";
 import UserPost from "../../reusableComponents/UserPost";
 import {
@@ -15,8 +15,7 @@ type Props = {
   comment: BookclubComment;
   setCommentsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
   locked: boolean;
-  chapterNumber: number;
-  unlockChapter: () => void;
+  unlockChapter: (chapterNumber: number) => void;
 };
 
 const BookclubCommentView = ({
@@ -80,6 +79,7 @@ const BookclubCommentView = ({
           comments={replies}
         >
           <Container mih="10rem">
+            <Title order={3}>Chapter {comment.chapterNumber + 1}</Title>
             <Highlight highlight={comment.highlighted}>
               {comment.passage}
             </Highlight>

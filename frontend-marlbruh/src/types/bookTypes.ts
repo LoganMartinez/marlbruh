@@ -21,6 +21,7 @@ interface BookclubCommentBase {
   likes: User[];
   passage: string;
   comment: string;
+  chapterNumber: number;
 }
 
 interface BookclubCommentNotFormatted extends BookclubCommentBase {
