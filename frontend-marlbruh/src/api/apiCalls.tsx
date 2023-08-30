@@ -184,3 +184,35 @@ export function createBookclubComment(
 export function likeBookclubComment(commentId: number, token: string) {
   return apiPut(`bookclub/likes/${commentId}/`, { junk: "junk" }, token);
 }
+
+export function createBookclubReply(
+  commentId: number,
+  content: string,
+  token: string
+) {
+  return apiPost(`bookclub/replies/${commentId}/`, { content }, token);
+}
+
+export function getBookclubReplies(commentId: number, token: string) {
+  return apiGet(`bookclub/replies/${commentId}/`, token);
+}
+
+export function getBookUserRelation(bookId: number, token: string) {
+  return apiPost(`bookclub/${bookId}/relations/`, { junk: "junk" }, token);
+}
+
+export function updateBookUserRelation(
+  bookId: number,
+  lastChapterComplete: number,
+  token: string
+) {
+  return apiPut(
+    `bookclub/${bookId}/relations/`,
+    { lastChapterComplete },
+    token
+  );
+}
+
+export function addBook(bookfile: FileWithPath, token: string) {
+  return apiPost(`bookclub/`, { bookfile }, token, "form");
+}

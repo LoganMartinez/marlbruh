@@ -85,7 +85,18 @@ const CreateBookclubPostModal = ({
     if (!chapter) {
       return [];
     }
-    const hits = chapter.content.split(new RegExp(searchTerm, "i")).slice(1);
+    const specialChars = "(){}";
+    let regexSearchTerm = searchTerm;
+    for (let i = 0; i < specialChars.length; i++) {
+      regexSearchTerm = regexSearchTerm.replace(
+        specialChars[i],
+        `\\${specialChars[i]}`
+      );
+    }
+
+    const hits = chapter.content
+      .split(new RegExp(regexSearchTerm, "i"))
+      .slice(1);
     if (hits.length === 0) {
       return [];
     }

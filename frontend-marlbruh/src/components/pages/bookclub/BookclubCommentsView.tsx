@@ -1,17 +1,33 @@
-import { Highlight } from "@mantine/core";
+import { Container, Highlight } from "@mantine/core";
 import { useAuth } from "../../../authentication/AuthContext";
 import UserPost from "../../reusableComponents/UserPost";
-import { likeBookclubComment } from "../../../api/apiCalls";
+import {
+  createBookclubReply,
+  getBookclubReplies,
+  likeBookclubComment,
+} from "../../../api/apiCalls";
 import { AxiosError } from "axios";
 import { errorNotification } from "../../../utilities/helperFunctions";
+import { useEffect, useState } from "react";
+import LockedBookclubComment from "./LockedBookclubComment";
 
 type Props = {
   comment: BookclubComment;
   setCommentsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+  locked: boolean;
+  chapterNumber: number;
+  unlockChapter: () => void;
 };
 
-const BookclubCommentView = ({ comment, setCommentsUpdated }: Props) => {
+const BookclubCommentView = ({
+  comment,
+  setCommentsUpdated,
+  locked,
+  unlockChapter,
+}: Props) => {
   const auth = useAuth();
+  const [replies, setReplies] = useState([]);
+  const [repliesUpdated, setRepliesUpdated] = useState(true);
 
   const toggleLike = () => {
     likeBookclubComment(comment.id, auth.authToken)
@@ -24,20 +40,53 @@ const BookclubCommentView = ({ comment, setCommentsUpdated }: Props) => {
   };
 
   const submitComment = (values: SubmitCommentForm) => {
-    console.log(values);
+    createBookclubReply(comment.id, values.commentText, auth.authToken)
+      .then(() => {
+        setRepliesUpdated(true);
+      })
+      .catch((err: AxiosError) => {
+        errorNotification(err.message);
+      });
   };
 
+  useEffect(() => {
+    if (repliesUpdated) {
+      getBookclubReplies(comment.id, auth.authToken)
+        .then(({ data: res }) => {
+          setReplies(res.reverse());
+        })
+        .catch((err: AxiosError) => {
+          errorNotification(err.message);
+        });
+      setRepliesUpdated(false);
+    }
+  }, [repliesUpdated]);
+
   return (
-    <UserPost
-      author={comment.author}
-      likes={comment.likes}
-      toggleLike={toggleLike}
-      caption={comment.comment}
-      submitComment={submitComment}
-      comments={[]}
-    >
-      <Highlight highlight="">{comment.passage}</Highlight>
-    </UserPost>
+    <>
+      {locked && comment.author.userId !== auth.currentUser.userId ? (
+        <LockedBookclubComment
+          comment={comment}
+          numberReplies={replies.length}
+          unlockChapter={unlockChapter}
+        />
+      ) : (
+        <UserPost
+          author={comment.author}
+          likes={comment.likes}
+          toggleLike={toggleLike}
+          caption={comment.comment}
+          submitComment={submitComment}
+          comments={replies}
+        >
+          <Container mih="10rem">
+            <Highlight highlight={comment.highlighted}>
+              {comment.passage}
+            </Highlight>
+          </Container>
+        </UserPost>
+      )}
+    </>
   );
 };
 

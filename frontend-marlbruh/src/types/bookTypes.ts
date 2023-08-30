@@ -15,11 +15,25 @@ type Chapter = {
   content: string;
 };
 
-type BookclubComment = {
+interface BookclubCommentBase {
   id: number;
   author: User;
   likes: User[];
   passage: string;
   comment: string;
+}
+
+interface BookclubCommentNotFormatted extends BookclubCommentBase {
   highlighted: string;
+}
+
+interface BookclubComment extends BookclubCommentBase {
+  highlighted: string[];
+}
+
+type BookUserRelation = {
+  id: number;
+  lastChapterComplete: number;
+  user: number;
+  book: number;
 };
