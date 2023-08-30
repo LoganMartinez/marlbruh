@@ -74,7 +74,7 @@ class TargetChapterView(APIView):
         return Response(responseChapter.data)
 
 
-class BookclubCommentsView(APIView):
+class BookclubChapterCommentsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, bookId, chapterNumber):
@@ -166,3 +166,18 @@ class BookclubUserRelationView(APIView):
         relation.save()
         responseRelation = serializers.BookclubUserRelationSerializer(relation)
         return Response(responseRelation.data)
+
+
+class BookclubCommentsView(APIView):
+    permission_classes = [IsAuthenticated]
+    # should maybe refactor the post to happen here instead of chapter view
+
+    def get(
+        self,
+        request,
+        bookId,
+    ):
+        comments = models.BookclubComment.objects.filter(book__id=bookId)
+
+        responseComments = serializers.BookclubCommentSerializer(comments, many=True)
+        return Response(responseComments.data)
