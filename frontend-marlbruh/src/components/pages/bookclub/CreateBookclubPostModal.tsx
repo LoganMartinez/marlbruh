@@ -1,5 +1,4 @@
 import {
-  ActionIcon,
   Autocomplete,
   Button,
   Group,
@@ -8,16 +7,18 @@ import {
   Select,
   Space,
   Stack,
+  Switch,
   Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useListState, useTextSelection } from "@mantine/hooks";
 import { IconHighlight, IconHighlightOff } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createBookclubComment, getChapter } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import {
   errorNotification,
+  replaceUnicodeChars,
   successNotification,
 } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
@@ -45,6 +46,8 @@ const CreateBookclubPostModal = ({
   const [searchResults, setSearchResults] = useState([] as string[]);
   const textSelection = useTextSelection();
   const [highlight, highlightHandlers] = useListState([] as string[]);
+  const [highlightedPhrase, setHighlightedPhrase] = useState("");
+  const [highlightMode, setHighlighMode] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -77,6 +80,9 @@ const CreateBookclubPostModal = ({
         })
         .finally(() => {
           form.reset();
+          setSearchResults([]);
+          setChapter(undefined);
+          highlightHandlers.setState([]);
           openHandlers.close();
         });
     }
@@ -86,7 +92,7 @@ const CreateBookclubPostModal = ({
     if (!chapter) {
       return [];
     }
-    const specialChars = "(){}";
+    const specialChars = "(){}?.[]+*\\|";
     let regexSearchTerm = searchTerm;
     for (let i = 0; i < specialChars.length; i++) {
       regexSearchTerm = regexSearchTerm.replace(
@@ -94,6 +100,8 @@ const CreateBookclubPostModal = ({
         `\\${specialChars[i]}`
       );
     }
+    // replace unicode apostrophes/quotes
+    regexSearchTerm = replaceUnicodeChars(regexSearchTerm);
 
     const hits = chapter.content
       .split(new RegExp(regexSearchTerm, "i"))
@@ -111,16 +119,44 @@ const CreateBookclubPostModal = ({
 
   const selectChapter = (chapterNumStr: string) => {
     const chapterNum = parseInt(chapterNumStr);
-    getChapter(book.id, chapterNum, auth.authToken).then(({ data: ch }) => {
-      setChapter(ch);
-    });
+    getChapter(book.id, chapterNum, auth.authToken).then(
+      ({ data: { content, ...rest } }: { data: Chapter }) => {
+        setChapter({ content: replaceUnicodeChars(content), ...rest });
+        setSearchResults([]);
+        highlightHandlers.setState([]);
+      }
+    );
   };
+
+  useEffect(() => {
+    const trimmedPhrase = highlightedPhrase.trim();
+    if (
+      highlightMode &&
+      textSelection?.toString() === "" &&
+      trimmedPhrase !== ""
+    ) {
+      if (highlight.includes(trimmedPhrase)) {
+        highlightHandlers.filter((str) => str !== trimmedPhrase);
+      } else {
+        console.log("added");
+        highlightHandlers.append(trimmedPhrase);
+      }
+    } else {
+      setHighlightedPhrase(textSelection?.toString() || "");
+    }
+  }, [textSelection?.toString()]);
 
   return (
     <Modal
       title="Create Bookclub Post"
       opened={opened}
-      onClose={openHandlers.close}
+      onClose={() => {
+        form.reset();
+        setSearchResults([]);
+        setChapter(undefined);
+        highlightHandlers.setState([]);
+        openHandlers.close();
+      }}
     >
       <form
         onSubmit={form.onSubmit((values) => {
@@ -173,35 +209,17 @@ const CreateBookclubPostModal = ({
           <div>
             <Group position="apart">
               <Space h="1.8rem" />
-              {textSelection && highlight.includes(textSelection.toString()) ? (
-                <ActionIcon
-                  style={{
-                    display: textSelection?.toString() ? "" : "none",
-                  }}
-                  onClick={() =>
-                    highlightHandlers.filter(
-                      (item) => item !== textSelection.toString()
-                    )
-                  }
-                >
-                  <IconHighlightOff />
-                </ActionIcon>
-              ) : (
-                <ActionIcon
-                  style={{
-                    display:
-                      textSelection?.toString() &&
-                      form.values.passage.includes(textSelection.toString())
-                        ? ""
-                        : "none",
-                  }}
-                  onClick={() =>
-                    highlightHandlers.append(textSelection?.toString() || "")
-                  }
-                >
-                  <IconHighlight />
-                </ActionIcon>
-              )}
+              <Group spacing={0}>
+                {/* <ActionIcon onClick={() => setHighlighMode((prev) => !prev)}>
+                  {highlightMode ?  : }
+                </ActionIcon> */}
+                <Switch
+                  onLabel={<IconHighlight size="1.5rem" />}
+                  offLabel={<IconHighlightOff size="1.5rem" />}
+                  checked={highlightMode}
+                  onChange={() => setHighlighMode((prev) => !prev)}
+                />
+              </Group>
             </Group>
             <Highlight highlight={highlight}>{form.values.passage}</Highlight>
           </div>
