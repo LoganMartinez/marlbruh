@@ -138,7 +138,6 @@ const CreateBookclubPostModal = ({
       if (highlight.includes(trimmedPhrase)) {
         highlightHandlers.filter((str) => str !== trimmedPhrase);
       } else {
-        console.log("added");
         highlightHandlers.append(trimmedPhrase);
       }
     } else {
@@ -176,17 +175,36 @@ const CreateBookclubPostModal = ({
             }}
           />
           {form.values.passage ? (
-            <Button
-              w="10rem"
-              variant="outline"
-              size="xs"
-              onClick={() => {
-                form.setFieldValue("passage", "");
-                highlightHandlers.setState([]);
-              }}
-            >
-              Change Passage
-            </Button>
+            <>
+              <Button
+                w="10rem"
+                variant="outline"
+                size="xs"
+                onClick={() => {
+                  form.setFieldValue("passage", "");
+                  highlightHandlers.setState([]);
+                }}
+              >
+                Change Passage
+              </Button>
+              <div>
+                <Group position="apart">
+                  <Space h="1.8rem" />
+                  <Group spacing={0}>
+                    <Switch
+                      onLabel={<IconHighlight size="1.5rem" />}
+                      offLabel={<IconHighlightOff size="1.5rem" />}
+                      checked={highlightMode}
+                      onChange={() => setHighlighMode((prev) => !prev)}
+                      size="md"
+                    />
+                  </Group>
+                </Group>
+                <Highlight highlight={highlight}>
+                  {form.values.passage}
+                </Highlight>
+              </div>
+            </>
           ) : (
             <Autocomplete
               withAsterisk
@@ -206,23 +224,6 @@ const CreateBookclubPostModal = ({
             />
           )}
 
-          <div>
-            <Group position="apart">
-              <Space h="1.8rem" />
-              <Group spacing={0}>
-                {/* <ActionIcon onClick={() => setHighlighMode((prev) => !prev)}>
-                  {highlightMode ?  : }
-                </ActionIcon> */}
-                <Switch
-                  onLabel={<IconHighlight size="1.5rem" />}
-                  offLabel={<IconHighlightOff size="1.5rem" />}
-                  checked={highlightMode}
-                  onChange={() => setHighlighMode((prev) => !prev)}
-                />
-              </Group>
-            </Group>
-            <Highlight highlight={highlight}>{form.values.passage}</Highlight>
-          </div>
           <Textarea
             withAsterisk
             label="Comment"
