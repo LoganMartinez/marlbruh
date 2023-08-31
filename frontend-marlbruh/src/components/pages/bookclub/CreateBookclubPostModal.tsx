@@ -80,6 +80,7 @@ const CreateBookclubPostModal = ({
           form.reset();
           setSearchResults([]);
           setChapter(undefined);
+          highlightHandlers.setState([]);
           openHandlers.close();
         });
     }
@@ -120,6 +121,7 @@ const CreateBookclubPostModal = ({
       ({ data: { content, ...rest } }: { data: Chapter }) => {
         setChapter({ content: replaceUnicodeChars(content), ...rest });
         setSearchResults([]);
+        highlightHandlers.setState([]);
       }
     );
   };
@@ -132,6 +134,7 @@ const CreateBookclubPostModal = ({
         form.reset();
         setSearchResults([]);
         setChapter(undefined);
+        highlightHandlers.setState([]);
         openHandlers.close();
       }}
     >
@@ -188,9 +191,7 @@ const CreateBookclubPostModal = ({
               <Space h="1.8rem" />
               {textSelection && highlight.includes(textSelection.toString()) ? (
                 <ActionIcon
-                  style={{
-                    display: textSelection?.toString() ? "" : "none",
-                  }}
+                  disabled={textSelection?.toString() === ""}
                   onClick={() =>
                     highlightHandlers.filter(
                       (item) => item !== textSelection.toString()
@@ -201,16 +202,15 @@ const CreateBookclubPostModal = ({
                 </ActionIcon>
               ) : (
                 <ActionIcon
-                  style={{
-                    display:
-                      textSelection?.toString() &&
-                      form.values.passage.includes(textSelection.toString())
-                        ? ""
-                        : "none",
-                  }}
-                  onClick={() =>
-                    highlightHandlers.append(textSelection?.toString() || "")
+                  disabled={
+                    !textSelection?.toString() ||
+                    !form.values.passage.includes(textSelection.toString())
                   }
+                  onClick={() => {
+                    if (textSelection?.toString()) {
+                      highlightHandlers.append(textSelection.toString());
+                    }
+                  }}
                 >
                   <IconHighlight />
                 </ActionIcon>
