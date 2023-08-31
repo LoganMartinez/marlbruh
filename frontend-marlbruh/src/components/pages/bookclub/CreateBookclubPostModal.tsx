@@ -1,5 +1,4 @@
 import {
-  ActionIcon,
   Autocomplete,
   Button,
   Group,
@@ -8,12 +7,13 @@ import {
   Select,
   Space,
   Stack,
+  Switch,
   Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useListState, useTextSelection } from "@mantine/hooks";
 import { IconHighlight, IconHighlightOff } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createBookclubComment, getChapter } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import {
@@ -46,6 +46,8 @@ const CreateBookclubPostModal = ({
   const [searchResults, setSearchResults] = useState([] as string[]);
   const textSelection = useTextSelection();
   const [highlight, highlightHandlers] = useListState([] as string[]);
+  const [highlightedPhrase, setHighlightedPhrase] = useState("");
+  const [highlightMode, setHighlighMode] = useState(false);
 
   const form = useForm({
     initialValues: {
@@ -126,6 +128,24 @@ const CreateBookclubPostModal = ({
     );
   };
 
+  useEffect(() => {
+    const trimmedPhrase = highlightedPhrase.trim();
+    if (
+      highlightMode &&
+      textSelection?.toString() === "" &&
+      trimmedPhrase !== ""
+    ) {
+      if (highlight.includes(trimmedPhrase)) {
+        highlightHandlers.filter((str) => str !== trimmedPhrase);
+      } else {
+        console.log("added");
+        highlightHandlers.append(trimmedPhrase);
+      }
+    } else {
+      setHighlightedPhrase(textSelection?.toString() || "");
+    }
+  }, [textSelection?.toString()]);
+
   return (
     <Modal
       title="Create Bookclub Post"
@@ -189,32 +209,17 @@ const CreateBookclubPostModal = ({
           <div>
             <Group position="apart">
               <Space h="1.8rem" />
-              {textSelection && highlight.includes(textSelection.toString()) ? (
-                <ActionIcon
-                  disabled={textSelection?.toString() === ""}
-                  onClick={() =>
-                    highlightHandlers.filter(
-                      (item) => item !== textSelection.toString()
-                    )
-                  }
-                >
-                  <IconHighlightOff />
-                </ActionIcon>
-              ) : (
-                <ActionIcon
-                  disabled={
-                    !textSelection?.toString() ||
-                    !form.values.passage.includes(textSelection.toString())
-                  }
-                  onClick={() => {
-                    if (textSelection?.toString()) {
-                      highlightHandlers.append(textSelection.toString());
-                    }
-                  }}
-                >
-                  <IconHighlight />
-                </ActionIcon>
-              )}
+              <Group spacing={0}>
+                {/* <ActionIcon onClick={() => setHighlighMode((prev) => !prev)}>
+                  {highlightMode ?  : }
+                </ActionIcon> */}
+                <Switch
+                  onLabel={<IconHighlight size="1.5rem" />}
+                  offLabel={<IconHighlightOff size="1.5rem" />}
+                  checked={highlightMode}
+                  onChange={() => setHighlighMode((prev) => !prev)}
+                />
+              </Group>
             </Group>
             <Highlight highlight={highlight}>{form.values.passage}</Highlight>
           </div>
