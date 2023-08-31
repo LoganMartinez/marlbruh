@@ -63,7 +63,7 @@ class TargetBookView(APIView):
         return Response({**responseBook.data, "numChapters": len(chapters)})
 
     def delete(self, request, bookId):
-        book = get_object_or_404(models, id=bookId)
+        book = get_object_or_404(models.Book, id=bookId)
         book.delete()
         return Response(status=status.HTTP_200_OK)
 
