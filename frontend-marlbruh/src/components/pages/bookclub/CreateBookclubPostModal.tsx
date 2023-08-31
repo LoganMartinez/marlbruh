@@ -18,6 +18,7 @@ import { createBookclubComment, getChapter } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import {
   errorNotification,
+  replaceUnicodeChars,
   successNotification,
 } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
@@ -77,6 +78,8 @@ const CreateBookclubPostModal = ({
         })
         .finally(() => {
           form.reset();
+          setSearchResults([]);
+          setChapter(undefined);
           openHandlers.close();
         });
     }
@@ -86,7 +89,7 @@ const CreateBookclubPostModal = ({
     if (!chapter) {
       return [];
     }
-    const specialChars = "(){}";
+    const specialChars = "(){}?.[]+*\\|";
     let regexSearchTerm = searchTerm;
     for (let i = 0; i < specialChars.length; i++) {
       regexSearchTerm = regexSearchTerm.replace(
@@ -94,6 +97,8 @@ const CreateBookclubPostModal = ({
         `\\${specialChars[i]}`
       );
     }
+    // replace unicode apostrophes/quotes
+    regexSearchTerm = replaceUnicodeChars(regexSearchTerm);
 
     const hits = chapter.content
       .split(new RegExp(regexSearchTerm, "i"))
@@ -111,16 +116,24 @@ const CreateBookclubPostModal = ({
 
   const selectChapter = (chapterNumStr: string) => {
     const chapterNum = parseInt(chapterNumStr);
-    getChapter(book.id, chapterNum, auth.authToken).then(({ data: ch }) => {
-      setChapter(ch);
-    });
+    getChapter(book.id, chapterNum, auth.authToken).then(
+      ({ data: { content, ...rest } }: { data: Chapter }) => {
+        setChapter({ content: replaceUnicodeChars(content), ...rest });
+        setSearchResults([]);
+      }
+    );
   };
 
   return (
     <Modal
       title="Create Bookclub Post"
       opened={opened}
-      onClose={openHandlers.close}
+      onClose={() => {
+        form.reset();
+        setSearchResults([]);
+        setChapter(undefined);
+        openHandlers.close();
+      }}
     >
       <form
         onSubmit={form.onSubmit((values) => {

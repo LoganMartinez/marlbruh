@@ -42,3 +42,7 @@ export function arraysEqual(a: Array<any>, b: Array<any>) {
   }
   return true;
 }
+
+export const replaceUnicodeChars = (str: string) => {
+  return str.replace(/[‘’]/g, "'").replace(/[“”“”]/g, '"');
+};
