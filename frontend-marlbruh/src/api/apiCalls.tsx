@@ -209,3 +209,26 @@ export function updateBookUserRelation(
 export function addBook(bookfile: FileWithPath, token: string) {
   return apiPost(`bookclub/`, { bookfile }, token, "form");
 }
+
+export function updateChores(
+  choreIds: number[],
+  token: string,
+  name: string | undefined,
+  icon: string | undefined,
+  userIds: number[] | undefined,
+  complete: boolean | undefined,
+  description: string | undefined | null
+) {
+  return apiPut(
+    "chores/",
+    {
+      choreIds: choreIds,
+      name: name,
+      icon: icon,
+      userIds: userIds,
+      complete: complete,
+      description: description,
+    },
+    token
+  );
+}

@@ -10,11 +10,12 @@ import { useEffect, useState } from "react";
 import { getChores } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import ChoreComponent from "./ChoreComponent";
-import { IconPlus } from "@tabler/icons-react";
+import { IconArrowBackUpDouble, IconPlus } from "@tabler/icons-react";
 import { useDisclosure, useViewportSize } from "@mantine/hooks";
 import ChoreCreationModal from "./ChoreCreationModal";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
+import ChoresResetModal from "./ChoresResetModal";
 
 const userFilterData = [
   { value: "all", label: "All users" },
@@ -32,6 +33,7 @@ const Chores = () => {
   const auth = useAuth();
   const windowWidth = useViewportSize().width;
   const [choreCreationOpened, choreCreationHandlers] = useDisclosure(false);
+  const [choresResetOpened, choresResetHandlers] = useDisclosure(false);
   const [allChores, setAllChores] = useState(undefined as Chore[] | undefined);
   const [filteredChores, setFilteredChores] = useState([] as Chore[]);
   const [choresUpdated, setChoresUpdated] = useState(true);
@@ -87,6 +89,12 @@ const Chores = () => {
         openHandlers={choreCreationHandlers}
         setChoresUpdated={setChoresUpdated}
       />
+      <ChoresResetModal
+        opened={choresResetOpened}
+        openHandlers={choresResetHandlers}
+        chores={allChores || []}
+        setChoresUpdated={setChoresUpdated}
+      />
       <Group position="apart" noWrap align="flex-start">
         <Group position="left" noWrap={windowWidth >= 500} w="70%">
           <Select
@@ -110,7 +118,10 @@ const Chores = () => {
         </Group>
 
         <Group position="center">
-          <ActionIcon onClick={() => choreCreationHandlers.open()}>
+          <ActionIcon onClick={choresResetHandlers.open}>
+            <IconArrowBackUpDouble />
+          </ActionIcon>
+          <ActionIcon onClick={choreCreationHandlers.open}>
             <IconPlus />
           </ActionIcon>
         </Group>
