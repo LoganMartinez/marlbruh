@@ -18,7 +18,7 @@ class PostChoreSerializer(serializers.Serializer):
     description = serializers.CharField(required=False, allow_null=True, max_length=150)
 
 
-class PutChoreSerializer(serializers.Serializer):
+class PutTargetChoreSerializer(serializers.Serializer):
     name = serializers.CharField(required=False)
     icon = serializers.CharField(required=False)
     userIds = serializers.ListField(child=serializers.IntegerField(), required=False)
@@ -29,3 +29,12 @@ class PutChoreSerializer(serializers.Serializer):
         if len(data.keys()) == 0:
             raise serializers.ValidationError("Must include at least one field")
         return data
+
+
+class PutChoreSerializer(serializers.Serializer):
+    choreIds = serializers.ListField(child=serializers.IntegerField())
+    name = serializers.CharField(required=False)
+    icon = serializers.CharField(required=False)
+    userIds = serializers.ListField(child=serializers.IntegerField(), required=False)
+    complete = serializers.BooleanField(required=False)
+    description = serializers.CharField(required=False, allow_null=True)
