@@ -62,8 +62,9 @@ const UserPost = ({
             backgroundColor: profileColors[author.profileColor],
             borderRadius: theme.radius.lg,
           })}
+          ref={sizeRef}
         >
-          <Container p="md" ref={sizeRef}>
+          <Container p="md">
             <Stack>
               {children}
               <Group position="apart" noWrap align="flex-start" spacing="xs">
