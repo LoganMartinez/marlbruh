@@ -84,3 +84,12 @@ class PicleCommentView(APIView):
         comments = models.PicleComment.objects.filter(originalPost_id=postId)
         responseSerializer = serializers.PicleCommentSerializer(comments, many=True)
         return Response(responseSerializer.data)
+
+
+class LatestPiclePostView(APIView):
+    permissions_classes = [IsAuthenticated]
+
+    def get(self, request):
+        mostRecent = models.PiclePost.objects.latest("id")
+        response = serializers.PiclePostSerializer(mostRecent)
+        return Response(response.data)
