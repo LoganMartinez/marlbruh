@@ -42,6 +42,7 @@ const SimplePiclePost = ({ post }: Props) => {
           borderRadius: theme.radius.lg,
         })}
         onClick={() => navigate("/pickle")}
+        maw={400}
       >
         <Container p="md">
           <Stack>
