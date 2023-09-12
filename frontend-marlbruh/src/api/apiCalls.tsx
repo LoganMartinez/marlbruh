@@ -232,3 +232,7 @@ export function updateChores(
     token
   );
 }
+
+export function getLatestPiclePost(token: string) {
+  return apiGet("picle/latest/", token);
+}
