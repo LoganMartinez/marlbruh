@@ -25,9 +25,10 @@ import {
   Stack,
   Tabs,
   Text,
+  Title,
 } from "@mantine/core";
 import BookSelectItem from "./BookSelectItem";
-import { IconPlus } from "@tabler/icons-react";
+import { IconArrowUp, IconPlus } from "@tabler/icons-react";
 import {
   useDisclosure,
   useLocalStorage,
@@ -187,6 +188,7 @@ const Bookclub = () => {
       />
       <Group position="apart" noWrap>
         <Select
+          label="Select Book"
           itemComponent={BookSelectItem}
           data={books.map((book) => ({
             value: book.id.toString(),
@@ -262,7 +264,10 @@ const Bookclub = () => {
           )}
         </Stack>
       ) : (
-        <></>
+        <Group align="center">
+          <IconArrowUp size="2rem" />
+          <Title>Select a book</Title>
+        </Group>
       )}
     </>
   );

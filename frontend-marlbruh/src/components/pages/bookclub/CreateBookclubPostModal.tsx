@@ -164,6 +164,8 @@ const CreateBookclubPostModal = ({
       >
         <Stack>
           <Select
+            withAsterisk
+            label="Chapter"
             data={[...Array(book.numChapters).keys()].map((chapterNum) => ({
               value: chapterNum.toString(),
               label: `Chapter ${chapterNum + 1}`,
