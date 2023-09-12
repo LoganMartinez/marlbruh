@@ -6,4 +6,5 @@ urlpatterns = [
     path("<int:postId>/", views.TargetPiclePostView.as_view()),
     path("<int:postId>/like/", views.LikePostView.as_view()),
     path("<int:postId>/comments/", views.PicleCommentView.as_view()),
+    path("latest/", views.LatestPiclePostView.as_view()),
 ]
