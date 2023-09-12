@@ -35,6 +35,28 @@ class ChoreView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
+    def put(self, request):
+        serializer = serializers.PutChoreSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        chores = models.Chore.objects.filter(
+            pk__in=serializer.validated_data["choreIds"]
+        )
+        for chore in chores:
+            if "name" in serializer.validated_data:
+                chore.name = serializer.validated_data["name"]
+            if "icon" in serializer.validated_data:
+                chore.icon = serializer.validated_data["icon"]
+            if "complete" in serializer.validated_data:
+                chore.complete = serializer.validated_data["complete"]
+            if "userIds" in serializer.validated_data:
+                users = User.objects.filter(id__in=serializer.validated_data["userIds"])
+                chore.users.set(users)
+            if "description" in serializer.validated_data:
+                chore.description = serializer.validated_data["description"]
+            chore.save()
+        return Response(status=status.HTTP_200_OK)
+
 
 class TargetChoreView(APIView):
     permissions_classes = [IsAuthenticated]
@@ -46,7 +68,7 @@ class TargetChoreView(APIView):
 
     def put(self, request, choreId):
         chore = get_object_or_404(models.Chore, id=choreId)
-        serializer = serializers.PutChoreSerializer(data=request.data)
+        serializer = serializers.PutTargetChoreSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if "name" in serializer.validated_data:
