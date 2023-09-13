@@ -26,4 +26,5 @@ urlpatterns = [
     path("api/chores/", include("chores.urls")),
     path("api/picle/", include("picle.urls")),
     path("api/bookclub/", include("bookclub.urls")),
+    path("api/kudos/", include("kudos.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
