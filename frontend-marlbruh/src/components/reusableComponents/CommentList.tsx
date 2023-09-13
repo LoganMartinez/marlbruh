@@ -5,14 +5,21 @@ import {
   Container,
   Group,
   ScrollArea,
+  Space,
   Stack,
+  Text,
   Textarea,
   Title,
+  px,
+  useMantineTheme,
 } from "@mantine/core";
 import PicleUserText from "./UserText";
 import React from "react";
-import { IconSend } from "@tabler/icons-react";
+import { IconHeart, IconHeartFilled, IconSend } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
+import { useElementSize } from "@mantine/hooks";
+import { useAuth } from "../../authentication/AuthContext";
+import { profileColorsSolid } from "../../utilities/constants";
 
 type Props = {
   height: number;
@@ -20,6 +27,7 @@ type Props = {
   setCurrentView: React.Dispatch<React.SetStateAction<PostView>>;
   comments: PostComment[];
   submitComment: (values: SubmitCommentForm) => void;
+  toggleCommentLike: (commentId: number) => void;
 };
 
 const CommentList = ({
@@ -28,7 +36,13 @@ const CommentList = ({
   comments,
   setCurrentView,
   submitComment,
+  toggleCommentLike,
 }: Props) => {
+  const auth = useAuth();
+  const { ref: headerSizeRef, height: headerHeight } = useElementSize();
+  const { ref: textAreaSizeRef, height: textAreaHeight } = useElementSize();
+  const theme = useMantineTheme();
+
   const form = useForm({
     initialValues: {
       commentText: "",
@@ -64,23 +78,56 @@ const CommentList = ({
     >
       <Container p="md">
         <Stack spacing={0}>
-          <Group position="apart">
+          <Group position="apart" ref={headerSizeRef}>
             <Title>Comments</Title>
             <CloseButton size="md" onClick={() => setCurrentView("post")} />
           </Group>
-          <ScrollArea h={height - 144}>
+          <ScrollArea
+            h={
+              height -
+              headerHeight -
+              textAreaHeight -
+              px(theme.spacing.lg) * 3 -
+              px("1rem")
+            }
+          >
             <Stack>
               {comments.map((comment) => (
                 <PicleUserText
                   user={comment.author}
                   content={comment.content}
                   key={comment.id}
+                  rightIcon={
+                    <Group spacing=".3rem">
+                      <ActionIcon onClick={() => toggleCommentLike(comment.id)}>
+                        {comment.likes.some(
+                          (user) => user.userId === auth.currentUser.userId
+                        ) ? (
+                          <Box
+                            style={{
+                              color:
+                                profileColorsSolid[
+                                  auth.currentUser.profileColor
+                                ],
+                            }}
+                          >
+                            <IconHeartFilled />
+                          </Box>
+                        ) : (
+                          <IconHeart />
+                        )}
+                      </ActionIcon>
+                      <Text>{comment.likes.length}</Text>
+                    </Group>
+                  }
                 />
               ))}
             </Stack>
           </ScrollArea>
+          <Space h="1rem" />
           <form onSubmit={form.onSubmit((values) => submitForm(values))}>
             <Textarea
+              ref={textAreaSizeRef}
               radius="lg"
               rightSection={
                 <ActionIcon type="submit">

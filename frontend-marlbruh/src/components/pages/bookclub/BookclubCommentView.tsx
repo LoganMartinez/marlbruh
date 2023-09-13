@@ -5,6 +5,7 @@ import {
   createBookclubReply,
   getBookclubReplies,
   likeBookclubComment,
+  likeBookclubReply,
 } from "../../../api/apiCalls";
 import { AxiosError } from "axios";
 import { errorNotification } from "../../../utilities/helperFunctions";
@@ -32,6 +33,16 @@ const BookclubCommentView = ({
     likeBookclubComment(comment.id, auth.authToken)
       .then(() => {
         setCommentsUpdated(true);
+      })
+      .catch((err: AxiosError) => {
+        errorNotification(err.message);
+      });
+  };
+
+  const toggleCommentLike = (replyId: number) => {
+    likeBookclubReply(replyId, auth.authToken)
+      .then(() => {
+        setRepliesUpdated(true);
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
@@ -77,6 +88,7 @@ const BookclubCommentView = ({
           caption={comment.comment}
           submitComment={submitComment}
           comments={replies}
+          toggleCommentLike={toggleCommentLike}
         >
           <Container mih="10rem">
             <Title order={3}>Chapter {comment.chapterNumber + 1}</Title>

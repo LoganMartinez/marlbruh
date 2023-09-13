@@ -31,6 +31,7 @@ const ChoreOverview = () => {
 
   return (
     <>
+      <Title>Chores</Title>
       {userChores.length === 0 ? (
         <Title order={3}>You finished all your chores! </Title>
       ) : (

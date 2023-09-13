@@ -125,6 +125,18 @@ class LikeBookclubCommentView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class LikeBookclubReplyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, replyId):
+        reply = get_object_or_404(models.BookclubReply, pk=replyId)
+        if request.user in reply.likes.all():
+            reply.likes.remove(request.user)
+        else:
+            reply.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
+
+
 class BookclubRepliesView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -38,6 +38,7 @@ class BookclubCommentSerializer(serializers.ModelSerializer):
 
 class BookclubReplySerializer(serializers.ModelSerializer):
     author = UserSerializer()
+    likes = UserSerializer(many=True)
 
     class Meta:
         model = models.BookclubReply()

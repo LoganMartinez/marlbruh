@@ -63,6 +63,18 @@ class LikePostView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class LikeCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, commentId):
+        comment = get_object_or_404(models.PicleComment, pk=commentId)
+        if request.user in comment.likes.all():
+            comment.likes.remove(request.user)
+        else:
+            comment.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
+
+
 class PicleCommentView(APIView):
     permissions_classes = [IsAuthenticated]
 
@@ -84,3 +96,12 @@ class PicleCommentView(APIView):
         comments = models.PicleComment.objects.filter(originalPost_id=postId)
         responseSerializer = serializers.PicleCommentSerializer(comments, many=True)
         return Response(responseSerializer.data)
+
+
+class LatestPiclePostView(APIView):
+    permissions_classes = [IsAuthenticated]
+
+    def get(self, request):
+        mostRecent = models.PiclePost.objects.latest("id")
+        response = serializers.PiclePostSerializer(mostRecent)
+        return Response(response.data)

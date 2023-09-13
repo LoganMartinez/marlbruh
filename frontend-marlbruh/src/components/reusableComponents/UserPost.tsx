@@ -24,6 +24,7 @@ type Props = {
   toggleLike: () => void;
   comments: PicleComment[];
   submitComment: (values: SubmitCommentForm) => void;
+  toggleCommentLike: (commentId: number) => void;
 } & PropsWithChildren;
 
 const UserPost = ({
@@ -34,6 +35,7 @@ const UserPost = ({
   toggleLike,
   comments,
   submitComment,
+  toggleCommentLike,
 }: Props) => {
   const { ref: sizeRef, height: postHeight } = useElementSize();
   const [currentView, setCurrentView] = useState("post" as PostView);
@@ -55,6 +57,7 @@ const UserPost = ({
           setCurrentView={setCurrentView}
           comments={comments}
           submitComment={submitComment}
+          toggleCommentLike={toggleCommentLike}
         />
       ) : (
         <Box
@@ -62,8 +65,9 @@ const UserPost = ({
             backgroundColor: profileColors[author.profileColor],
             borderRadius: theme.radius.lg,
           })}
+          ref={sizeRef}
         >
-          <Container p="md" ref={sizeRef}>
+          <Container p="md">
             <Stack>
               {children}
               <Group position="apart" noWrap align="flex-start" spacing="xs">
