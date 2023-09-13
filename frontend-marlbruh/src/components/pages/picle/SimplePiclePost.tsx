@@ -48,7 +48,7 @@ const SimplePiclePost = ({ post }: Props) => {
           <Stack>
             <Group position="apart">
               <UserHandle user={post.author} />
-              <Group spacing="xs">
+              <Group spacing="xs" align="flex-start">
                 {post.likes.some(
                   (user) => user.userId === auth.currentUser.userId
                 ) ? (

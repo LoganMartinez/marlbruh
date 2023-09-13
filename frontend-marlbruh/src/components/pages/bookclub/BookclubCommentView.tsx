@@ -38,6 +38,10 @@ const BookclubCommentView = ({
       });
   };
 
+  const toggleCommentLike = (commentId: number) => {
+    console.log(commentId);
+  };
+
   const submitComment = (values: SubmitCommentForm) => {
     createBookclubReply(comment.id, values.commentText, auth.authToken)
       .then(() => {
@@ -77,6 +81,7 @@ const BookclubCommentView = ({
           caption={comment.comment}
           submitComment={submitComment}
           comments={replies}
+          toggleCommentLike={toggleCommentLike}
         >
           <Container mih="10rem">
             <Title order={3}>Chapter {comment.chapterNumber + 1}</Title>
