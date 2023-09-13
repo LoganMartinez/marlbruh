@@ -1,5 +1,4 @@
 import { Box, Container, Loader, SimpleGrid } from "@mantine/core";
-import ComingSoon from "../reusablePages/ComingSoon";
 import { useEffect, useState } from "react";
 import { getAllUsers } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
