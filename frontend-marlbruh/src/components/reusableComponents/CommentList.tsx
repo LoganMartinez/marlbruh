@@ -7,6 +7,7 @@ import {
   ScrollArea,
   Space,
   Stack,
+  Text,
   Textarea,
   Title,
   px,
@@ -14,9 +15,11 @@ import {
 } from "@mantine/core";
 import PicleUserText from "./UserText";
 import React from "react";
-import { IconSend } from "@tabler/icons-react";
+import { IconHeart, IconHeartFilled, IconSend } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { useElementSize } from "@mantine/hooks";
+import { useAuth } from "../../authentication/AuthContext";
+import { profileColorsSolid } from "../../utilities/constants";
 
 type Props = {
   height: number;
@@ -24,6 +27,7 @@ type Props = {
   setCurrentView: React.Dispatch<React.SetStateAction<PostView>>;
   comments: PostComment[];
   submitComment: (values: SubmitCommentForm) => void;
+  toggleCommentLike: (commentId: number) => void;
 };
 
 const CommentList = ({
@@ -32,7 +36,9 @@ const CommentList = ({
   comments,
   setCurrentView,
   submitComment,
+  toggleCommentLike,
 }: Props) => {
+  const auth = useAuth();
   const { ref: headerSizeRef, height: headerHeight } = useElementSize();
   const { ref: textAreaSizeRef, height: textAreaHeight } = useElementSize();
   const theme = useMantineTheme();
@@ -91,6 +97,29 @@ const CommentList = ({
                   user={comment.author}
                   content={comment.content}
                   key={comment.id}
+                  rightIcon={
+                    <Group spacing=".3rem">
+                      <ActionIcon onClick={() => toggleCommentLike(comment.id)}>
+                        {comment.likes.some(
+                          (user) => user.userId === auth.currentUser.userId
+                        ) ? (
+                          <Box
+                            style={{
+                              color:
+                                profileColorsSolid[
+                                  auth.currentUser.profileColor
+                                ],
+                            }}
+                          >
+                            <IconHeartFilled />
+                          </Box>
+                        ) : (
+                          <IconHeart />
+                        )}
+                      </ActionIcon>
+                      <Text>{comment.likes.length}</Text>
+                    </Group>
+                  }
                 />
               ))}
             </Stack>

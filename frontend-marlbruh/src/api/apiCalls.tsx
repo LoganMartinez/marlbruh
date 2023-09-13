@@ -236,3 +236,7 @@ export function updateChores(
 export function getLatestPiclePost(token: string) {
   return apiGet("picle/latest/", token);
 }
+
+export function likePicleComment(commentId: number, token: string) {
+  return apiPut(`picle/comments/${commentId}/like/`, { junk: "JUNK" }, token);
+}

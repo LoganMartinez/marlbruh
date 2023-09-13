@@ -3,6 +3,7 @@ import { useAuth } from "../../../authentication/AuthContext";
 import {
   createComment,
   getComments,
+  likePicleComment,
   likePiclePost,
 } from "../../../api/apiCalls";
 import { AxiosError } from "axios";
@@ -25,6 +26,16 @@ const PiclePost = ({ post, postsUpdated, setPostsUpdated }: Props) => {
     likePiclePost(post.id, auth.authToken)
       .then(() => {
         setPostsUpdated(true);
+      })
+      .catch((err: AxiosError) => {
+        errorNotification(err.message);
+      });
+  };
+
+  const toggleCommentLike = (commentId: number) => {
+    likePicleComment(commentId, auth.authToken)
+      .then(() => {
+        setCommentsUpdated(true);
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
@@ -65,6 +76,7 @@ const PiclePost = ({ post, postsUpdated, setPostsUpdated }: Props) => {
         toggleLike={toggleLike}
         comments={comments}
         submitComment={submitComment}
+        toggleCommentLike={toggleCommentLike}
       >
         <Image radius="xl" src={post.content} />
       </UserPost>
