@@ -5,6 +5,7 @@ import {
   createBookclubReply,
   getBookclubReplies,
   likeBookclubComment,
+  likeBookclubReply,
 } from "../../../api/apiCalls";
 import { AxiosError } from "axios";
 import { errorNotification } from "../../../utilities/helperFunctions";
@@ -38,8 +39,14 @@ const BookclubCommentView = ({
       });
   };
 
-  const toggleCommentLike = (commentId: number) => {
-    console.log(commentId);
+  const toggleCommentLike = (replyId: number) => {
+    likeBookclubReply(replyId, auth.authToken)
+      .then(() => {
+        setRepliesUpdated(true);
+      })
+      .catch((err: AxiosError) => {
+        errorNotification(err.message);
+      });
   };
 
   const submitComment = (values: SubmitCommentForm) => {

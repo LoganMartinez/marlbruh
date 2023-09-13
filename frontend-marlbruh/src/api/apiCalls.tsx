@@ -240,3 +240,7 @@ export function getLatestPiclePost(token: string) {
 export function likePicleComment(commentId: number, token: string) {
   return apiPut(`picle/comments/${commentId}/like/`, { junk: "JUNK" }, token);
 }
+
+export function likeBookclubReply(replyId: number, token: string) {
+  return apiPut(`bookclub/likes/reply/${replyId}/`, { junk: "JUNK" }, token);
+}
