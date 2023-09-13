@@ -8,8 +8,8 @@ import {
 import {
   IconBook,
   IconDog,
-  IconFish,
   IconHome2,
+  IconStar,
   IconTool,
 } from "@tabler/icons-react";
 import { FunctionComponent, useEffect, useState } from "react";
@@ -105,9 +105,9 @@ const data = [
     link: "/pickle",
   },
   {
-    icon: <IconFish {...iconProps} />,
-    label: "fish",
-    link: "/fish",
+    icon: <IconStar {...iconProps} />,
+    label: "kudos",
+    link: "/kudos",
   },
 ];
 
