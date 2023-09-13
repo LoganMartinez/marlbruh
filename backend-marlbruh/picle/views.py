@@ -63,6 +63,18 @@ class LikePostView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+class LikeCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, commentId):
+        comment = get_object_or_404(models.PicleComment, pk=commentId)
+        if request.user in comment.likes.all():
+            comment.likes.remove(request.user)
+        else:
+            comment.likes.add(request.user)
+        return Response(status=status.HTTP_200_OK)
+
+
 class PicleCommentView(APIView):
     permissions_classes = [IsAuthenticated]
 
