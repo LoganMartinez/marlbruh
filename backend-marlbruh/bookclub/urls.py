@@ -4,6 +4,7 @@ from bookclub import views
 urlpatterns = [
     path("", views.BookView.as_view()),
     path("likes/<int:commentId>/", views.LikeBookclubCommentView.as_view()),
+    path("likes/reply/<int:replyId>/", views.LikeBookclubReplyView.as_view()),
     path("replies/<int:commentId>/", views.BookclubRepliesView.as_view()),
     path("<int:bookId>/", views.TargetBookView.as_view()),
     path("<int:bookId>/relations/", views.BookclubUserRelationView.as_view()),
