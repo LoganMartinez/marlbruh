@@ -2,6 +2,7 @@ interface Book {
   id: number;
   title: string;
   coverImage: string;
+  cssStyles: string;
 }
 
 interface BookWithNumChapters extends Book {
