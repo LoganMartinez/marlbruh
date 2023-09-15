@@ -104,6 +104,7 @@ const CreateBookclubPostModal = ({
     regexSearchTerm = replaceUnicodeChars(regexSearchTerm);
 
     const hits = chapter.content
+      .replace(/(<([^>]+)>)|&#13;/gi, "") // strip html
       .split(new RegExp(regexSearchTerm, "i"))
       .slice(1);
     if (hits.length === 0) {
