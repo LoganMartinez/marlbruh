@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from bookclub import models, serializers
 from rest_framework import status
-from ebooklib import epub
+from ebooklib import epub, ITEM_STYLE
 from rest_framework.parsers import MultiPartParser, FormParser
 from bs4 import BeautifulSoup
 import io
@@ -36,7 +36,11 @@ class BookView(APIView):
         coverImage = ImageFile(
             io.BytesIO(coverImageBytes.get_content()), name="book-cover-image.jpg"
         )
-        createdBook = models.Book.objects.create(title=title, coverImage=coverImage)
+        styles = book.get_items_of_type(ITEM_STYLE)
+        css = b"\n".join([style.get_content() for style in styles])
+        createdBook = models.Book.objects.create(
+            title=title, coverImage=coverImage, cssStyles=css
+        )
         coverImage.close()
         ncx = book.get_item_with_id("ncx")
         ncxsoup = BeautifulSoup(ncx.get_content(), "lxml")
@@ -44,9 +48,11 @@ class BookView(APIView):
         for ch in ncxsoup.find_all("navpoint"):
             src = ch.content["src"]
             chapter = book.get_item_with_href(src)
-            chapterSoup = BeautifulSoup(chapter.get_content(), "html.parser")
+            chapterHtml = (
+                chapter.get_content().split(b"<body>")[-1].split(b"</body>")[0]
+            )
             models.Chapter.objects.create(
-                book=createdBook, content=chapterSoup.get_text(), chapterNumber=chNo
+                book=createdBook, content=chapterHtml, chapterNumber=chNo
             )
             chNo = chNo + 1
         responseBook = serializers.BookSerializer(createdBook)

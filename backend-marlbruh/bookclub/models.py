@@ -5,6 +5,7 @@ from users.models import User
 class Book(models.Model):
     title = models.CharField(max_length=50)
     coverImage = models.ImageField()
+    cssStyles = models.TextField()
 
 
 class Chapter(models.Model):
