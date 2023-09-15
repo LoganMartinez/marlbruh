@@ -6,3 +6,4 @@ gunicorn
 tzdata
 ebooklib
 bs4
+wrpy
