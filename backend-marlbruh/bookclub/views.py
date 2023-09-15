@@ -37,7 +37,7 @@ class BookView(APIView):
             io.BytesIO(coverImageBytes.get_content()), name="book-cover-image.jpg"
         )
         styles = book.get_items_of_type(ITEM_STYLE)
-        css = b"\n".join([style.get_content() for style in styles])
+        css = b"\n".join([style.get_content() for style in styles]).decode("utf-8")
         createdBook = models.Book.objects.create(
             title=title, coverImage=coverImage, cssStyles=css
         )
@@ -50,7 +50,7 @@ class BookView(APIView):
             chapter = book.get_item_with_href(src)
             chapterHtml = (
                 chapter.get_content().split(b"<body>")[-1].split(b"</body>")[0]
-            )
+            ).decode("utf-8")
             models.Chapter.objects.create(
                 book=createdBook, content=chapterHtml, chapterNumber=chNo
             )
