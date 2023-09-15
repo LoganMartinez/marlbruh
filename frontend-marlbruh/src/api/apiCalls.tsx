@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import { apiDelete, apiGet, apiPost, apiPut } from "./apiUtils";
 import { FileWithPath } from "@mantine/dropzone";
+import { WrLanguage } from "../utilities/constants";
 
 export function getUserGivenToken(token: string): Promise<AxiosResponse<User>> {
   return apiGet("users/me/", token);
@@ -243,4 +244,16 @@ export function likePicleComment(commentId: number, token: string) {
 
 export function likeBookclubReply(replyId: number, token: string) {
   return apiPut(`bookclub/likes/reply/${replyId}/`, { junk: "JUNK" }, token);
+}
+
+export function wrTranslate(
+  fromLanguage: WrLanguage,
+  toLanguage: WrLanguage,
+  phrase: string,
+  token: string
+) {
+  return apiGet(
+    `translate/traslatePhrase/${fromLanguage}/${toLanguage}/${phrase}`,
+    token
+  );
 }
