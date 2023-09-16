@@ -253,7 +253,7 @@ export function wrTranslate(
   token: string
 ) {
   return apiGet(
-    `translate/traslatePhrase/${fromLanguage}/${toLanguage}/${phrase}`,
+    `translator/translatePhrase/${fromLanguage}/${toLanguage}/${phrase}/`,
     token
   );
 }
