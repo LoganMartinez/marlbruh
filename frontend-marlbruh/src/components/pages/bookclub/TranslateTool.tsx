@@ -23,10 +23,14 @@ import {
 } from "../../../utilities/constants";
 import { wrTranslate } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
-import { useDisclosure } from "@mantine/hooks";
+import {
+  useDisclosure,
+  useLocalStorage,
+  useTextSelection,
+} from "@mantine/hooks";
 import {
   IconArrowRight,
   IconBook2,
@@ -46,6 +50,18 @@ const useStyles = createStyles((theme) => ({
     backgroundColor: theme.colors.dark[8],
     borderBottom: `2px solid ${theme.colors.dark[6]}`,
     borderTop: `2px solid ${theme.colors.dark[6]}`,
+  },
+
+  wrSticky: {
+    position: "sticky",
+    top: "0px",
+    width: "100%",
+    paddingTop: "1rem",
+    paddingBottom: "2rem",
+    paddingLeft: "0px",
+    paddingRight: "0px",
+    backgroundColor: theme.colors.dark[7],
+    borderBottom: `2px solid ${theme.colors.dark[5]}`,
   },
 
   exampleSentence: {
@@ -72,6 +88,15 @@ const TranslateTool = ({ enabled }: Props) => {
   const [languageSelectOpen, { toggle: toggleLanguageSelect }] =
     useDisclosure(false);
   const [tranlationLoading, setTranslationLoading] = useState(false);
+  const [storedFromLang, setStoredFromLang] = useLocalStorage({
+    key: "marlbruh-from-lang",
+    defaultValue: "en" as WrLanguage,
+  });
+  const [storedToLang, setStoredToLang] = useLocalStorage({
+    key: "marlbruh-to-lang",
+    defaultValue: "es" as WrLanguage,
+  });
+  const textSelection = useTextSelection();
   const translateForm = useForm({
     initialValues: {
       fromLanguage: "en",
@@ -89,6 +114,8 @@ const TranslateTool = ({ enabled }: Props) => {
 
   const submitTranslate = (values: TranslateForm) => {
     setTranslationLoading(true);
+    setStoredFromLang(values.fromLanguage);
+    setStoredToLang(values.toLanguage);
     wrTranslate(
       values.fromLanguage,
       values.toLanguage,
@@ -104,6 +131,19 @@ const TranslateTool = ({ enabled }: Props) => {
       .finally(() => setTranslationLoading(false));
   };
 
+  useEffect(() => {
+    translateForm.setFieldValue("fromLanguage", storedFromLang);
+  }, [storedFromLang]);
+  useEffect(() => {
+    translateForm.setFieldValue("toLanguage", storedToLang);
+  }, [storedToLang]);
+
+  useEffect(() => {
+    if (textSelection?.toString()) {
+      translateForm.setFieldValue("phrase", textSelection.toString());
+    }
+  }, [textSelection?.toString()]);
+
   return (
     <div className={enabled ? cx(classes.sticky) : ""}>
       {enabled ? (
@@ -115,8 +155,8 @@ const TranslateTool = ({ enabled }: Props) => {
               w="100%"
               label={
                 <>
-                  <Group position="left" spacing={0}>
-                    <Text>
+                  <Group position="left" spacing={0} noWrap>
+                    <Text fz="xs">
                       Translate (
                       <b>
                         {
@@ -186,76 +226,77 @@ const TranslateTool = ({ enabled }: Props) => {
                   >
                     <ScrollArea h={400}>
                       <Stack>
-                        <Group position="apart" p="xs">
+                        <Group
+                          position="apart"
+                          p="xs"
+                          className={cx(classes["wrSticky"])}
+                        >
                           <Title order={3}>{translationRes.word}</Title>
                           <CloseButton
                             onClick={() => setTranslationRes(undefined)}
                           />
                         </Group>
 
-                        {translationRes.translations.map((group, index) => (
-                          <React.Fragment key={index}>
-                            <Divider size="lg" />
-                            <Title order={4} pl="1rem">
-                              {group.title}
-                            </Title>
-                            {group.entries.map((entry, index) => (
+                        {translationRes.translations.length > 0 ? (
+                          <>
+                            {translationRes.translations.map((group, index) => (
                               <React.Fragment key={index}>
-                                <Divider variant="dashed" />
-                                <Grid key={index} p="xs">
-                                  <Grid.Col span={6}>
-                                    {entry.from_word.source}
-                                  </Grid.Col>
-                                  <Grid.Col span={6}>{entry.context}</Grid.Col>
-                                  <Grid.Col span={6}>
-                                    {entry.to_word.map((word) =>
-                                      word.notes ? `(${word.notes}) ` : ""
-                                    )}
-                                  </Grid.Col>
-                                  <Grid.Col span={6}>
-                                    {entry.to_word
-                                      .map((word) => word.meaning)
-                                      .join(", ")}
-                                  </Grid.Col>
-                                  <Grid.Col span={12}>
-                                    <Text
-                                      className={cx(classes.exampleSentence)}
-                                      fz="xs"
-                                    >
-                                      {entry.from_example}
-                                    </Text>
-                                  </Grid.Col>
-                                  <Grid.Col span={12}>
-                                    <Text
-                                      className={cx(classes.exampleSentence)}
-                                      fz="xs"
-                                    >
-                                      {entry.to_example}
-                                    </Text>
-                                  </Grid.Col>
-                                </Grid>
+                                <Divider size="lg" />
+                                <Title order={4} pl="1rem">
+                                  {group.title}
+                                </Title>
+                                {group.entries.map((entry, index) => (
+                                  <React.Fragment key={index}>
+                                    <Divider variant="dashed" />
+                                    <Grid key={index} p="xs">
+                                      <Grid.Col span={6}>
+                                        {entry.from_word.source}
+                                      </Grid.Col>
+                                      <Grid.Col span={6}>
+                                        {entry.context}
+                                      </Grid.Col>
+                                      <Grid.Col span={6}>
+                                        {entry.to_word.map((word) =>
+                                          word.notes ? `(${word.notes}) ` : ""
+                                        )}
+                                      </Grid.Col>
+                                      <Grid.Col span={6}>
+                                        {entry.to_word
+                                          .map((word) => word.meaning)
+                                          .join(", ")}
+                                      </Grid.Col>
+                                      <Grid.Col span={12}>
+                                        <Text
+                                          className={cx(
+                                            classes.exampleSentence
+                                          )}
+                                          fz="xs"
+                                        >
+                                          {entry.from_example}
+                                        </Text>
+                                      </Grid.Col>
+                                      <Grid.Col span={12}>
+                                        <Text
+                                          className={cx(
+                                            classes.exampleSentence
+                                          )}
+                                          fz="xs"
+                                        >
+                                          {entry.to_example}
+                                        </Text>
+                                      </Grid.Col>
+                                    </Grid>
+                                  </React.Fragment>
+                                ))}
                               </React.Fragment>
                             ))}
-                            {/* <Table>
-                              <tbody>
-                                {group.entries.map((entry, index) => (
-                                  <tr key={index}>
-                                    <td>{entry.from_word.source}</td>
-                                    <td>{entry.context}</td>
-                                    <td>
-                                      {entry.to_word
-                                        .map(
-                                          (word) =>
-                                            word.meaning + (word.grammar || "")
-                                        )
-                                        .join(", ")}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </Table> */}
-                          </React.Fragment>
-                        ))}
+                          </>
+                        ) : (
+                          <>
+                            <Divider />
+                            <Title order={4}>No Translations Found</Title>
+                          </>
+                        )}
                       </Stack>
                     </ScrollArea>
                   </Box>

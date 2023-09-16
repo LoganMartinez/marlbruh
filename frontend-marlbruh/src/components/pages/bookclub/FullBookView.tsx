@@ -5,7 +5,7 @@ import { useAuth } from "../../../authentication/AuthContext";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
 import { IconSettings } from "@tabler/icons-react";
-import { useDisclosure } from "@mantine/hooks";
+import { useLocalStorage } from "@mantine/hooks";
 import TranslateTool from "./TranslateTool";
 
 type Props = {
@@ -15,10 +15,12 @@ type Props = {
 
 const FullBookView = ({ book, lastChapterComplete }: Props) => {
   const auth = useAuth();
-  const [translateEnabled, { toggle: toggleTranslateEnabled }] =
-    useDisclosure(false);
+  const [translateEnabled, setTranslateEnabled] = useLocalStorage({
+    key: "marlbruh-book-translate-enabled",
+    defaultValue: false,
+  });
   const [selectedPage, setSelectedPage] = useState(
-    Math.max(lastChapterComplete, 1)
+    Math.max(lastChapterComplete, 0)
   );
   const [selectedChapter, setSelectedChapter] = useState(
     undefined as Chapter | undefined
@@ -61,7 +63,7 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item onClick={toggleTranslateEnabled}>
+                <Menu.Item onClick={() => setTranslateEnabled((prev) => !prev)}>
                   {translateEnabled
                     ? "Disable Translate Tool"
                     : "Enable Translate Tool"}
