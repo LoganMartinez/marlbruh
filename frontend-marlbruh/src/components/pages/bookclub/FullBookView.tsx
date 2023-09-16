@@ -1,12 +1,34 @@
-import { ActionIcon, Group, Loader, Menu, Select } from "@mantine/core";
+import {
+  ActionIcon,
+  Group,
+  Loader,
+  Menu,
+  Select,
+  createStyles,
+} from "@mantine/core";
 import { useEffect, useState } from "react";
 import { getChapter } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
-import { IconSettings } from "@tabler/icons-react";
-import { useLocalStorage } from "@mantine/hooks";
+import { IconArrowBarToUp, IconSettings } from "@tabler/icons-react";
+import {
+  useElementSize,
+  useListState,
+  useLocalStorage,
+  useScrollIntoView,
+} from "@mantine/hooks";
 import TranslateTool from "./TranslateTool";
+import { BOOK_PAGE_LEN } from "../../../utilities/constants";
+import { Carousel } from "@mantine/carousel";
+
+const useStyles = createStyles(() => ({
+  scrollUp: {
+    position: "fixed",
+    bottom: "2rem",
+    right: "2rem",
+  },
+}));
 
 type Props = {
   book: BookWithNumChapters;
@@ -19,40 +41,71 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
     key: "marlbruh-book-translate-enabled",
     defaultValue: false,
   });
-  const [selectedPage, setSelectedPage] = useState(
+  const [selectedChapterNo, setSelectedChapterNo] = useState(
     Math.max(lastChapterComplete, 0)
   );
-  const [selectedChapter, setSelectedChapter] = useState(
-    undefined as Chapter | undefined
-  );
+  const [chapterPages, chapterPagesHandler] = useListState([] as string[]);
+  const { ref: sizeRef, width } = useElementSize();
+  const { scrollIntoView: scrollToTop, targetRef: scrollRef } =
+    useScrollIntoView<HTMLDivElement>({
+      offset: 64 + 20 + (translateEnabled ? 116 : 0),
+      duration: 150,
+    });
+  const { classes, cx } = useStyles();
 
   // get chapter
   useEffect(() => {
-    getChapter(book.id, selectedPage, auth.authToken)
-      .then(({ data: chapter }) => {
-        setSelectedChapter(chapter);
+    getChapter(book.id, selectedChapterNo, auth.authToken)
+      .then(({ data: chapter }: { data: Chapter }) => {
+        chapterPagesHandler.setState([]);
+        let [header, ...paragraphs] = chapter.content.split("<p");
+        paragraphs = paragraphs.map((p) => "<p" + p);
+        let currentPageLen = 0;
+        let currentPageContent = header;
+        paragraphs.forEach((p) => {
+          const regexp = /\<p[^\>]*\>(?<inner>.*)\<\/p\>/; // strip away <p> and </p>, keeps any nested elements
+          const innerHtml = p.match(regexp)?.groups?.inner;
+          if (!innerHtml) {
+            errorNotification("Some content may not be displayed properly" + p);
+            return;
+          }
+          innerHtml.length;
+          currentPageContent += p;
+          currentPageLen += innerHtml.length;
+          if (currentPageLen > BOOK_PAGE_LEN) {
+            chapterPagesHandler.append(currentPageContent);
+            currentPageLen = 0;
+            currentPageContent = "";
+          }
+        });
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
       });
-  }, [selectedPage, book]);
+  }, [selectedChapterNo, book]);
 
   return (
     <>
-      {selectedChapter ? (
+      {chapterPages.length > 0 ? (
         <>
-          <Group position="apart" w="100%" align="flex-start" noWrap>
+          <Group
+            position="apart"
+            w="100%"
+            align="flex-start"
+            noWrap
+            ref={sizeRef}
+          >
             <Select
               label="Chapter"
               data={[...Array(book.numChapters).keys()].map((chapterNum) => ({
                 value: chapterNum.toString(),
                 label: `Chapter ${chapterNum + 1}`,
               }))}
-              value={selectedPage.toString()}
+              value={selectedChapterNo.toString()}
               onChange={(value) => {
                 if (value) {
                   const chapterNum = parseInt(value);
-                  setSelectedPage(chapterNum);
+                  setSelectedChapterNo(chapterNum);
                 }
               }}
             />
@@ -73,12 +126,33 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
           </Group>
           <TranslateTool enabled={translateEnabled} />
 
-          <div>
-            <style>{book.cssStyles}</style>
-            <div
-              dangerouslySetInnerHTML={{ __html: selectedChapter.content }}
-            />
-          </div>
+          <Carousel
+            slideGap="md"
+            withControls={false}
+            includeGapInSize
+            w={width}
+            ref={scrollRef}
+          >
+            {chapterPages.map((page, index) => (
+              <Carousel.Slide key={index}>
+                <div>
+                  <style>{book.cssStyles}</style>
+                  <div dangerouslySetInnerHTML={{ __html: page }} />
+                </div>
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+          <ActionIcon
+            radius="xl"
+            variant="filled"
+            onClick={() => {
+              scrollToTop({ alignment: "start" });
+            }}
+            className={cx(classes["scrollUp"])}
+            color="blue"
+          >
+            <IconArrowBarToUp size="1rem" />
+          </ActionIcon>
         </>
       ) : (
         <Loader />
