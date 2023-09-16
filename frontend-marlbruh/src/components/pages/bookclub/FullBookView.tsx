@@ -20,7 +20,7 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
     defaultValue: false,
   });
   const [selectedPage, setSelectedPage] = useState(
-    Math.max(lastChapterComplete, 1)
+    Math.max(lastChapterComplete, 0)
   );
   const [selectedChapter, setSelectedChapter] = useState(
     undefined as Chapter | undefined

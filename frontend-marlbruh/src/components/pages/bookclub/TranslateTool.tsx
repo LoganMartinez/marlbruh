@@ -52,6 +52,18 @@ const useStyles = createStyles((theme) => ({
     borderTop: `2px solid ${theme.colors.dark[6]}`,
   },
 
+  wrSticky: {
+    position: "sticky",
+    top: "0px",
+    width: "100%",
+    paddingTop: "1rem",
+    paddingBottom: "2rem",
+    paddingLeft: "0px",
+    paddingRight: "0px",
+    backgroundColor: theme.colors.dark[7],
+    borderBottom: `2px solid ${theme.colors.dark[5]}`,
+  },
+
   exampleSentence: {
     color: theme.colors.dark[2],
   },
@@ -214,58 +226,77 @@ const TranslateTool = ({ enabled }: Props) => {
                   >
                     <ScrollArea h={400}>
                       <Stack>
-                        <Group position="apart" p="xs">
+                        <Group
+                          position="apart"
+                          p="xs"
+                          className={cx(classes["wrSticky"])}
+                        >
                           <Title order={3}>{translationRes.word}</Title>
                           <CloseButton
                             onClick={() => setTranslationRes(undefined)}
                           />
                         </Group>
 
-                        {translationRes.translations.map((group, index) => (
-                          <React.Fragment key={index}>
-                            <Divider size="lg" />
-                            <Title order={4} pl="1rem">
-                              {group.title}
-                            </Title>
-                            {group.entries.map((entry, index) => (
+                        {translationRes.translations.length > 0 ? (
+                          <>
+                            {translationRes.translations.map((group, index) => (
                               <React.Fragment key={index}>
-                                <Divider variant="dashed" />
-                                <Grid key={index} p="xs">
-                                  <Grid.Col span={6}>
-                                    {entry.from_word.source}
-                                  </Grid.Col>
-                                  <Grid.Col span={6}>{entry.context}</Grid.Col>
-                                  <Grid.Col span={6}>
-                                    {entry.to_word.map((word) =>
-                                      word.notes ? `(${word.notes}) ` : ""
-                                    )}
-                                  </Grid.Col>
-                                  <Grid.Col span={6}>
-                                    {entry.to_word
-                                      .map((word) => word.meaning)
-                                      .join(", ")}
-                                  </Grid.Col>
-                                  <Grid.Col span={12}>
-                                    <Text
-                                      className={cx(classes.exampleSentence)}
-                                      fz="xs"
-                                    >
-                                      {entry.from_example}
-                                    </Text>
-                                  </Grid.Col>
-                                  <Grid.Col span={12}>
-                                    <Text
-                                      className={cx(classes.exampleSentence)}
-                                      fz="xs"
-                                    >
-                                      {entry.to_example}
-                                    </Text>
-                                  </Grid.Col>
-                                </Grid>
+                                <Divider size="lg" />
+                                <Title order={4} pl="1rem">
+                                  {group.title}
+                                </Title>
+                                {group.entries.map((entry, index) => (
+                                  <React.Fragment key={index}>
+                                    <Divider variant="dashed" />
+                                    <Grid key={index} p="xs">
+                                      <Grid.Col span={6}>
+                                        {entry.from_word.source}
+                                      </Grid.Col>
+                                      <Grid.Col span={6}>
+                                        {entry.context}
+                                      </Grid.Col>
+                                      <Grid.Col span={6}>
+                                        {entry.to_word.map((word) =>
+                                          word.notes ? `(${word.notes}) ` : ""
+                                        )}
+                                      </Grid.Col>
+                                      <Grid.Col span={6}>
+                                        {entry.to_word
+                                          .map((word) => word.meaning)
+                                          .join(", ")}
+                                      </Grid.Col>
+                                      <Grid.Col span={12}>
+                                        <Text
+                                          className={cx(
+                                            classes.exampleSentence
+                                          )}
+                                          fz="xs"
+                                        >
+                                          {entry.from_example}
+                                        </Text>
+                                      </Grid.Col>
+                                      <Grid.Col span={12}>
+                                        <Text
+                                          className={cx(
+                                            classes.exampleSentence
+                                          )}
+                                          fz="xs"
+                                        >
+                                          {entry.to_example}
+                                        </Text>
+                                      </Grid.Col>
+                                    </Grid>
+                                  </React.Fragment>
+                                ))}
                               </React.Fragment>
                             ))}
-                          </React.Fragment>
-                        ))}
+                          </>
+                        ) : (
+                          <>
+                            <Divider />
+                            <Title order={4}>No Translations Found</Title>
+                          </>
+                        )}
                       </Stack>
                     </ScrollArea>
                   </Box>
