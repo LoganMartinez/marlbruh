@@ -74,6 +74,43 @@ class TargetBookView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
+# temporary view for migration from plaintext books to html books
+# should be deleted after migration
+class MigrateHtml(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def put(self, request, bookId):
+        serializer = serializers.PostBookSerializer(data=request.FILES)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        with open("/tmp/marlbruhbook.epub", "wb") as file:
+            file.write(serializer.validated_data["bookfile"].read())
+        book = epub.read_epub("/tmp/marlbruhbook.epub", {"ignore_ncx": False})
+        styles = book.get_items_of_type(ITEM_STYLE)
+        css = b"\n".join([style.get_content() for style in styles]).decode("utf-8")
+        oldbook = get_object_or_404(models.Book, pk=bookId)
+        oldbook.cssStyles = css
+        ncx = book.get_item_with_id("ncx")
+        ncxsoup = BeautifulSoup(ncx.get_content(), "lxml")
+        chNo = 0
+        for ch in ncxsoup.find_all("navpoint"):
+            src = ch.content["src"]
+            chapter = book.get_item_with_href(src)
+            chapterHtml = (
+                chapter.get_content().split(b"<body>")[-1].split(b"</body>")[0]
+            ).decode("utf-8")
+            oldChapter = get_object_or_404(
+                models.Chapter, book__id=bookId, chapterNumber=chNo
+            )
+            oldChapter.content = chapterHtml
+            oldChapter.save()
+            chNo = chNo + 1
+        oldbook.save()
+        responseBook = serializers.BookSerializer(oldbook)
+        return Response(responseBook.data)
+
+
 class TargetChapterView(APIView):
     permission_classes = [IsAuthenticated]
 
