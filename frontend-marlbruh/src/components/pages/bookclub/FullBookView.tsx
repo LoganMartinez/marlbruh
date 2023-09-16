@@ -1,10 +1,12 @@
-import { Loader, Pagination } from "@mantine/core";
+import { ActionIcon, Group, Loader, Menu, Select } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { getChapter } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
-import { useViewportSize } from "@mantine/hooks";
+import { IconSettings } from "@tabler/icons-react";
+import { useDisclosure } from "@mantine/hooks";
+import TranslateTool from "./TranslateTool";
 
 type Props = {
   book: BookWithNumChapters;
@@ -13,9 +15,10 @@ type Props = {
 
 const FullBookView = ({ book, lastChapterComplete }: Props) => {
   const auth = useAuth();
-  const windowWidth = useViewportSize().width;
+  const [translateEnabled, { toggle: toggleTranslateEnabled }] =
+    useDisclosure(false);
   const [selectedPage, setSelectedPage] = useState(
-    Math.max(lastChapterComplete + 1, 1)
+    Math.max(lastChapterComplete, 1)
   );
   const [selectedChapter, setSelectedChapter] = useState(
     undefined as Chapter | undefined
@@ -23,7 +26,7 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
 
   // get chapter
   useEffect(() => {
-    getChapter(book.id, Math.max(selectedPage - 1, 0), auth.authToken)
+    getChapter(book.id, selectedPage, auth.authToken)
       .then(({ data: chapter }) => {
         setSelectedChapter(chapter);
       })
@@ -36,13 +39,38 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
     <>
       {selectedChapter ? (
         <>
-          <Pagination
-            total={book.numChapters}
-            siblings={1}
-            size={windowWidth > 500 ? "md" : "xs"}
-            value={selectedPage}
-            onChange={(page) => setSelectedPage(page)}
-          />
+          <Group position="apart" w="100%" align="flex-start" noWrap>
+            <Select
+              label="Chapter"
+              data={[...Array(book.numChapters).keys()].map((chapterNum) => ({
+                value: chapterNum.toString(),
+                label: `Chapter ${chapterNum + 1}`,
+              }))}
+              value={selectedPage.toString()}
+              onChange={(value) => {
+                if (value) {
+                  const chapterNum = parseInt(value);
+                  setSelectedPage(chapterNum);
+                }
+              }}
+            />
+            <Menu>
+              <Menu.Target>
+                <ActionIcon>
+                  <IconSettings />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item onClick={toggleTranslateEnabled}>
+                  {translateEnabled
+                    ? "Disable Translate Tool"
+                    : "Enable Translate Tool"}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Group>
+          <TranslateTool enabled={translateEnabled} />
+
           <div>
             <style>{book.cssStyles}</style>
             <div

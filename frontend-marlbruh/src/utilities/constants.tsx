@@ -53,3 +53,21 @@ export let profileColorsSolid = {} as Record<string, string>;
 Object.keys(profileColors).forEach((key) => {
   profileColorsSolid[key] = profileColors[key].slice(0, 7);
 });
+
+export const translateLanguages = ["en", "es", "fr", "pt", "it", "de"] as const;
+
+export type WrLanguage = (typeof translateLanguages)[number];
+
+export const prettyTranslateLanguages = {
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+  pt: "Portuguese",
+  it: "Italian",
+  de: "German",
+} as const;
+
+export const selectLanguageData = translateLanguages.map((key) => ({
+  value: key,
+  label: prettyTranslateLanguages[key],
+}));
