@@ -1,7 +1,11 @@
 import ComingSoon from "./reusablePages/ComingSoon";
 
 const Fish = () => {
-  return <ComingSoon />;
+  return (
+    <>
+      <ComingSoon />
+    </>
+  );
 };
 
 export default Fish;

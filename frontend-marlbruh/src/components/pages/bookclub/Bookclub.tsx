@@ -4,7 +4,6 @@ import {
   getBookUserRelation,
   getBookclubComments,
   getBooks,
-  getChapter,
   updateBookUserRelation,
 } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
@@ -18,13 +17,11 @@ import {
   Button,
   Group,
   Loader,
-  Pagination,
   Select,
   SimpleGrid,
   Space,
   Stack,
   Tabs,
-  Text,
   Title,
 } from "@mantine/core";
 import BookSelectItem from "./BookSelectItem";
@@ -37,6 +34,7 @@ import {
 import CreateBookclubPostModal from "./CreateBookclubPostModal";
 import BookclubCommentView from "./BookclubCommentView";
 import AddBookModal from "./AddBookModal";
+import FullBookView from "./FullBookView";
 
 const Bookclub = () => {
   const auth = useAuth();
@@ -44,17 +42,15 @@ const Bookclub = () => {
   const [selectedBook, setSelectedBook] = useState(
     undefined as BookWithNumChapters | undefined
   );
-  const [selectedChapter, setSelectedChapter] = useState(
-    undefined as Chapter | undefined
-  );
+
   const windowWidth = useViewportSize().width;
-  const [selectedPage, setSelectedPage] = useState(1);
+
   const [selectedTab, setSelectedTab] = useState("discussion" as string | null);
   const [createModalOpen, createModelOpenHandlers] = useDisclosure(false);
   const [commentsUpdated, setCommentsUpdated] = useState(true);
 
   const [comments, setComments] = useState([] as BookclubComment[]);
-  const [lastCompletedChapter, setLastCompletedChapter] = useState(
+  const [lastChapterComplete, setLastChapterComplete] = useState(
     undefined as number | undefined
   );
   const [relationChanged, setRelationChanged] = useState(true);
@@ -116,26 +112,12 @@ const Bookclub = () => {
     }
   }, [commentsUpdated, selectedBook]);
 
-  // get chapter
-  useEffect(() => {
-    if (selectedBook) {
-      getChapter(selectedBook.id, Math.max(selectedPage - 1, 0), auth.authToken)
-        .then(({ data: chapter }) => {
-          setSelectedChapter(chapter);
-        })
-        .catch((err: AxiosError) => {
-          errorNotification(err.message);
-        });
-    }
-  }, [selectedPage, selectedBook]);
-
   // update locked chapters
   useEffect(() => {
     if (selectedBook && relationChanged) {
       getBookUserRelation(selectedBook.id, auth.authToken)
         .then(({ data: relation }: { data: BookUserRelation }) => {
-          setLastCompletedChapter(relation.lastChapterComplete);
-          setSelectedPage(Math.max(relation.lastChapterComplete + 1, 1));
+          setLastChapterComplete(relation.lastChapterComplete);
         })
         .catch((err: AxiosError) => {
           return errorNotification(err.message);
@@ -215,52 +197,47 @@ const Bookclub = () => {
               <Tabs.Tab value="full">Full Book</Tabs.Tab>
             </Tabs.List>
           </Tabs>
-
-          {selectedChapter ? (
-            selectedTab === "discussion" ? (
-              <>
-                <Group position="apart" w="100%">
-                  <Space />
-                  <ActionIcon onClick={createModelOpenHandlers.open}>
-                    <IconPlus />
-                  </ActionIcon>
-                </Group>
-                <SimpleGrid
-                  cols={3}
-                  breakpoints={[
-                    { maxWidth: "62rem", cols: 3, spacing: "md" },
-                    { maxWidth: "48rem", cols: 2, spacing: "sm" },
-                    { maxWidth: "36rem", cols: 1, spacing: "sm" },
-                  ]}
-                >
-                  {comments.map((comment) => (
-                    <BookclubCommentView
-                      comment={comment}
-                      setCommentsUpdated={setCommentsUpdated}
-                      key={comment.id}
-                      locked={
-                        lastCompletedChapter === undefined ||
-                        comment.chapterNumber > lastCompletedChapter
-                      }
-                      unlockChapter={unlockChapter}
-                    />
-                  ))}
-                </SimpleGrid>
-              </>
-            ) : (
-              <>
-                <Pagination
-                  total={selectedBook.numChapters}
-                  siblings={1}
-                  size={windowWidth > 500 ? "md" : "xs"}
-                  value={selectedPage}
-                  onChange={(page) => setSelectedPage(page)}
-                />
-                <Text>{selectedChapter.content}</Text>
-              </>
-            )
+          {selectedTab === "discussion" ? (
+            <>
+              <Group position="apart" w="100%">
+                <Space />
+                <ActionIcon onClick={createModelOpenHandlers.open}>
+                  <IconPlus />
+                </ActionIcon>
+              </Group>
+              <SimpleGrid
+                cols={3}
+                breakpoints={[
+                  { maxWidth: "62rem", cols: 3, spacing: "md" },
+                  { maxWidth: "48rem", cols: 2, spacing: "sm" },
+                  { maxWidth: "36rem", cols: 1, spacing: "sm" },
+                ]}
+              >
+                {comments.map((comment) => (
+                  <BookclubCommentView
+                    comment={comment}
+                    setCommentsUpdated={setCommentsUpdated}
+                    key={comment.id}
+                    locked={
+                      lastChapterComplete === undefined ||
+                      comment.chapterNumber > lastChapterComplete
+                    }
+                    unlockChapter={unlockChapter}
+                  />
+                ))}
+              </SimpleGrid>
+            </>
           ) : (
-            <Loader />
+            <>
+              {lastChapterComplete ? (
+                <FullBookView
+                  book={selectedBook}
+                  lastChapterComplete={lastChapterComplete}
+                />
+              ) : (
+                <Loader />
+              )}
+            </>
           )}
         </Stack>
       ) : (
