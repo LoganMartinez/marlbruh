@@ -26,7 +26,11 @@ import { useAuth } from "../../../authentication/AuthContext";
 import React, { useEffect, useState } from "react";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
-import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import {
+  useDisclosure,
+  useLocalStorage,
+  useTextSelection,
+} from "@mantine/hooks";
 import {
   IconArrowRight,
   IconBook2,
@@ -80,6 +84,7 @@ const TranslateTool = ({ enabled }: Props) => {
     key: "marlbruh-to-lang",
     defaultValue: "es" as WrLanguage,
   });
+  const textSelection = useTextSelection();
   const translateForm = useForm({
     initialValues: {
       fromLanguage: "en",
@@ -120,6 +125,12 @@ const TranslateTool = ({ enabled }: Props) => {
   useEffect(() => {
     translateForm.setFieldValue("toLanguage", storedToLang);
   }, [storedToLang]);
+
+  useEffect(() => {
+    if (textSelection?.toString()) {
+      translateForm.setFieldValue("phrase", textSelection.toString());
+    }
+  }, [textSelection?.toString()]);
 
   return (
     <div className={enabled ? cx(classes.sticky) : ""}>
@@ -253,24 +264,6 @@ const TranslateTool = ({ enabled }: Props) => {
                                 </Grid>
                               </React.Fragment>
                             ))}
-                            {/* <Table>
-                              <tbody>
-                                {group.entries.map((entry, index) => (
-                                  <tr key={index}>
-                                    <td>{entry.from_word.source}</td>
-                                    <td>{entry.context}</td>
-                                    <td>
-                                      {entry.to_word
-                                        .map(
-                                          (word) =>
-                                            word.meaning + (word.grammar || "")
-                                        )
-                                        .join(", ")}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </Table> */}
                           </React.Fragment>
                         ))}
                       </Stack>

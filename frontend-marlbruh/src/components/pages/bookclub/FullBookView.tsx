@@ -19,8 +19,6 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
     key: "marlbruh-book-translate-enabled",
     defaultValue: false,
   });
-  // const [translateEnabled, { toggle: toggleTranslateEnabled }] =
-  //   useDisclosure(false);
   const [selectedPage, setSelectedPage] = useState(
     Math.max(lastChapterComplete, 1)
   );
