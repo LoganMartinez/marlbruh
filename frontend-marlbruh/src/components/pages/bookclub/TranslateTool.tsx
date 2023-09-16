@@ -23,10 +23,10 @@ import {
 } from "../../../utilities/constants";
 import { wrTranslate } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import {
   IconArrowRight,
   IconBook2,
@@ -72,6 +72,14 @@ const TranslateTool = ({ enabled }: Props) => {
   const [languageSelectOpen, { toggle: toggleLanguageSelect }] =
     useDisclosure(false);
   const [tranlationLoading, setTranslationLoading] = useState(false);
+  const [storedFromLang, setStoredFromLang] = useLocalStorage({
+    key: "marlbruh-from-lang",
+    defaultValue: "en" as WrLanguage,
+  });
+  const [storedToLang, setStoredToLang] = useLocalStorage({
+    key: "marlbruh-to-lang",
+    defaultValue: "es" as WrLanguage,
+  });
   const translateForm = useForm({
     initialValues: {
       fromLanguage: "en",
@@ -89,6 +97,8 @@ const TranslateTool = ({ enabled }: Props) => {
 
   const submitTranslate = (values: TranslateForm) => {
     setTranslationLoading(true);
+    setStoredFromLang(values.fromLanguage);
+    setStoredToLang(values.toLanguage);
     wrTranslate(
       values.fromLanguage,
       values.toLanguage,
@@ -104,6 +114,13 @@ const TranslateTool = ({ enabled }: Props) => {
       .finally(() => setTranslationLoading(false));
   };
 
+  useEffect(() => {
+    translateForm.setFieldValue("fromLanguage", storedFromLang);
+  }, [storedFromLang]);
+  useEffect(() => {
+    translateForm.setFieldValue("toLanguage", storedToLang);
+  }, [storedToLang]);
+
   return (
     <div className={enabled ? cx(classes.sticky) : ""}>
       {enabled ? (
@@ -115,8 +132,8 @@ const TranslateTool = ({ enabled }: Props) => {
               w="100%"
               label={
                 <>
-                  <Group position="left" spacing={0}>
-                    <Text>
+                  <Group position="left" spacing={0} noWrap>
+                    <Text fz="xs">
                       Translate (
                       <b>
                         {
