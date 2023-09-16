@@ -24,5 +24,14 @@ class TranslatorView(APIView):
             serializer.validated_data["inLanguage"],
             serializer.validated_data["outLanguage"],
         )
-        translation = wr.translate(serializer.validated_data["phrase"])
+        try:
+            translation = wr.translate(serializer.validated_data["phrase"])
+        except NameError:
+            translation = {
+                "word": serializer.validated_data["phrase"],
+                "from_lang": serializer.validated_data["inLanguage"],
+                "to_lang": serializer.validated_data["outLanguage"],
+                "url": "",
+                "translations": [],
+            }
         return Response(translation)
