@@ -1,0 +1,9 @@
+Django
+djangorestframework
+django-cors-headers
+Pillow
+gunicorn
+tzdata
+ebooklib
+bs4
+wrpy

@@ -1,5 +1,8 @@
 frontend-marlbruh/node_modules
+.vscode
 .DS_Store
+backend-marlbruh/data
+backend-marlbruh/media
 
 
 # Byte-compiled / optimized / DLL files
@@ -124,7 +127,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
