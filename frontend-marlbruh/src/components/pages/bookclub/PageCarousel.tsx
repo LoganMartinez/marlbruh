@@ -1,19 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel, { EmblaCarouselType } from "embla-carousel-react";
 import "../../../css/embla.css";
-import {
-  ActionIcon,
-  Center,
-  Group,
-  Progress,
-  Space,
-  createStyles,
-} from "@mantine/core";
+import { ActionIcon, Group, createStyles } from "@mantine/core";
 import {
   IconArrowBarToUp,
   IconArrowLeft,
   IconArrowRight,
-  IconBookmark,
 } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
@@ -32,14 +24,22 @@ type Props = {
   css: string;
   width: number | string;
   scrollToTop: ({ alignment }?: any) => void;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  startPage: number;
 };
 
-const PageCarousel = ({ pages, css, width, scrollToTop }: Props) => {
+const PageCarousel = ({
+  pages,
+  css,
+  width,
+  scrollToTop,
+  setCurrentPage,
+  startPage,
+}: Props) => {
   const { classes, cx } = useStyles();
-  const [emblaRef, emblaApi] = useEmblaCarousel({});
+  const [emblaRef, emblaApi] = useEmblaCarousel({ startIndex: startPage });
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
-  const [scrollProgress, setScrollProgress] = useState(0);
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) {
@@ -57,9 +57,8 @@ const PageCarousel = ({ pages, css, width, scrollToTop }: Props) => {
   const onInit = useCallback(() => {}, []);
 
   const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
-    setScrollProgress(
-      (emblaApi.selectedScrollSnap() / (pages.length - 1)) * 100
-    );
+    const page = emblaApi.selectedScrollSnap();
+    setCurrentPage(page);
     setPrevBtnDisabled(!emblaApi.canScrollPrev());
     setNextBtnDisabled(!emblaApi.canScrollNext());
   }, []);
@@ -75,16 +74,6 @@ const PageCarousel = ({ pages, css, width, scrollToTop }: Props) => {
   return (
     <>
       <div className="embla">
-        <Center>
-          <Progress w="50%" value={scrollProgress} />
-        </Center>
-        <Group position="apart">
-          <Space />
-          <ActionIcon pb="1rem">
-            <IconBookmark />
-          </ActionIcon>
-        </Group>
-
         <div
           className="embla__viewport"
           ref={emblaRef}

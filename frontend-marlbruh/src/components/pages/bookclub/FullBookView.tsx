@@ -1,10 +1,23 @@
-import { ActionIcon, Group, Loader, Menu, Select } from "@mantine/core";
+import {
+  ActionIcon,
+  Grid,
+  Group,
+  Loader,
+  Menu,
+  Progress,
+  Select,
+  Space,
+} from "@mantine/core";
 import { useEffect, useState } from "react";
-import { getChapter } from "../../../api/apiCalls";
+import { bookmarkPage, getChapter } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
-import { IconSettings } from "@tabler/icons-react";
+import {
+  IconBookmark,
+  IconBookmarkFilled,
+  IconSettings,
+} from "@tabler/icons-react";
 import {
   useElementSize,
   useListState,
@@ -17,17 +30,18 @@ import PageCarousel from "./PageCarousel";
 
 type Props = {
   book: BookWithNumChapters;
-  lastChapterComplete: number;
+  userRelation: BookUserRelation;
+  setRelationChanged: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const FullBookView = ({ book, lastChapterComplete }: Props) => {
+const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   const auth = useAuth();
   const [translateEnabled, setTranslateEnabled] = useLocalStorage({
     key: "marlbruh-book-translate-enabled",
     defaultValue: false,
   });
   const [selectedChapterNo, setSelectedChapterNo] = useState(
-    Math.max(lastChapterComplete, 0)
+    Math.max(userRelation.bookmarkedChapter, 0)
   );
   const [chapterPages, chapterPagesHandler] = useListState([] as string[]);
   const { ref: sizeRef, width } = useElementSize();
@@ -35,6 +49,9 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
     useScrollIntoView<HTMLDivElement>({
       duration: 300,
     });
+  const [currentPage, setCurrentPage] = useState(
+    Math.max(userRelation.bookmarkedPage, 0)
+  );
 
   // get chapter
   useEffect(() => {
@@ -66,6 +83,18 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
         errorNotification(err.message);
       });
   }, [selectedChapterNo, book]);
+
+  const toggleBookmark = (on: Boolean) => {
+    const chapterNo = on ? selectedChapterNo : -1;
+    const pageNo = on ? currentPage : -1;
+    bookmarkPage(book.id, chapterNo, pageNo, auth.authToken)
+      .then(() => {
+        setRelationChanged(true);
+      })
+      .catch((err: AxiosError) => {
+        errorNotification(err.message);
+      });
+  };
 
   return (
     <>
@@ -111,11 +140,41 @@ const FullBookView = ({ book, lastChapterComplete }: Props) => {
             </Menu>
           </Group>
           <TranslateTool enabled={translateEnabled} />
+          <Grid w="100%">
+            <Grid.Col span={2}>
+              <Space />
+            </Grid.Col>
+            <Grid.Col span={8}>
+              <Progress
+                w="100%"
+                value={(currentPage / (chapterPages.length - 1)) * 100}
+              />
+            </Grid.Col>
+            <Grid.Col span={2}>
+              <Group position="apart" w="100%" noWrap>
+                <Space />
+
+                {selectedChapterNo === userRelation.bookmarkedChapter &&
+                currentPage === userRelation.bookmarkedPage ? (
+                  <ActionIcon pb="1rem" onClick={() => toggleBookmark(false)}>
+                    <IconBookmarkFilled />
+                  </ActionIcon>
+                ) : (
+                  <ActionIcon pb="1rem" onClick={() => toggleBookmark(true)}>
+                    <IconBookmark />
+                  </ActionIcon>
+                )}
+              </Group>
+            </Grid.Col>
+          </Grid>
+
           <PageCarousel
             pages={chapterPages}
             css={book.cssStyles}
             width={width}
             scrollToTop={scrollToTop}
+            setCurrentPage={setCurrentPage}
+            startPage={currentPage}
           />
         </>
       ) : (

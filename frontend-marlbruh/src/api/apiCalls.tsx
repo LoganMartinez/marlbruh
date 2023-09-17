@@ -257,3 +257,16 @@ export function wrTranslate(
     token
   );
 }
+
+export function bookmarkPage(
+  bookId: number,
+  bookmarkedChapter: number,
+  bookmarkedPage: number,
+  token: string
+) {
+  return apiPut(
+    `bookclub/${bookId}/relations/`,
+    { bookmarkedChapter, bookmarkedPage },
+    token
+  );
+}
