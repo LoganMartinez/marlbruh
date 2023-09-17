@@ -37,9 +37,8 @@ const PageCarousel = ({
   startPage,
 }: Props) => {
   const { classes, cx } = useStyles();
-  const [sp] = useState(startPage);
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    startIndex: sp,
+    startIndex: startPage,
     watchDrag: false,
   });
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);

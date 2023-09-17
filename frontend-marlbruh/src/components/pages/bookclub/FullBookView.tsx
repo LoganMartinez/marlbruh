@@ -53,16 +53,18 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   const [currentPage, setCurrentPage] = useState(
     Math.max(userRelation.bookmarkedPage, 0)
   );
+  const [startPage, setStartPage] = useState(0);
 
   // get chapter
   useEffect(() => {
     getChapter(book.id, selectedChapterNo, auth.authToken)
       .then(({ data: chapter }: { data: Chapter }) => {
-        setCurrentPage(
+        const sp =
           selectedChapterNo === userRelation.bookmarkedChapter
             ? userRelation.bookmarkedPage
-            : 0
-        );
+            : 0;
+        setStartPage(sp);
+        setCurrentPage(sp);
         chapterPagesHandler.setState([]);
         let [header, ...paragraphs] = chapter.content.split("<p");
         paragraphs = paragraphs.map((p) => "<p" + p);
@@ -167,7 +169,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
             width={width}
             scrollToTop={scrollToTop}
             setCurrentPage={setCurrentPage}
-            startPage={currentPage}
+            startPage={startPage}
           />
         </>
       ) : (
