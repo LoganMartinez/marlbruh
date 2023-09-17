@@ -222,7 +222,16 @@ class BookclubUserRelationView(APIView):
         relation = get_object_or_404(
             models.BookUserRelation, user=request.user, book__id=bookId
         )
-        relation.lastChapterComplete = serializer.validated_data["lastChapterComplete"]
+        for key in serializer.validated_data:
+            setattr(relation, key, serializer.validated_data[key])
+
+        # if "lastChapterComplete" in serializer.validated_data:
+        #     relation.lastChapterComplete = serializer.validated_data["lastChapterComplete"]
+        # if "bookmarkedChapter" in serializer.validated_data:
+        #     relation.bookmarkedChapter = serializer.validated_data["bookmarkedChapter"]
+        # if "bookmarkedPage" in serializer.validated_data:
+        #     relation.bookmarkedPage = serializer.validated_data["bookmarkedPage"]
+
         relation.save()
         responseRelation = serializers.BookclubUserRelationSerializer(relation)
         return Response(responseRelation.data)
