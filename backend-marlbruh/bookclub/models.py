@@ -42,3 +42,5 @@ class BookUserRelation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     lastChapterComplete = models.IntegerField(default=-1)
+    bookmarkedChapter = models.IntegerField(default=-1)
+    bookmarkedPage = models.IntegerField(default=-1)

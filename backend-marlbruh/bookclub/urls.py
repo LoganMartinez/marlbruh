@@ -7,8 +7,6 @@ urlpatterns = [
     path("likes/reply/<int:replyId>/", views.LikeBookclubReplyView.as_view()),
     path("replies/<int:commentId>/", views.BookclubRepliesView.as_view()),
     path("<int:bookId>/", views.TargetBookView.as_view()),
-    # should be removed after migration
-    path("<int:bookId>/htmlmigrate/", views.MigrateHtml.as_view()),
     path("<int:bookId>/relations/", views.BookclubUserRelationView.as_view()),
     path("<int:bookId>/comments/", views.BookclubCommentsView.as_view()),
     path(
