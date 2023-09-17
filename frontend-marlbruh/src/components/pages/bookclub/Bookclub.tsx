@@ -50,9 +50,6 @@ const Bookclub = () => {
   const [commentsUpdated, setCommentsUpdated] = useState(true);
 
   const [comments, setComments] = useState([] as BookclubComment[]);
-  const [lastChapterComplete, setLastChapterComplete] = useState(
-    undefined as number | undefined
-  );
   const [relationChanged, setRelationChanged] = useState(true);
   const [addBookModalOpen, addBookModalHandlers] = useDisclosure(false);
   const [storedBookId, setStoredBookId] = useLocalStorage({
@@ -60,6 +57,9 @@ const Bookclub = () => {
     defaultValue: -1 as number,
   });
   const [booksUpdated, setBooksUpdated] = useState(true);
+  const [userRelation, setUserRelation] = useState(
+    undefined as BookUserRelation | undefined
+  );
 
   // get list of all books for select
   useEffect(() => {
@@ -117,7 +117,7 @@ const Bookclub = () => {
     if (selectedBook && relationChanged) {
       getBookUserRelation(selectedBook.id, auth.authToken)
         .then(({ data: relation }: { data: BookUserRelation }) => {
-          setLastChapterComplete(relation.lastChapterComplete);
+          setUserRelation(relation);
         })
         .catch((err: AxiosError) => {
           return errorNotification(err.message);
@@ -219,8 +219,8 @@ const Bookclub = () => {
                     setCommentsUpdated={setCommentsUpdated}
                     key={comment.id}
                     locked={
-                      lastChapterComplete === undefined ||
-                      comment.chapterNumber > lastChapterComplete
+                      userRelation?.lastChapterComplete === undefined ||
+                      comment.chapterNumber > userRelation.lastChapterComplete
                     }
                     unlockChapter={unlockChapter}
                   />
@@ -229,10 +229,11 @@ const Bookclub = () => {
             </>
           ) : (
             <>
-              {lastChapterComplete ? (
+              {userRelation?.lastChapterComplete ? (
                 <FullBookView
                   book={selectedBook}
-                  lastChapterComplete={lastChapterComplete}
+                  userRelation={userRelation}
+                  setRelationChanged={setRelationChanged}
                 />
               ) : (
                 <Loader />

@@ -36,6 +36,8 @@ interface BookclubComment extends BookclubCommentBase {
 type BookUserRelation = {
   id: number;
   lastChapterComplete: number;
+  bookmarkedChapter: number;
+  bookmarkedPage: number;
   user: number;
   book: number;
 };
