@@ -3,10 +3,10 @@ import {
   Grid,
   Group,
   Loader,
-  Menu,
   Progress,
   Select,
   Space,
+  Switch,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { bookmarkPage, getChapter } from "../../../api/apiCalls";
@@ -16,7 +16,8 @@ import { AxiosError } from "axios";
 import {
   IconBookmark,
   IconBookmarkFilled,
-  IconSettings,
+  IconLanguage,
+  IconLanguageOff,
 } from "@tabler/icons-react";
 import {
   useElementSize,
@@ -57,6 +58,11 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   useEffect(() => {
     getChapter(book.id, selectedChapterNo, auth.authToken)
       .then(({ data: chapter }: { data: Chapter }) => {
+        setCurrentPage(
+          selectedChapterNo === userRelation.bookmarkedChapter
+            ? userRelation.bookmarkedPage
+            : 0
+        );
         chapterPagesHandler.setState([]);
         let [header, ...paragraphs] = chapter.content.split("<p");
         paragraphs = paragraphs.map((p) => "<p" + p);
@@ -100,13 +106,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
     <>
       {chapterPages.length > 0 ? (
         <>
-          <Group
-            position="apart"
-            w="100%"
-            align="flex-start"
-            noWrap
-            ref={sizeRef}
-          >
+          <Group position="apart" w="100%" align="center" noWrap ref={sizeRef}>
             <div ref={scrollRef}>
               <Select
                 label="Chapter"
@@ -123,21 +123,14 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
                 }}
               />
             </div>
-
-            <Menu>
-              <Menu.Target>
-                <ActionIcon>
-                  <IconSettings />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item onClick={() => setTranslateEnabled((prev) => !prev)}>
-                  {translateEnabled
-                    ? "Disable Translate Tool"
-                    : "Enable Translate Tool"}
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <Switch
+              onLabel={<IconLanguage size="1rem" />}
+              offLabel={<IconLanguageOff size="1rem" />}
+              checked={translateEnabled}
+              onChange={(event) =>
+                setTranslateEnabled(event.currentTarget.checked)
+              }
+            />
           </Group>
           <TranslateTool enabled={translateEnabled} />
           <Grid w="100%">
