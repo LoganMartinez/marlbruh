@@ -50,7 +50,7 @@ const useStyles = createStyles((theme) => ({
     backgroundColor: theme.colors.dark[8],
     borderBottom: `2px solid ${theme.colors.dark[6]}`,
     borderTop: `2px solid ${theme.colors.dark[6]}`,
-    zIndex: 1000,
+    zIndex: 100,
   },
 
   wrSticky: {
