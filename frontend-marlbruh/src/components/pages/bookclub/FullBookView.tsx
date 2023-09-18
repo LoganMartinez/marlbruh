@@ -106,35 +106,33 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
 
   return (
     <>
+      <Group position="apart" w="100%" align="center" noWrap ref={sizeRef}>
+        <div ref={scrollRef}>
+          <Select
+            label="Chapter"
+            data={[...Array(book.numChapters).keys()].map((chapterNum) => ({
+              value: chapterNum.toString(),
+              label: `Chapter ${chapterNum + 1}`,
+            }))}
+            value={selectedChapterNo.toString()}
+            onChange={(value) => {
+              if (value) {
+                const chapterNum = parseInt(value);
+                setSelectedChapterNo(chapterNum);
+              }
+            }}
+          />
+        </div>
+        <Switch
+          onLabel={<IconLanguage size="1rem" />}
+          offLabel={<IconLanguageOff size="1rem" />}
+          checked={translateEnabled}
+          onChange={(event) => setTranslateEnabled(event.currentTarget.checked)}
+        />
+      </Group>
+      <TranslateTool enabled={translateEnabled} />
       {chapterPages.length > 0 ? (
         <>
-          <Group position="apart" w="100%" align="center" noWrap ref={sizeRef}>
-            <div ref={scrollRef}>
-              <Select
-                label="Chapter"
-                data={[...Array(book.numChapters).keys()].map((chapterNum) => ({
-                  value: chapterNum.toString(),
-                  label: `Chapter ${chapterNum + 1}`,
-                }))}
-                value={selectedChapterNo.toString()}
-                onChange={(value) => {
-                  if (value) {
-                    const chapterNum = parseInt(value);
-                    setSelectedChapterNo(chapterNum);
-                  }
-                }}
-              />
-            </div>
-            <Switch
-              onLabel={<IconLanguage size="1rem" />}
-              offLabel={<IconLanguageOff size="1rem" />}
-              checked={translateEnabled}
-              onChange={(event) =>
-                setTranslateEnabled(event.currentTarget.checked)
-              }
-            />
-          </Group>
-          <TranslateTool enabled={translateEnabled} />
           <Grid w="100%">
             <Grid.Col span={2}>
               <Space />
@@ -146,9 +144,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
               />
             </Grid.Col>
             <Grid.Col span={2}>
-              <Group position="apart" w="100%" noWrap>
-                <Space />
-
+              <Group position="right" w="100%" noWrap>
                 {selectedChapterNo === userRelation.bookmarkedChapter &&
                 currentPage === userRelation.bookmarkedPage ? (
                   <ActionIcon pb="1rem" onClick={() => toggleBookmark(false)}>
