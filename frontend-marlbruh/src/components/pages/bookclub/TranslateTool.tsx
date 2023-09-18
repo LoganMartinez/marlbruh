@@ -263,20 +263,20 @@ const TranslateTool = ({ enabled }: Props) => {
                                             {entry.from_word.source}
                                           </Grid.Col>
                                           <Grid.Col span={6}>
-                                            {entry.context}
-                                          </Grid.Col>
-                                          <Grid.Col span={6}>
-                                            {entry.to_word.map((word) =>
-                                              word.notes
-                                                ? `(${word.notes}) `
-                                                : ""
-                                            )}
-                                          </Grid.Col>
-                                          <Grid.Col span={6}>
                                             {entry.to_word
-                                              .map((word) => word.meaning)
+                                              .map(
+                                                (word) =>
+                                                  word.meaning +
+                                                  (word.notes
+                                                    ? ` (${word.notes})`
+                                                    : "")
+                                              )
                                               .join(", ")}
                                           </Grid.Col>
+                                          <Grid.Col span={12}>
+                                            {entry.context}
+                                          </Grid.Col>
+                                          <Grid.Col span={6}></Grid.Col>
                                           <Grid.Col span={12}>
                                             <Text
                                               className={cx(

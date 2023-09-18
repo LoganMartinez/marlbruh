@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel, { EmblaCarouselType } from "embla-carousel-react";
 import "../../../css/embla.css";
-import { ActionIcon, Group, createStyles } from "@mantine/core";
+import { ActionIcon, Group, createStyles, px } from "@mantine/core";
 import {
   IconArrowBarToUp,
   IconArrowLeft,
@@ -22,7 +22,7 @@ const useStyles = createStyles((theme) => ({
 type Props = {
   pages: string[];
   css: string;
-  width: number | string;
+  width: number;
   scrollToTop: ({ alignment }?: any) => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   startPage: number;
@@ -80,7 +80,7 @@ const PageCarousel = ({
         <div
           className="embla__viewport"
           ref={emblaRef}
-          style={{ width: width }}
+          style={{ width: width - px("2rem") }}
         >
           <div className="embla__container">
             {pages.map((page, index) => (
