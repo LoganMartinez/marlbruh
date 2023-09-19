@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Box,
   Grid,
   Group,
   Loader,
@@ -59,6 +60,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   useEffect(() => {
     getChapter(book.id, selectedChapterNo, auth.authToken)
       .then(({ data: chapter }: { data: Chapter }) => {
+        console.log(chapter.content);
         const sp =
           selectedChapterNo === userRelation.bookmarkedChapter
             ? userRelation.bookmarkedPage
@@ -70,7 +72,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
         paragraphs = paragraphs.map((p) => "<p" + p);
         let currentPageLen = 0;
         let currentPageContent = header;
-        paragraphs.forEach((p) => {
+        paragraphs.forEach((p, index) => {
           const regexp = /\<p[^\>]*\>(?<inner>.*)\<\/p\>/; // strip away <p> and </p>, keeps any nested elements
           const innerHtml = p.match(regexp)?.groups?.inner;
           if (!innerHtml) {
@@ -80,7 +82,10 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
           innerHtml.length;
           currentPageContent += p;
           currentPageLen += innerHtml.length;
-          if (currentPageLen > BOOK_PAGE_LEN) {
+          if (
+            currentPageLen > BOOK_PAGE_LEN ||
+            index === paragraphs.length - 1
+          ) {
             chapterPagesHandler.append(currentPageContent);
             currentPageLen = 0;
             currentPageContent = "";
@@ -147,11 +152,21 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
               <Group position="right" w="100%" noWrap>
                 {selectedChapterNo === userRelation.bookmarkedChapter &&
                 currentPage === userRelation.bookmarkedPage ? (
-                  <ActionIcon pb="1rem" onClick={() => toggleBookmark(false)}>
-                    <IconBookmarkFilled />
+                  <ActionIcon
+                    pb="1rem"
+                    onClick={() => toggleBookmark(false)}
+                    variant="unstyled"
+                  >
+                    <Box sx={(theme) => ({ color: theme.colors.blue[6] })}>
+                      <IconBookmarkFilled />
+                    </Box>
                   </ActionIcon>
                 ) : (
-                  <ActionIcon pb="1rem" onClick={() => toggleBookmark(true)}>
+                  <ActionIcon
+                    pb="1rem"
+                    onClick={() => toggleBookmark(true)}
+                    variant="unstyled"
+                  >
                     <IconBookmark />
                   </ActionIcon>
                 )}
