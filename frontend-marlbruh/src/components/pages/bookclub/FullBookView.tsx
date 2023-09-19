@@ -60,7 +60,6 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   useEffect(() => {
     getChapter(book.id, selectedChapterNo, auth.authToken)
       .then(({ data: chapter }: { data: Chapter }) => {
-        console.log(chapter.content);
         const sp =
           selectedChapterNo === userRelation.bookmarkedChapter
             ? userRelation.bookmarkedPage
