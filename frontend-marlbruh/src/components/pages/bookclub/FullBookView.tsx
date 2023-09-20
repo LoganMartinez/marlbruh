@@ -8,6 +8,7 @@ import {
   Select,
   Space,
   Switch,
+  createStyles,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { bookmarkPage, getChapter } from "../../../api/apiCalls";
@@ -19,16 +20,28 @@ import {
   IconBookmarkFilled,
   IconLanguage,
   IconLanguageOff,
+  IconMaximize,
+  IconMinimize,
 } from "@tabler/icons-react";
 import {
   useElementSize,
   useListState,
   useLocalStorage,
   useScrollIntoView,
+  useViewportSize,
 } from "@mantine/hooks";
 import TranslateTool from "./TranslateTool";
 import { BOOK_PAGE_LEN } from "../../../utilities/constants";
 import PageCarousel from "./PageCarousel";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
+
+const useStyles = createStyles((theme) => ({
+  fullscreen: {
+    overflow: "scroll",
+    paddingLeft: theme.spacing.md,
+    paddingTop: "0px",
+  },
+}));
 
 type Props = {
   book: BookWithNumChapters;
@@ -38,6 +51,10 @@ type Props = {
 
 const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   const auth = useAuth();
+  const { classes, cx } = useStyles();
+  const windowWidth = useViewportSize().width;
+  // affects breakpoints of progress bar grid
+  const smallWindow = windowWidth < 500;
   const [translateEnabled, setTranslateEnabled] = useLocalStorage({
     key: "marlbruh-book-translate-enabled",
     defaultValue: false,
@@ -55,6 +72,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
     Math.max(userRelation.bookmarkedPage, 0)
   );
   const [startPage, setStartPage] = useState(0);
+  const fullScreenHandle = useFullScreenHandle();
 
   // get chapter
   useEffect(() => {
@@ -134,57 +152,82 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
           onChange={(event) => setTranslateEnabled(event.currentTarget.checked)}
         />
       </Group>
-      <TranslateTool enabled={translateEnabled} />
-      {chapterPages.length > 0 ? (
-        <>
-          <Grid w="100%">
-            <Grid.Col span={2}>
-              <Space />
-            </Grid.Col>
-            <Grid.Col span={8}>
-              <Progress
-                w="100%"
-                value={(currentPage / (chapterPages.length - 1)) * 100}
-              />
-            </Grid.Col>
-            <Grid.Col span={2}>
-              <Group position="right" w="100%" noWrap>
-                {selectedChapterNo === userRelation.bookmarkedChapter &&
-                currentPage === userRelation.bookmarkedPage ? (
-                  <ActionIcon
-                    pb="1rem"
-                    onClick={() => toggleBookmark(false)}
-                    variant="unstyled"
-                  >
-                    <Box sx={(theme) => ({ color: theme.colors.blue[6] })}>
-                      <IconBookmarkFilled />
-                    </Box>
-                  </ActionIcon>
-                ) : (
-                  <ActionIcon
-                    pb="1rem"
-                    onClick={() => toggleBookmark(true)}
-                    variant="unstyled"
-                  >
-                    <IconBookmark />
-                  </ActionIcon>
-                )}
-              </Group>
-            </Grid.Col>
-          </Grid>
+      <FullScreen
+        handle={fullScreenHandle}
+        className={fullScreenHandle.active ? cx(classes["fullscreen"]) : ""}
+      >
+        {translateEnabled ? (
+          <TranslateTool fullscreen={fullScreenHandle.active} />
+        ) : (
+          <></>
+        )}
+        <Space h="xl" />
 
-          <PageCarousel
-            pages={chapterPages}
-            css={book.cssStyles}
-            width={width}
-            scrollToTop={scrollToTop}
-            setCurrentPage={setCurrentPage}
-            startPage={startPage}
-          />
-        </>
-      ) : (
-        <Loader />
-      )}
+        {chapterPages.length > 0 ? (
+          <>
+            <Grid w="100%">
+              <Grid.Col span={smallWindow ? 0 : 2}>
+                <Space />
+              </Grid.Col>
+              <Grid.Col span={8}>
+                <Progress
+                  w="100%"
+                  value={(currentPage / (chapterPages.length - 1)) * 100}
+                />
+              </Grid.Col>
+              <Grid.Col span={smallWindow ? 2 : 1}>
+                <Group position="center" w="100%" noWrap>
+                  {selectedChapterNo === userRelation.bookmarkedChapter &&
+                  currentPage === userRelation.bookmarkedPage ? (
+                    <ActionIcon
+                      pb="1rem"
+                      onClick={() => toggleBookmark(false)}
+                      variant="unstyled"
+                    >
+                      <Box sx={(theme) => ({ color: theme.colors.blue[6] })}>
+                        <IconBookmarkFilled />
+                      </Box>
+                    </ActionIcon>
+                  ) : (
+                    <ActionIcon
+                      pb="1rem"
+                      onClick={() => toggleBookmark(true)}
+                      variant="unstyled"
+                    >
+                      <IconBookmark />
+                    </ActionIcon>
+                  )}
+                </Group>
+              </Grid.Col>
+              <Grid.Col span={smallWindow ? 2 : 1}>
+                <Group position="center" w="100%" noWrap>
+                  {fullScreenHandle.active ? (
+                    <ActionIcon onClick={fullScreenHandle.exit} pb="1rem">
+                      <IconMinimize />
+                    </ActionIcon>
+                  ) : (
+                    <ActionIcon onClick={fullScreenHandle.enter} pb="1rem">
+                      <IconMaximize />
+                    </ActionIcon>
+                  )}
+                </Group>
+              </Grid.Col>
+            </Grid>
+
+            <PageCarousel
+              pages={chapterPages}
+              css={book.cssStyles}
+              width={fullScreenHandle.active ? windowWidth : width}
+              scrollToTop={scrollToTop}
+              setCurrentPage={setCurrentPage}
+              startPage={startPage}
+            />
+          </>
+        ) : (
+          <Loader />
+        )}
+        <Space h="5rem" />
+      </FullScreen>
     </>
   );
 };
