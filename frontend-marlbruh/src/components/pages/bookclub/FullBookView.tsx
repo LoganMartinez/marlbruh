@@ -227,9 +227,9 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
           ) : (
             <Loader />
           )}
-        </div>
 
-        <Space h="5rem" />
+          <Space h="5rem" />
+        </div>
       </FullScreen>
     </>
   );
