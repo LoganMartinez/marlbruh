@@ -156,76 +156,79 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
         handle={fullScreenHandle}
         className={fullScreenHandle.active ? cx(classes["fullscreen"]) : ""}
       >
-        {translateEnabled ? (
-          <TranslateTool fullscreen={fullScreenHandle.active} />
-        ) : (
-          <></>
-        )}
-        <Space h="xl" />
+        <div>
+          {translateEnabled ? (
+            <TranslateTool fullscreen={fullScreenHandle.active} />
+          ) : (
+            <></>
+          )}
+          <Space h="xl" />
 
-        {chapterPages.length > 0 ? (
-          <>
-            <Grid w="100%">
-              <Grid.Col span={smallWindow ? 0 : 2}>
-                <Space />
-              </Grid.Col>
-              <Grid.Col span={8}>
-                <Progress
-                  w="100%"
-                  value={(currentPage / (chapterPages.length - 1)) * 100}
-                />
-              </Grid.Col>
-              <Grid.Col span={smallWindow ? 2 : 1}>
-                <Group position="center" w="100%" noWrap>
-                  {selectedChapterNo === userRelation.bookmarkedChapter &&
-                  currentPage === userRelation.bookmarkedPage ? (
-                    <ActionIcon
-                      pb="1rem"
-                      onClick={() => toggleBookmark(false)}
-                      variant="unstyled"
-                    >
-                      <Box sx={(theme) => ({ color: theme.colors.blue[6] })}>
-                        <IconBookmarkFilled />
-                      </Box>
-                    </ActionIcon>
-                  ) : (
-                    <ActionIcon
-                      pb="1rem"
-                      onClick={() => toggleBookmark(true)}
-                      variant="unstyled"
-                    >
-                      <IconBookmark />
-                    </ActionIcon>
-                  )}
-                </Group>
-              </Grid.Col>
-              <Grid.Col span={smallWindow ? 2 : 1}>
-                <Group position="center" w="100%" noWrap>
-                  {fullScreenHandle.active ? (
-                    <ActionIcon onClick={fullScreenHandle.exit} pb="1rem">
-                      <IconMinimize />
-                    </ActionIcon>
-                  ) : (
-                    <ActionIcon onClick={fullScreenHandle.enter} pb="1rem">
-                      <IconMaximize />
-                    </ActionIcon>
-                  )}
-                </Group>
-              </Grid.Col>
-            </Grid>
+          {chapterPages.length > 0 ? (
+            <>
+              <Grid w="100%">
+                <Grid.Col span={smallWindow ? 0 : 2}>
+                  <Space />
+                </Grid.Col>
+                <Grid.Col span={8}>
+                  <Progress
+                    w="100%"
+                    value={(currentPage / (chapterPages.length - 1)) * 100}
+                  />
+                </Grid.Col>
+                <Grid.Col span={smallWindow ? 2 : 1}>
+                  <Group position="center" w="100%" noWrap>
+                    {selectedChapterNo === userRelation.bookmarkedChapter &&
+                    currentPage === userRelation.bookmarkedPage ? (
+                      <ActionIcon
+                        pb="1rem"
+                        onClick={() => toggleBookmark(false)}
+                        variant="unstyled"
+                      >
+                        <Box sx={(theme) => ({ color: theme.colors.blue[6] })}>
+                          <IconBookmarkFilled />
+                        </Box>
+                      </ActionIcon>
+                    ) : (
+                      <ActionIcon
+                        pb="1rem"
+                        onClick={() => toggleBookmark(true)}
+                        variant="unstyled"
+                      >
+                        <IconBookmark />
+                      </ActionIcon>
+                    )}
+                  </Group>
+                </Grid.Col>
+                <Grid.Col span={smallWindow ? 2 : 1}>
+                  <Group position="center" w="100%" noWrap>
+                    {fullScreenHandle.active ? (
+                      <ActionIcon onClick={fullScreenHandle.exit} pb="1rem">
+                        <IconMinimize />
+                      </ActionIcon>
+                    ) : (
+                      <ActionIcon onClick={fullScreenHandle.enter} pb="1rem">
+                        <IconMaximize />
+                      </ActionIcon>
+                    )}
+                  </Group>
+                </Grid.Col>
+              </Grid>
 
-            <PageCarousel
-              pages={chapterPages}
-              css={book.cssStyles}
-              width={fullScreenHandle.active ? windowWidth : width}
-              scrollToTop={scrollToTop}
-              setCurrentPage={setCurrentPage}
-              startPage={startPage}
-            />
-          </>
-        ) : (
-          <Loader />
-        )}
+              <PageCarousel
+                pages={chapterPages}
+                css={book.cssStyles}
+                width={fullScreenHandle.active ? windowWidth : width}
+                scrollToTop={scrollToTop}
+                setCurrentPage={setCurrentPage}
+                startPage={startPage}
+              />
+            </>
+          ) : (
+            <Loader />
+          )}
+        </div>
+
         <Space h="5rem" />
       </FullScreen>
     </>
