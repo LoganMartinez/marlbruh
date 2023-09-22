@@ -132,6 +132,7 @@ const Bookclub = () => {
       .then(({ data: book }) => {
         setSelectedBook(book);
         setStoredBookId(book.id);
+        setCommentsUpdated(true);
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
