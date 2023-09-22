@@ -2,7 +2,6 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import {
   BookclubErrorBoundary,
   ChoresErrorBoundary,
-  FishErrorBoundary,
   HomeErrorBoundary,
   PickleErrorBoundary,
 } from "./ErrorBoundaryPage";
@@ -16,7 +15,6 @@ const MarlbruhRoutes = () => {
         <Route path="/chores" element={<ChoresErrorBoundary />} />
         <Route path="/bookclub" element={<BookclubErrorBoundary />} />
         <Route path="/pickle" element={<PickleErrorBoundary />} />
-        <Route path="/fish" element={<FishErrorBoundary />} />
         <Route path="/users/:username" element={<UserPage />} />
       </Routes>
     </HashRouter>

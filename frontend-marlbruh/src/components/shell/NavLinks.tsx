@@ -104,11 +104,6 @@ const data = [
     label: "pickle",
     link: "/pickle",
   },
-  {
-    icon: <IconFish {...iconProps} />,
-    label: "fish",
-    link: "/fish",
-  },
 ];
 
 const NavLinks: FunctionComponent<NavLinksProps> = ({ direction }) => {
