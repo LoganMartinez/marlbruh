@@ -207,27 +207,36 @@ const Bookclub = () => {
                   <IconPlus />
                 </ActionIcon>
               </Group>
-              <SimpleGrid
-                cols={3}
-                breakpoints={[
-                  { maxWidth: "62rem", cols: 3, spacing: "md" },
-                  { maxWidth: "48rem", cols: 2, spacing: "sm" },
-                  { maxWidth: "36rem", cols: 1, spacing: "sm" },
-                ]}
-              >
-                {comments.map((comment) => (
-                  <BookclubCommentView
-                    comment={comment}
-                    setCommentsUpdated={setCommentsUpdated}
-                    key={comment.id}
-                    locked={
-                      userRelation?.lastChapterComplete === undefined ||
-                      comment.chapterNumber > userRelation.lastChapterComplete
-                    }
-                    unlockChapter={unlockChapter}
-                  />
-                ))}
-              </SimpleGrid>
+              {comments.length == 0 ? (
+                <Stack>
+                  <Title>There are no comments for this book yet</Title>
+                  <Button onClick={createModelOpenHandlers.open}>
+                    Be the First
+                  </Button>
+                </Stack>
+              ) : (
+                <SimpleGrid
+                  cols={3}
+                  breakpoints={[
+                    { maxWidth: "62rem", cols: 3, spacing: "md" },
+                    { maxWidth: "48rem", cols: 2, spacing: "sm" },
+                    { maxWidth: "36rem", cols: 1, spacing: "sm" },
+                  ]}
+                >
+                  {comments.map((comment) => (
+                    <BookclubCommentView
+                      comment={comment}
+                      setCommentsUpdated={setCommentsUpdated}
+                      key={comment.id}
+                      locked={
+                        userRelation?.lastChapterComplete === undefined ||
+                        comment.chapterNumber > userRelation.lastChapterComplete
+                      }
+                      unlockChapter={unlockChapter}
+                    />
+                  ))}
+                </SimpleGrid>
+              )}
             </>
           ) : (
             <>
