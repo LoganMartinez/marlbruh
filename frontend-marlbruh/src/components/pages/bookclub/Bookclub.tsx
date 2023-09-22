@@ -45,7 +45,7 @@ const Bookclub = () => {
 
   const windowWidth = useViewportSize().width;
 
-  const [selectedTab, setSelectedTab] = useState("discussion" as string | null);
+  const [selectedTab, setSelectedTab] = useState("full" as string | null);
   const [createModalOpen, createModelOpenHandlers] = useDisclosure(false);
   const [commentsUpdated, setCommentsUpdated] = useState(true);
 
@@ -195,8 +195,8 @@ const Bookclub = () => {
         <Stack align="center">
           <Tabs value={selectedTab} onTabChange={setSelectedTab}>
             <Tabs.List>
-              <Tabs.Tab value="discussion">Discussion</Tabs.Tab>
               <Tabs.Tab value="full">Full Book</Tabs.Tab>
+              <Tabs.Tab value="discussion">Discussion</Tabs.Tab>
             </Tabs.List>
           </Tabs>
           {selectedTab === "discussion" ? (
