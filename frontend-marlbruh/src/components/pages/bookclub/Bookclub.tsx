@@ -70,8 +70,8 @@ const Bookclub = () => {
         })
         .catch((err: AxiosError) => {
           errorNotification(err.message);
-        });
-      setBooksUpdated(false);
+        })
+        .finally(() => setBooksUpdated(false));
     }
   }, [booksUpdated]);
 
@@ -189,7 +189,9 @@ const Bookclub = () => {
 
       <Space h="xs" />
 
-      {selectedBook ? (
+      {booksUpdated ? (
+        <Loader />
+      ) : selectedBook ? (
         <Stack align="center">
           <Tabs value={selectedTab} onTabChange={setSelectedTab}>
             <Tabs.List>
