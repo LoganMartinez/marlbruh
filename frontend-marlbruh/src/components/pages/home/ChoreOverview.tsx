@@ -1,4 +1,10 @@
-import { SimpleGrid, Stack, Title, UnstyledButton } from "@mantine/core";
+import {
+  Loader,
+  SimpleGrid,
+  Stack,
+  Title,
+  UnstyledButton,
+} from "@mantine/core";
 import { useEffect, useState } from "react";
 import { getChores } from "../../../api/apiCalls";
 import { useAuth } from "../../../authentication/AuthContext";
@@ -13,6 +19,7 @@ type getChoresReturn = {
 const ChoreOverview = () => {
   const auth = useAuth();
   const [userChores, setUserChores] = useState([] as Chore[]);
+  const [choresLoading, setChoresLoading] = useState(true);
 
   useEffect(() => {
     getChores(auth.authToken)
@@ -25,6 +32,7 @@ const ChoreOverview = () => {
             )
         );
         setUserChores(filteredChores);
+        setChoresLoading(false);
       })
       .catch((err: AxiosError) => errorNotification(err.message));
   }, []);
@@ -32,7 +40,10 @@ const ChoreOverview = () => {
   return (
     <>
       <Title>Chores</Title>
-      {userChores.length === 0 ? (
+
+      {choresLoading ? (
+        <Loader />
+      ) : userChores.length === 0 ? (
         <Title order={3}>You finished all your chores! </Title>
       ) : (
         <Stack spacing=".1rem">
