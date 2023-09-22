@@ -74,6 +74,18 @@ const PageCarousel = ({
     emblaApi.on("select", onSelect);
   }, [emblaApi, onInit, onSelect]);
 
+  let cssWithoutBodyMargins = css;
+  const bodyRegex = /body[^\{]*\{[^\}]*\}/;
+  const body = css.match(bodyRegex);
+  if (body && body.length > 0) {
+    const marginRegex = /margin[^;]*;/g;
+    const bodyWithoutMargins = body[0].replace(marginRegex, "");
+    cssWithoutBodyMargins = cssWithoutBodyMargins.replace(
+      body[0],
+      bodyWithoutMargins
+    );
+  }
+
   return (
     <>
       <div className="embla">
@@ -85,7 +97,7 @@ const PageCarousel = ({
           <div className="embla__container">
             {pages.map((page, index) => (
               <div className="embla__slide" key={index}>
-                <style>{css}</style>
+                <style>{cssWithoutBodyMargins}</style>
                 <div
                   className="embla__page"
                   dangerouslySetInnerHTML={{ __html: page }}
