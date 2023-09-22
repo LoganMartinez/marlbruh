@@ -45,7 +45,7 @@ const Bookclub = () => {
 
   const windowWidth = useViewportSize().width;
 
-  const [selectedTab, setSelectedTab] = useState("discussion" as string | null);
+  const [selectedTab, setSelectedTab] = useState("full" as string | null);
   const [createModalOpen, createModelOpenHandlers] = useDisclosure(false);
   const [commentsUpdated, setCommentsUpdated] = useState(true);
 
@@ -70,8 +70,8 @@ const Bookclub = () => {
         })
         .catch((err: AxiosError) => {
           errorNotification(err.message);
-        });
-      setBooksUpdated(false);
+        })
+        .finally(() => setBooksUpdated(false));
     }
   }, [booksUpdated]);
 
@@ -132,6 +132,7 @@ const Bookclub = () => {
       .then(({ data: book }) => {
         setSelectedBook(book);
         setStoredBookId(book.id);
+        setCommentsUpdated(true);
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
@@ -189,12 +190,14 @@ const Bookclub = () => {
 
       <Space h="xs" />
 
-      {selectedBook ? (
+      {booksUpdated ? (
+        <Loader />
+      ) : selectedBook ? (
         <Stack align="center">
           <Tabs value={selectedTab} onTabChange={setSelectedTab}>
             <Tabs.List>
-              <Tabs.Tab value="discussion">Discussion</Tabs.Tab>
               <Tabs.Tab value="full">Full Book</Tabs.Tab>
+              <Tabs.Tab value="discussion">Discussion</Tabs.Tab>
             </Tabs.List>
           </Tabs>
           {selectedTab === "discussion" ? (
@@ -205,27 +208,36 @@ const Bookclub = () => {
                   <IconPlus />
                 </ActionIcon>
               </Group>
-              <SimpleGrid
-                cols={3}
-                breakpoints={[
-                  { maxWidth: "62rem", cols: 3, spacing: "md" },
-                  { maxWidth: "48rem", cols: 2, spacing: "sm" },
-                  { maxWidth: "36rem", cols: 1, spacing: "sm" },
-                ]}
-              >
-                {comments.map((comment) => (
-                  <BookclubCommentView
-                    comment={comment}
-                    setCommentsUpdated={setCommentsUpdated}
-                    key={comment.id}
-                    locked={
-                      userRelation?.lastChapterComplete === undefined ||
-                      comment.chapterNumber > userRelation.lastChapterComplete
-                    }
-                    unlockChapter={unlockChapter}
-                  />
-                ))}
-              </SimpleGrid>
+              {comments.length == 0 ? (
+                <Stack>
+                  <Title>There are no comments for this book yet</Title>
+                  <Button onClick={createModelOpenHandlers.open}>
+                    Be the First
+                  </Button>
+                </Stack>
+              ) : (
+                <SimpleGrid
+                  cols={3}
+                  breakpoints={[
+                    { maxWidth: "62rem", cols: 3, spacing: "md" },
+                    { maxWidth: "48rem", cols: 2, spacing: "sm" },
+                    { maxWidth: "36rem", cols: 1, spacing: "sm" },
+                  ]}
+                >
+                  {comments.map((comment) => (
+                    <BookclubCommentView
+                      comment={comment}
+                      setCommentsUpdated={setCommentsUpdated}
+                      key={comment.id}
+                      locked={
+                        userRelation?.lastChapterComplete === undefined ||
+                        comment.chapterNumber > userRelation.lastChapterComplete
+                      }
+                      unlockChapter={unlockChapter}
+                    />
+                  ))}
+                </SimpleGrid>
+              )}
             </>
           ) : (
             <>

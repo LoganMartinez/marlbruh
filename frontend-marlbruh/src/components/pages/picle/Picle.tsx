@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Group,
+  Loader,
   SimpleGrid,
   Space,
   Stack,
@@ -30,8 +31,8 @@ const Pickle = () => {
         })
         .catch((err: AxiosError) => {
           errorNotification(err.message);
-        });
-      setPostsUpdated(false);
+        })
+        .finally(() => setPostsUpdated(false));
     }
   }, [postsUpdated]);
 
@@ -58,14 +59,18 @@ const Pickle = () => {
             { maxWidth: "36rem", cols: 1, spacing: "sm" },
           ]}
         >
-          {allPosts.map((post) => (
-            <PiclePost
-              post={post}
-              key={post.id}
-              postsUpdated={postsUpdated}
-              setPostsUpdated={setPostsUpdated}
-            />
-          ))}
+          {postsUpdated ? (
+            <Loader />
+          ) : (
+            allPosts.map((post) => (
+              <PiclePost
+                post={post}
+                key={post.id}
+                postsUpdated={postsUpdated}
+                setPostsUpdated={setPostsUpdated}
+              />
+            ))
+          )}
         </SimpleGrid>
       </Stack>
     </>
