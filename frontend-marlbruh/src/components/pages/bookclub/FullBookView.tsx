@@ -34,12 +34,15 @@ import TranslateTool from "./TranslateTool";
 import { BOOK_PAGE_LEN } from "../../../utilities/constants";
 import PageCarousel from "./PageCarousel";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { useShell } from "../../shell/MarlbruhShell";
+import { isMobile } from "react-device-detect";
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles((theme, mobile: boolean) => ({
   fullscreen: {
-    overflow: "scroll",
-    paddingLeft: theme.spacing.md,
+    overflow: mobile ? "" : "scroll",
+    paddingLeft: mobile ? "0px" : theme.spacing.md,
     paddingTop: "0px",
+    backgroundColor: theme.colors.dark[8],
   },
 }));
 
@@ -51,10 +54,10 @@ type Props = {
 
 const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   const auth = useAuth();
-  const { classes, cx } = useStyles();
+  const shell = useShell();
+  const { classes, cx } = useStyles(isMobile);
   const windowWidth = useViewportSize().width;
-  // affects breakpoints of progress bar grid
-  const smallWindow = windowWidth < 500;
+  const smallWindow = windowWidth < 500; // affects breakpoints of progress bar grid
   const [translateEnabled, setTranslateEnabled] = useLocalStorage({
     key: "marlbruh-book-translate-enabled",
     defaultValue: false,
@@ -73,6 +76,22 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   );
   const [startPage, setStartPage] = useState(0);
   const fullScreenHandle = useFullScreenHandle();
+
+  const fullscreenActive = () => {
+    return isMobile ? !shell.shellEnabled : fullScreenHandle.active;
+  };
+
+  const toggleFullscreen = () => {
+    if (isMobile) {
+      shell.setShellEnabled((prev) => !prev);
+    } else {
+      if (fullscreenActive()) {
+        fullScreenHandle.exit();
+      } else {
+        fullScreenHandle.enter();
+      }
+    }
+  };
 
   // get chapter
   useEffect(() => {
@@ -154,11 +173,11 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
       </Group>
       <FullScreen
         handle={fullScreenHandle}
-        className={fullScreenHandle.active ? cx(classes["fullscreen"]) : ""}
+        className={fullscreenActive() ? cx(classes["fullscreen"]) : ""}
       >
         <div>
           {translateEnabled ? (
-            <TranslateTool fullscreen={fullScreenHandle.active} />
+            <TranslateTool fullscreen={fullscreenActive()} />
           ) : (
             <></>
           )}
@@ -203,11 +222,11 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
                 <Grid.Col span={smallWindow ? 2 : 1}>
                   <Group position="center" w="100%" noWrap>
                     {fullScreenHandle.active ? (
-                      <ActionIcon onClick={fullScreenHandle.exit} pb="1rem">
+                      <ActionIcon onClick={toggleFullscreen} pb="1rem">
                         <IconMinimize />
                       </ActionIcon>
                     ) : (
-                      <ActionIcon onClick={fullScreenHandle.enter} pb="1rem">
+                      <ActionIcon onClick={toggleFullscreen} pb="1rem">
                         <IconMaximize />
                       </ActionIcon>
                     )}
@@ -218,7 +237,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
               <PageCarousel
                 pages={chapterPages}
                 css={book.cssStyles}
-                width={fullScreenHandle.active ? windowWidth : width}
+                width={fullscreenActive() ? windowWidth : width}
                 scrollToTop={scrollToTop}
                 setCurrentPage={setCurrentPage}
                 startPage={startPage}
