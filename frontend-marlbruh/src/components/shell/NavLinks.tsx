@@ -5,13 +5,7 @@ import {
   createStyles,
   rem,
 } from "@mantine/core";
-import {
-  IconBook,
-  IconDog,
-  IconFish,
-  IconHome2,
-  IconTool,
-} from "@tabler/icons-react";
+import { IconBook, IconDog, IconHome2, IconTool } from "@tabler/icons-react";
 import { FunctionComponent, useEffect, useState } from "react";
 
 const useStyles = createStyles((theme) => ({
