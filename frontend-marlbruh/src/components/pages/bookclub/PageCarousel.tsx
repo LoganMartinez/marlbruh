@@ -7,6 +7,7 @@ import {
   IconArrowLeft,
   IconArrowRight,
 } from "@tabler/icons-react";
+import { splitChapter } from "./BookclubPage";
 
 const useStyles = createStyles((theme) => ({
   pageButtons: {
@@ -20,23 +21,26 @@ const useStyles = createStyles((theme) => ({
 }));
 
 type Props = {
-  pages: string[];
+  chapterContent: string;
   css: string;
   width: number;
   scrollToTop: ({ alignment }?: any) => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   startPage: number;
+  setNumPages: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const PageCarousel = ({
-  pages,
+  chapterContent,
   css,
   width,
   scrollToTop,
   setCurrentPage,
   startPage,
+  setNumPages,
 }: Props) => {
   const { classes, cx } = useStyles();
+  const [pages, setPages] = useState([] as JSX.Element[]);
   const [emblaRef, emblaApi] = useEmblaCarousel({
     startIndex: startPage,
     watchDrag: false,
@@ -86,6 +90,12 @@ const PageCarousel = ({
     );
   }
 
+  useEffect(() => {
+    const pgs = splitChapter(chapterContent, cssWithoutBodyMargins);
+    setPages(pgs);
+    setNumPages(pgs.length);
+  }, []);
+
   return (
     <>
       <div className="embla">
@@ -95,15 +105,14 @@ const PageCarousel = ({
           style={{ width: width - px("2rem") }}
         >
           <div className="embla__container">
-            {pages.map((page, index) => (
-              <div className="embla__slide" key={index}>
-                <style>{cssWithoutBodyMargins}</style>
-                <div
-                  className="embla__page"
-                  dangerouslySetInnerHTML={{ __html: page }}
-                />
-              </div>
-            ))}
+            {pages}
+            {/* {pages.map((page, index) => (
+              <BookclubPage
+                css={cssWithoutBodyMargins}
+                pageContent={page}
+                key={index}
+              />
+            ))} */}
           </div>
         </div>
         <div className={cx(classes["pageButtons"])}>

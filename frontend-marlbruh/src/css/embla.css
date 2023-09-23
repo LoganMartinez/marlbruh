@@ -17,8 +17,3 @@
   padding-left: var(--slide-spacing);
   position: relative;
 }
-
-.embla__page {
-  display: block;
-  object-fit: cover;
-}
