@@ -4,10 +4,10 @@ import {
   Grid,
   Group,
   Loader,
+  Menu,
   Progress,
   Select,
   Space,
-  Switch,
   createStyles,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
@@ -18,12 +18,10 @@ import { AxiosError } from "axios";
 import {
   IconBookmark,
   IconBookmarkFilled,
-  IconLanguage,
-  IconLanguageOff,
-  IconMaximize,
-  IconMinimize,
+  IconDots,
 } from "@tabler/icons-react";
 import {
+  useDisclosure,
   useElementSize,
   useLocalStorage,
   useScrollIntoView,
@@ -31,16 +29,16 @@ import {
 } from "@mantine/hooks";
 import TranslateTool from "./TranslateTool";
 import PageCarousel from "./PageCarousel";
-import { FullScreen, useFullScreenHandle } from "react-full-screen";
-import { useShell } from "../../shell/MarlbruhShell";
-import { isMobile } from "react-device-detect";
 
-const useStyles = createStyles((theme, mobile: boolean) => ({
+const useStyles = createStyles((theme) => ({
   fullscreen: {
-    overflow: mobile ? "" : "scroll",
-    paddingLeft: mobile ? "0px" : theme.spacing.md,
-    paddingTop: "0px",
+    position: "absolute",
+    zIndex: 1000,
     backgroundColor: theme.colors.dark[8],
+    top: 0,
+    left: 0,
+    width: "100%",
+    paddingLeft: theme.spacing.md,
   },
 }));
 
@@ -52,8 +50,8 @@ type Props = {
 
 const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   const auth = useAuth();
-  const shell = useShell();
-  const { classes, cx } = useStyles(isMobile);
+  const [fsActive, fsHandlers] = useDisclosure();
+  const { classes, cx } = useStyles();
   const windowWidth = useViewportSize().width;
   const smallWindow = windowWidth < 500; // affects breakpoints of progress bar grid
   const [translateEnabled, setTranslateEnabled] = useLocalStorage({
@@ -73,24 +71,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
     Math.max(userRelation.bookmarkedPage, 0)
   );
   const [startPage, setStartPage] = useState(0);
-  const fullScreenHandle = useFullScreenHandle();
   const [numPages, setNumPages] = useState(0);
-
-  const fullscreenActive = () => {
-    return isMobile ? !shell.shellEnabled : fullScreenHandle.active;
-  };
-
-  const toggleFullscreen = () => {
-    if (isMobile) {
-      shell.setShellEnabled((prev) => !prev);
-    } else {
-      if (fullscreenActive()) {
-        fullScreenHandle.exit();
-      } else {
-        fullScreenHandle.enter();
-      }
-    }
-  };
 
   // get chapter
   useEffect(() => {
@@ -146,112 +127,101 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
 
   return (
     <>
-      <Group position="apart" w="100%" align="center" noWrap ref={sizeRef}>
-        <div ref={scrollRef}>
-          <Select
-            label="Chapter"
-            data={[...Array(book.numChapters).keys()].map((chapterNum) => ({
-              value: chapterNum.toString(),
-              label: `Chapter ${chapterNum + 1}`,
-            }))}
-            value={selectedChapterNo.toString()}
-            onChange={(value) => {
-              if (value) {
-                const chapterNum = parseInt(value);
-                setSelectedChapterNo(chapterNum);
-              }
-            }}
-          />
-        </div>
-        <Switch
-          onLabel={<IconLanguage size="1rem" />}
-          offLabel={<IconLanguageOff size="1rem" />}
-          checked={translateEnabled}
-          onChange={(event) => setTranslateEnabled(event.currentTarget.checked)}
-        />
-      </Group>
-      <FullScreen
-        handle={fullScreenHandle}
-        className={fullscreenActive() ? cx(classes["fullscreen"]) : ""}
-      >
-        <div>
-          {translateEnabled ? (
-            <TranslateTool fullscreen={fullscreenActive()} />
-          ) : (
-            <></>
-          )}
-          <Space h="xl" />
+      <Space w="100%" ref={sizeRef} />
+      <div ref={scrollRef} />
+      <div className={fsActive ? cx(classes["fullscreen"]) : ""}>
+        {translateEnabled ? <TranslateTool fullscreen={fsActive} /> : <></>}
 
-          {numPages > 0 ? (
-            <Grid w="100%">
-              <Grid.Col span={smallWindow ? 0 : 2}>
-                <Space />
-              </Grid.Col>
-              <Grid.Col span={8}>
+        {numPages > 0 ? (
+          <Grid w="100%" align="center">
+            <Grid.Col span={smallWindow ? 0 : 2}>
+              <Space />
+            </Grid.Col>
+            <Grid.Col span={smallWindow ? 10 : 8}>
+              <Group position="center">
                 <Progress
-                  w="100%"
+                  w="90%"
                   value={(currentPage / (numPages - 1)) * 100}
                 />
-              </Grid.Col>
-              <Grid.Col span={smallWindow ? 2 : 1}>
-                <Group position="center" w="100%" noWrap>
-                  {selectedChapterNo === userRelation.bookmarkedChapter &&
-                  currentPage === userRelation.bookmarkedPage ? (
-                    <ActionIcon
-                      pb="1rem"
-                      onClick={() => toggleBookmark(false)}
-                      variant="unstyled"
+              </Group>
+            </Grid.Col>
+            <Grid.Col span={2}>
+              <Group position="center" w="100%" noWrap spacing="xs">
+                {selectedChapterNo === userRelation.bookmarkedChapter &&
+                currentPage === userRelation.bookmarkedPage ? (
+                  <ActionIcon
+                    onClick={() => toggleBookmark(false)}
+                    variant="unstyled"
+                  >
+                    <Box sx={(theme) => ({ color: theme.colors.blue[6] })}>
+                      <IconBookmarkFilled />
+                    </Box>
+                  </ActionIcon>
+                ) : (
+                  <ActionIcon
+                    onClick={() => toggleBookmark(true)}
+                    variant="unstyled"
+                  >
+                    <IconBookmark />
+                  </ActionIcon>
+                )}
+                <Menu>
+                  <Menu.Target>
+                    <ActionIcon>
+                      <IconDots />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item closeMenuOnClick={false}>
+                      <Select
+                        data={[...Array(book.numChapters).keys()].map(
+                          (chapterNum) => ({
+                            value: chapterNum.toString(),
+                            label: `Chapter ${chapterNum + 1}`,
+                          })
+                        )}
+                        value={selectedChapterNo.toString()}
+                        onChange={(value) => {
+                          if (value) {
+                            const chapterNum = parseInt(value);
+                            setSelectedChapterNo(chapterNum);
+                          }
+                        }}
+                      />
+                    </Menu.Item>
+                    <Menu.Item onClick={fsHandlers.toggle}>
+                      Toggle Fullscreen
+                    </Menu.Item>
+                    <Menu.Item
+                      onClick={() => setTranslateEnabled((prev) => !prev)}
                     >
-                      <Box sx={(theme) => ({ color: theme.colors.blue[6] })}>
-                        <IconBookmarkFilled />
-                      </Box>
-                    </ActionIcon>
-                  ) : (
-                    <ActionIcon
-                      pb="1rem"
-                      onClick={() => toggleBookmark(true)}
-                      variant="unstyled"
-                    >
-                      <IconBookmark />
-                    </ActionIcon>
-                  )}
-                </Group>
-              </Grid.Col>
-              <Grid.Col span={smallWindow ? 2 : 1}>
-                <Group position="center" w="100%" noWrap>
-                  {fullScreenHandle.active ? (
-                    <ActionIcon onClick={toggleFullscreen} pb="1rem">
-                      <IconMinimize />
-                    </ActionIcon>
-                  ) : (
-                    <ActionIcon onClick={toggleFullscreen} pb="1rem">
-                      <IconMaximize />
-                    </ActionIcon>
-                  )}
-                </Group>
-              </Grid.Col>
-            </Grid>
-          ) : (
-            <Loader />
-          )}
+                      Toggle Translate Tool
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              </Group>
+            </Grid.Col>
+          </Grid>
+        ) : (
+          <Loader />
+        )}
 
-          {chapter?.content ? (
-            <PageCarousel
-              chapterContent={chapter.content}
-              css={book.cssStyles}
-              width={fullscreenActive() ? windowWidth : width}
-              scrollToTop={scrollToTop}
-              setCurrentPage={setCurrentPage}
-              startPage={startPage}
-              setNumPages={setNumPages}
-            />
-          ) : (
-            <Loader />
-          )}
+        {chapter?.content ? (
+          <PageCarousel
+            chapterContent={chapter.content}
+            css={book.cssStyles}
+            width={fsActive ? windowWidth : width}
+            scrollToTop={scrollToTop}
+            setCurrentPage={setCurrentPage}
+            startPage={startPage}
+            setNumPages={setNumPages}
+          />
+        ) : (
+          <Loader />
+        )}
 
-          <Space h="5rem" />
-        </div>
-      </FullScreen>
+        <Space h="5rem" />
+      </div>
     </>
   );
 };
