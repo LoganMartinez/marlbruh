@@ -51,7 +51,7 @@ const useStyles = createStyles((theme, fullscreen: boolean) => ({
     borderBottom: `2px solid ${theme.colors.dark[6]}`,
     borderTop: `2px solid ${theme.colors.dark[6]}`,
     zIndex: 50,
-    backgroundColor: theme.colors.dark[8]
+    backgroundColor: theme.colors.dark[8],
   },
 
   wrSticky: {

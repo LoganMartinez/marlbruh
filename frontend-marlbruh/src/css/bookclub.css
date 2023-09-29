@@ -1,0 +1,9 @@
+.offscreenDiv {
+  position: "absolute";
+  top: -3000;
+  display: "flex";
+  flex-wrap: "wrap";
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-bottom: 5rem;
+}

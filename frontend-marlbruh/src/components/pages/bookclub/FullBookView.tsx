@@ -24,7 +24,6 @@ import {
   useDisclosure,
   useElementSize,
   useLocalStorage,
-  useScrollIntoView,
   useViewportSize,
 } from "@mantine/hooks";
 import TranslateTool from "./TranslateTool";
@@ -38,6 +37,7 @@ const useStyles = createStyles((theme) => ({
     top: 0,
     left: 0,
     width: "100%",
+    height: "100%",
     paddingLeft: theme.spacing.md,
   },
 }));
@@ -52,7 +52,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   const auth = useAuth();
   const [fsActive, fsHandlers] = useDisclosure();
   const { classes, cx } = useStyles();
-  const windowWidth = useViewportSize().width;
+  const { width: windowWidth, height: windowHeight } = useViewportSize();
   const smallWindow = windowWidth < 500; // affects breakpoints of progress bar grid
   const [translateEnabled, setTranslateEnabled] = useLocalStorage({
     key: "marlbruh-book-translate-enabled",
@@ -63,16 +63,11 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
     Math.max(userRelation.bookmarkedChapter, 0)
   );
   const { ref: sizeRef, width } = useElementSize();
-  let { scrollIntoView: scrollToTop, targetRef: scrollRef } =
-    useScrollIntoView<HTMLDivElement>({
-      duration: 300,
-    });
   const [currentPage, setCurrentPage] = useState(
     Math.max(userRelation.bookmarkedPage, 0)
   );
   const [startPage, setStartPage] = useState(0);
   const [numPages, setNumPages] = useState(0);
-
   // get chapter
   useEffect(() => {
     getChapter(book.id, selectedChapterNo, auth.authToken)
@@ -84,29 +79,6 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
         setStartPage(sp);
         setCurrentPage(sp);
         setChapter(chapter);
-        // let [header, ...paragraphs] = chapter.content.split("<p");
-        // paragraphs = paragraphs.map((p) => "<p" + p);
-        // let currentPageLen = 0;
-        // let currentPageContent = header;
-        // paragraphs.forEach((p, index) => {
-        //   const regexp = /\<p[^\>]*\>(?<inner>.*)\<\/p\>/; // strip away <p> and </p>, keeps any nested elements
-        //   const innerHtml = p.match(regexp)?.groups?.inner;
-        //   if (!innerHtml) {
-        //     errorNotification("Some content may not be displayed properly" + p);
-        //     return;
-        //   }
-        //   innerHtml.length;
-        //   currentPageContent += p;
-        //   currentPageLen += innerHtml.length;
-        //   if (
-        //     currentPageLen > BOOK_PAGE_LEN ||
-        //     index === paragraphs.length - 1
-        //   ) {
-        //     chapterPagesHandler.append(currentPageContent);
-        //     currentPageLen = 0;
-        //     currentPageContent = "";
-        //   }
-        // });
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
@@ -128,7 +100,6 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   return (
     <>
       <Space w="100%" ref={sizeRef} />
-      <div ref={scrollRef} />
       <div className={fsActive ? cx(classes["fullscreen"]) : ""}>
         {translateEnabled ? <TranslateTool fullscreen={fsActive} /> : <></>}
 
@@ -211,16 +182,14 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
             chapterContent={chapter.content}
             css={book.cssStyles}
             width={fsActive ? windowWidth : width}
-            scrollToTop={scrollToTop}
             setCurrentPage={setCurrentPage}
             startPage={startPage}
             setNumPages={setNumPages}
+            height={windowHeight}
           />
         ) : (
           <Loader />
         )}
-
-        <Space h="5rem" />
       </div>
     </>
   );
