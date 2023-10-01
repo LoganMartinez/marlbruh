@@ -27,7 +27,7 @@ export const splitChapter = (
   document.body.appendChild(offscreen);
   let offscreenRect = offscreen.getBoundingClientRect();
   let pages = [] as string[];
-  let currentPage = "" as string;
+  let currentPage = header;
   for (let i = 0; i < paragraphs.length; ++i) {
     const currentP = paragraphs[i];
     offscreen.innerHTML += currentP;

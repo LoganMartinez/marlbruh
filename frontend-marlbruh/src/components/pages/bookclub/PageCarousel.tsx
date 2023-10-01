@@ -44,7 +44,6 @@ const PageCarousel = ({
   });
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
-
   const scrollPrev = useCallback(() => {
     if (emblaApi) {
       emblaApi.scrollPrev();
@@ -93,7 +92,9 @@ const PageCarousel = ({
     setPages(pgs);
     setNumPages(pgs.length);
     setLoading(false);
-  }, []);
+    setNextBtnDisabled(startPage == pgs.length - 1);
+    setPrevBtnDisabled(startPage == 0);
+  }, [chapterContent]);
 
   return (
     <>

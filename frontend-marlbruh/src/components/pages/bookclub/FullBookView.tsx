@@ -77,8 +77,8 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
             ? userRelation.bookmarkedPage
             : 0;
         setStartPage(sp);
-        setCurrentPage(sp);
         setChapter(chapter);
+        setCurrentPage(sp);
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
