@@ -29,8 +29,10 @@ import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
 import {
   useDisclosure,
+  useElementSize,
   useLocalStorage,
   useTextSelection,
+  useViewportSize,
 } from "@mantine/hooks";
 import {
   IconArrowRight,
@@ -114,6 +116,7 @@ const TranslateTool = ({ fullscreen }: Props) => {
     },
   });
   const [translationResOpen, setTranslationResOpen] = useState(false);
+  const { width, ref: sizeRef } = useElementSize();
 
   const submitTranslate = (values: TranslateForm) => {
     setTranslationLoading(true);
@@ -153,7 +156,7 @@ const TranslateTool = ({ fullscreen }: Props) => {
       <form
         onSubmit={translateForm.onSubmit((values) => submitTranslate(values))}
       >
-        <Stack>
+        <Stack ref={sizeRef}>
           <TextInput
             w="100%"
             label={
@@ -256,7 +259,7 @@ const TranslateTool = ({ fullscreen }: Props) => {
                                 {group.entries.map((entry, index) => (
                                   <React.Fragment key={index}>
                                     <Divider variant="dashed" />
-                                    <Grid key={index} p="xs">
+                                    <Grid key={index} p="xs" w="100%">
                                       <Grid.Col span={6}>
                                         {entry.from_word.source}
                                       </Grid.Col>
