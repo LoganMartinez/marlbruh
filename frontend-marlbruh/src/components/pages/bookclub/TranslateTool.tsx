@@ -29,10 +29,8 @@ import { errorNotification } from "../../../utilities/helperFunctions";
 import { AxiosError } from "axios";
 import {
   useDisclosure,
-  useElementSize,
   useLocalStorage,
   useTextSelection,
-  useViewportSize,
 } from "@mantine/hooks";
 import {
   IconArrowRight,
@@ -116,7 +114,6 @@ const TranslateTool = ({ fullscreen }: Props) => {
     },
   });
   const [translationResOpen, setTranslationResOpen] = useState(false);
-  const { width, ref: sizeRef } = useElementSize();
 
   const submitTranslate = (values: TranslateForm) => {
     setTranslationLoading(true);
@@ -156,7 +153,7 @@ const TranslateTool = ({ fullscreen }: Props) => {
       <form
         onSubmit={translateForm.onSubmit((values) => submitTranslate(values))}
       >
-        <Stack ref={sizeRef}>
+        <Stack>
           <TextInput
             w="100%"
             label={
