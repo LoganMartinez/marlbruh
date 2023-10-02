@@ -31,8 +31,6 @@ type Props = {
   startPage: number;
   setNumPages: React.Dispatch<React.SetStateAction<number>>;
   height: number;
-  chapterLoading: boolean;
-  setChapterLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const PageCarousel = ({
@@ -43,11 +41,10 @@ const PageCarousel = ({
   startPage,
   setNumPages,
   height,
-  chapterLoading,
-  setChapterLoading,
 }: Props) => {
   const { classes, cx } = useStyles();
   const [pages, setPages] = useState([] as JSX.Element[]);
+  const [chapterLoading, setChapterLoading] = useState(true);
   const [emblaRef, emblaApi] = useEmblaCarousel({
     startIndex: startPage,
     watchDrag: false,
@@ -94,6 +91,7 @@ const PageCarousel = ({
   }
 
   useEffect(() => {
+    setChapterLoading(true);
     async function updatePages() {
       const pgs = await splitChapter(
         chapterContent,

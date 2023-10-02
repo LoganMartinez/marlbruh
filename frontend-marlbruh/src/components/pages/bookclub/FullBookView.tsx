@@ -71,7 +71,6 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   );
   const [startPage, setStartPage] = useState(0);
   const [numPages, setNumPages] = useState(0);
-  const [chapterLoading, setChapterLoading] = useState(true);
   // get chapter
   useEffect(() => {
     getChapter(book.id, selectedChapterNo, auth.authToken)
@@ -84,7 +83,6 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
           setStartPage(sp);
           setChapter(ch);
           setCurrentPage(sp);
-          setChapterLoading(true);
         }
       })
       .catch((err: AxiosError) => {
@@ -106,11 +104,11 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
 
   return (
     <>
-      <Space w="100%" ref={sizeRef} />
       <div
         className={
           fsActive ? cx(classes["fullscreen"]) : cx(classes["notFullscreen"])
         }
+        ref={sizeRef}
       >
         {translateEnabled ? <TranslateTool fullscreen={fsActive} /> : <></>}
 
@@ -197,8 +195,6 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
             startPage={startPage}
             setNumPages={setNumPages}
             height={windowHeight}
-            chapterLoading={chapterLoading}
-            setChapterLoading={setChapterLoading}
           />
         ) : (
           <Loader />
