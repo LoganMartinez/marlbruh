@@ -68,17 +68,22 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   );
   const [startPage, setStartPage] = useState(0);
   const [numPages, setNumPages] = useState(0);
+  const [chapterLoading, setChapterLoading] = useState(true);
   // get chapter
   useEffect(() => {
     getChapter(book.id, selectedChapterNo, auth.authToken)
-      .then(({ data: chapter }: { data: Chapter }) => {
-        const sp =
-          selectedChapterNo === userRelation.bookmarkedChapter
-            ? userRelation.bookmarkedPage
-            : 0;
-        setStartPage(sp);
-        setChapter(chapter);
-        setCurrentPage(sp);
+      .then(({ data: ch }: { data: Chapter }) => {
+        if (chapter?.id !== ch.id) {
+          const sp =
+            selectedChapterNo === userRelation.bookmarkedChapter
+              ? userRelation.bookmarkedPage
+              : 0;
+          setStartPage(sp);
+          setChapter(ch);
+          setCurrentPage(sp);
+          console.log(chapterLoading + " asdf");
+          setChapterLoading(true);
+        }
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
@@ -186,6 +191,8 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
             startPage={startPage}
             setNumPages={setNumPages}
             height={windowHeight}
+            chapterLoading={chapterLoading}
+            setChapterLoading={setChapterLoading}
           />
         ) : (
           <Loader />

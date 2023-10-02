@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel, { EmblaCarouselType } from "embla-carousel-react";
 import "../../../css/embla.css";
-import { ActionIcon, Group, createStyles, px, rem } from "@mantine/core";
+import {
+  ActionIcon,
+  Group,
+  Loader,
+  createStyles,
+  px,
+  rem,
+} from "@mantine/core";
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 import { splitChapter } from "./BookclubPage";
 
@@ -24,6 +31,8 @@ type Props = {
   startPage: number;
   setNumPages: React.Dispatch<React.SetStateAction<number>>;
   height: number;
+  chapterLoading: boolean;
+  setChapterLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const PageCarousel = ({
@@ -34,8 +43,9 @@ const PageCarousel = ({
   startPage,
   setNumPages,
   height,
+  chapterLoading,
+  setChapterLoading,
 }: Props) => {
-  const [loading, setLoading] = useState(true);
   const { classes, cx } = useStyles();
   const [pages, setPages] = useState([] as JSX.Element[]);
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -84,21 +94,25 @@ const PageCarousel = ({
   }
 
   useEffect(() => {
-    const pgs = splitChapter(
-      chapterContent,
-      cssWithoutBodyMargins,
-      rem(height - 70 - 60)
-    );
-    setPages(pgs);
-    setNumPages(pgs.length);
-    setLoading(false);
-    setNextBtnDisabled(startPage == pgs.length - 1);
-    setPrevBtnDisabled(startPage == 0);
+    async function updatePages() {
+      const pgs = await splitChapter(
+        chapterContent,
+        cssWithoutBodyMargins,
+        rem(height - 70 - 60)
+      );
+      console.log(chapterLoading);
+      setPages(pgs);
+      setNumPages(pgs.length);
+      setChapterLoading(false);
+      setNextBtnDisabled(startPage == pgs.length - 1);
+      setPrevBtnDisabled(startPage == 0);
+    }
+    updatePages();
   }, [chapterContent]);
 
   return (
     <>
-      {!loading ? (
+      {!chapterLoading ? (
         <div className="embla">
           <div
             className="embla__viewport"
@@ -127,7 +141,7 @@ const PageCarousel = ({
           </div>
         </div>
       ) : (
-        <></>
+        <Loader />
       )}
     </>
   );
