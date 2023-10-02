@@ -40,6 +40,9 @@ const useStyles = createStyles((theme) => ({
     height: "100%",
     paddingLeft: theme.spacing.md,
   },
+  notFullscreen: {
+    width: "100%",
+  },
 }));
 
 type Props = {
@@ -81,7 +84,6 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
           setStartPage(sp);
           setChapter(ch);
           setCurrentPage(sp);
-          console.log(chapterLoading + " asdf");
           setChapterLoading(true);
         }
       })
@@ -105,7 +107,11 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   return (
     <>
       <Space w="100%" ref={sizeRef} />
-      <div className={fsActive ? cx(classes["fullscreen"]) : ""}>
+      <div
+        className={
+          fsActive ? cx(classes["fullscreen"]) : cx(classes["notFullscreen"])
+        }
+      >
         {translateEnabled ? <TranslateTool fullscreen={fsActive} /> : <></>}
 
         {numPages > 0 ? (
@@ -179,7 +185,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
             </Grid.Col>
           </Grid>
         ) : (
-          <Loader />
+          <></>
         )}
 
         {chapter?.content ? (

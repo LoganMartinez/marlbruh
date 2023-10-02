@@ -100,7 +100,6 @@ const PageCarousel = ({
         cssWithoutBodyMargins,
         rem(height - 70 - 60)
       );
-      console.log(chapterLoading);
       setPages(pgs);
       setNumPages(pgs.length);
       setChapterLoading(false);

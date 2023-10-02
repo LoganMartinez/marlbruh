@@ -32,7 +32,9 @@ export async function splitChapter(
   const emptyHtmlRegex =
     /(\<(?<tag>[^p][^ ]*)[^\>]*\>\<\/\k<tag>\>)|(\<[^(\/\>)]+\/\>)/g;
   let i = 0;
-  while (i < paragraphs.length) {
+  let isDone = false;
+
+  const calculatePages = () => {
     /*
       Add paragraphs until offscreen reference exceeds page length, then do
       the same but with individual words of that paragraph
@@ -80,7 +82,19 @@ export async function splitChapter(
       currentPage += currentP;
       ++i;
     }
+    if (i === paragraphs.length) {
+      isDone = true;
+    } else {
+      setTimeout(calculatePages, 0);
+    }
+  };
+
+  calculatePages();
+
+  while (!isDone) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
   }
+
   if (currentPage != "") {
     pages.push(currentPage);
   }
