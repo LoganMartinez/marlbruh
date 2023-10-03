@@ -51,7 +51,7 @@ const useStyles = createStyles((theme, fullscreen: boolean) => ({
     borderBottom: `2px solid ${theme.colors.dark[6]}`,
     borderTop: `2px solid ${theme.colors.dark[6]}`,
     zIndex: 50,
-    backgroundColor: theme.colors.dark[8]
+    backgroundColor: theme.colors.dark[8],
   },
 
   wrSticky: {
@@ -256,7 +256,7 @@ const TranslateTool = ({ fullscreen }: Props) => {
                                 {group.entries.map((entry, index) => (
                                   <React.Fragment key={index}>
                                     <Divider variant="dashed" />
-                                    <Grid key={index} p="xs">
+                                    <Grid key={index} p="xs" w="100%">
                                       <Grid.Col span={6}>
                                         {entry.from_word.source}
                                       </Grid.Col>
