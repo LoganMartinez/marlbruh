@@ -96,7 +96,7 @@ const PageCarousel = ({
       const pgs = await splitChapter(
         chapterContent,
         cssWithoutBodyMargins,
-        rem(height - 70 - 60)
+        rem(height - px("6rem"))
       );
       setPages(pgs);
       setNumPages(pgs.length);
