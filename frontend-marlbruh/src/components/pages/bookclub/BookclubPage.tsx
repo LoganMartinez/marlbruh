@@ -19,72 +19,99 @@ export async function splitChapter(
   css: string,
   pageHeight: string
 ) {
-  let [header, ...paragraphs] = chapterContent.split("<p");
-  paragraphs = paragraphs.map((p) => "<p" + p);
   const offscreen = document.createElement("div");
   offscreen.className = "offscreenDiv";
-  offscreen.innerHTML = `<style>${css}</style>${header}`;
   document.body.appendChild(offscreen);
   let offscreenRect = offscreen.getBoundingClientRect();
   let pages = [] as string[];
-  let currentPage = header;
-  const pRegex = /(?<ptag>\<p [^\>]*\>)(?<inner>.*)\<\/p\>/;
-  const emptyHtmlRegex =
-    /(\<(?<tag>[^p][^ ]*)[^\>]*\>\<\/\k<tag>\>)|(\<[^(\/\>)]+\/\>)/g;
-  let i = 0;
+  const htmlRegex =
+    /(?<before>[^\<]*)(((\<(?<elem>[^ ]+)( (?<style>[^\>]+))?\>(?<innerhtml>.*?)\<\/\k<elem>\>)|((?<selfClosingElem>\<[^(\/|\>)]+\/\>)))(?<after>.*))?/s;
   let isDone = false;
+  let content = chapterContent;
 
-  const calculatePages = () => {
-    /*
-      Add paragraphs until offscreen reference exceeds page length, then do
-      the same but with individual words of that paragraph
-    */
-    const currentP = paragraphs[i];
-    let originalInnerHTML = offscreen.innerHTML;
-    offscreen.innerHTML += currentP;
+  const pageTooBig = (section: string) => {
+    offscreen.innerHTML = `<style>${css}</style>${section}`;
     offscreenRect = offscreen.getBoundingClientRect();
-    if (offscreenRect.height > px(pageHeight)) {
-      offscreen.innerHTML = originalInnerHTML;
-      const reg = currentP.match(pRegex);
-      const ptag = reg?.groups?.ptag ? reg.groups.ptag : "";
-      const words = reg?.groups?.inner
-        ? reg.groups.inner.replace(emptyHtmlRegex, "").split(" ")
-        : [];
-      let currentAddition = ptag;
-      for (let j = 0; j < words.length; ++j) {
-        const originalAddition = currentAddition;
-        currentAddition += words[j] + " ";
-        offscreen.innerHTML += `${currentAddition}</p>`;
-        offscreenRect = offscreen.getBoundingClientRect();
-        if (offscreenRect.height <= px(pageHeight)) {
-          offscreen.innerHTML = originalInnerHTML;
-        } else {
-          if (j === 0) {
-            paragraphs[i] = `${ptag}${words.join(" ")}</p>`;
-          } else {
-            currentPage += `${originalAddition}</p>`;
-            // break up paragraph across pages -> remove indent
-            paragraphs[i] = `${ptag.slice(0, -1)} style="text-indent:0">${words
-              .slice(j)
-              .join(" ")}</p>`;
-          }
-          // decrement i so it will deal with the leftovers next loop
+    const ret = offscreenRect.height > px(pageHeight);
+    return ret;
+  };
+
+  const calculatePage = (
+    content: string,
+    closeTags: string,
+    page: string
+  ): string[] => {
+    const reg = content.match(htmlRegex);
+    const before = reg?.groups?.before || "";
+    const after = reg?.groups?.after || "";
+    const selfClosingElem = reg?.groups?.selfClosingElem || "";
+    const openElem = reg?.groups?.elem
+      ? `<${reg.groups.elem}${
+          reg?.groups?.style ? ` ${reg.groups.style}` : ""
+        }>`
+      : "";
+    const innerhtml = reg?.groups?.innerhtml || "";
+    const closeElem = reg?.groups?.elem ? `</${reg.groups.elem}>` : "";
+    if (before !== "") {
+      const rest = openElem + innerhtml + closeElem + selfClosingElem + after;
+      let newPage = page + before + closeTags;
+      if (pageTooBig(newPage)) {
+        const words = before.split(" ");
+        let i = words.length - 1;
+        let wordsToNotAdd = [...words];
+        // remove words until it doesn't overflow
+        while (pageTooBig(newPage) && i > 0) {
+          wordsToNotAdd = [...words];
+          const wordsToAdd = wordsToNotAdd.splice(0, i);
+          newPage = page + wordsToAdd.join(" ") + closeTags;
           --i;
-          break;
+        }
+        if (i == 0) {
+          // entire content overflows
+          return [content, page + closeTags];
+        } else {
+          return [wordsToNotAdd.join(" ") + rest + closeTags, newPage];
         }
       }
-
-      pages.push(currentPage);
-      currentPage = "";
-      offscreen.innerHTML = `<style>${css}</style>`;
-      ++i;
-    } else {
-      currentPage += currentP;
-      ++i;
+      const newContent = rest + closeTags;
+      return calculatePage(newContent, closeTags, newPage);
     }
-    if (i === paragraphs.length) {
+
+    if (selfClosingElem !== "") {
+      const newPage = page + selfClosingElem + closeTags;
+      if (pageTooBig(newPage)) {
+        return [content, page];
+      }
+      return calculatePage(after, closeTags, newPage);
+    }
+
+    if (openElem !== "") {
+      const newPage = page + openElem + innerhtml + closeElem;
+      if (pageTooBig(newPage)) {
+        // have to split up innerhtml
+        const [remainingContent, finalPage] = calculatePage(
+          innerhtml,
+          closeElem + closeTags,
+          page + openElem
+        );
+        return [openElem + remainingContent + after, finalPage];
+      }
+      return calculatePage(after, closeTags, newPage);
+    }
+    return [content, page];
+  };
+
+  const calculatePages = () => {
+    const [remainingContent, page] = calculatePage(
+      content,
+      "",
+      `<style>${css}</style>`
+    );
+    if (remainingContent === content) {
       isDone = true;
     } else {
+      content = remainingContent;
+      pages.push(page);
       setTimeout(calculatePages, 0);
     }
   };
@@ -95,9 +122,6 @@ export async function splitChapter(
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
 
-  if (currentPage != "") {
-    pages.push(currentPage);
-  }
   offscreen.innerHTML = "";
   offscreen.style.display = "none";
 
