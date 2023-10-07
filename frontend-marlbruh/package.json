@@ -17,10 +17,13 @@
     "@mantine/notifications": "^6.0.19",
     "@tabler/icons-react": "^2.30.0",
     "axios": "^1.4.0",
+    "embla-carousel-react": "^8.0.0-rc13",
     "react": "^18.2.0",
     "react-confetti-explosion": "^2.1.2",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
+    "react-full-screen": "^1.1.1",
     "react-router-dom": "^6.15.0"
   },
   "devDependencies": {

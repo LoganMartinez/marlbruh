@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Group,
+  Loader,
   Select,
   SimpleGrid,
   Space,
@@ -48,40 +49,45 @@ const Chores = () => {
       getChores(auth.authToken)
         .then(({ data: chores }) => {
           setAllChores(chores);
+          changeFilter(chores);
         })
         .catch((err: AxiosError) => {
           errorNotification(err.message);
-        });
-      setChoresUpdated(false);
+        })
+        .finally(() => setChoresUpdated(false));
     }
   }, [choresUpdated]);
 
-  // filter chores
+  const changeFilter = (chores: Chore[]) => {
+    setFilteredChores(
+      chores.filter((chore) => {
+        const meFilterFail =
+          filter.users === "me" &&
+          chore.users.every(
+            ({ username }) => username !== auth.currentUser.username
+          );
+        const unassignedFilterFail =
+          filter.users === "unassigned" && chore.users.length > 0;
+        const incompleteFilterFail =
+          filter.completionStatus === "incomplete" && chore.complete;
+        const completeFilterFail =
+          filter.completionStatus === "complete" && !chore.complete;
+        return !(
+          meFilterFail ||
+          unassignedFilterFail ||
+          incompleteFilterFail ||
+          completeFilterFail
+        );
+      })
+    );
+  };
+
   useEffect(() => {
     if (allChores) {
-      setFilteredChores(
-        allChores.filter((chore) => {
-          const meFilterFail =
-            filter.users === "me" &&
-            chore.users.every(
-              ({ username }) => username !== auth.currentUser.username
-            );
-          const unassignedFilterFail =
-            filter.users === "unassigned" && chore.users.length > 0;
-          const incompleteFilterFail =
-            filter.completionStatus === "incomplete" && chore.complete;
-          const completeFilterFail =
-            filter.completionStatus === "complete" && !chore.complete;
-          return !(
-            meFilterFail ||
-            unassignedFilterFail ||
-            incompleteFilterFail ||
-            completeFilterFail
-          );
-        })
-      );
+      changeFilter(allChores);
     }
-  }, [filter, allChores]);
+  }, [filter]);
+
   return (
     <>
       <ChoreCreationModal
@@ -128,7 +134,9 @@ const Chores = () => {
       </Group>
       <Space h="xs" />
 
-      {filteredChores && filteredChores.length > 0 ? (
+      {choresUpdated ? (
+        <Loader />
+      ) : filteredChores && filteredChores.length > 0 ? (
         <SimpleGrid
           cols={3}
           breakpoints={[

@@ -66,4 +66,11 @@ class PostBookclubReplySerializer(serializers.Serializer):
 
 
 class PutBookclubUserRelationSerialzier(serializers.Serializer):
-    lastChapterComplete = serializers.IntegerField()
+    lastChapterComplete = serializers.IntegerField(required=False)
+    bookmarkedChapter = serializers.IntegerField(required=False)
+    bookmarkedPage = serializers.IntegerField(required=False)
+
+    def validate(self, data):
+        if len(data.keys()) == 0:
+            raise serializers.ValidationError("Must include at least one field")
+        return data

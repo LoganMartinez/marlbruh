@@ -71,3 +71,6 @@ export const selectLanguageData = translateLanguages.map((key) => ({
   value: key,
   label: prettyTranslateLanguages[key],
 }));
+
+// number of characters per page
+export const BOOK_PAGE_LEN = 3000;

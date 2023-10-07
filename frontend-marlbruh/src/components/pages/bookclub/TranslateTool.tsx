@@ -13,6 +13,7 @@ import {
   Text,
   TextInput,
   Title,
+  Transition,
   createStyles,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -38,18 +39,19 @@ import {
   IconX,
 } from "@tabler/icons-react";
 
-const useStyles = createStyles((theme) => ({
-  sticky: {
+const useStyles = createStyles((theme, fullscreen: boolean) => ({
+  translate: {
     position: "sticky",
-    top: "70px",
+    top: fullscreen ? "0px" : "68px",
     width: "100%",
     paddingTop: "1rem",
     paddingBottom: "2rem",
     paddingLeft: "0px",
-    paddingRight: "0px",
-    backgroundColor: theme.colors.dark[8],
+    paddingRight: fullscreen ? theme.spacing.md : "0px",
     borderBottom: `2px solid ${theme.colors.dark[6]}`,
     borderTop: `2px solid ${theme.colors.dark[6]}`,
+    zIndex: 50,
+    backgroundColor: theme.colors.dark[8],
   },
 
   wrSticky: {
@@ -70,7 +72,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 type Props = {
-  enabled: boolean;
+  fullscreen: boolean;
 };
 
 type TranslateForm = {
@@ -79,9 +81,9 @@ type TranslateForm = {
   phrase: string;
 };
 
-const TranslateTool = ({ enabled }: Props) => {
+const TranslateTool = ({ fullscreen }: Props) => {
   const auth = useAuth();
-  const { classes, cx } = useStyles();
+  const { classes, cx } = useStyles(fullscreen);
   const [translationRes, setTranslationRes] = useState(
     undefined as TranslationResponse | undefined
   );
@@ -111,6 +113,7 @@ const TranslateTool = ({ enabled }: Props) => {
           : null,
     },
   });
+  const [translationResOpen, setTranslationResOpen] = useState(false);
 
   const submitTranslate = (values: TranslateForm) => {
     setTranslationLoading(true);
@@ -124,6 +127,7 @@ const TranslateTool = ({ enabled }: Props) => {
     )
       .then(({ data: res }: { data: TranslationResponse }) => {
         setTranslationRes(res);
+        setTranslationResOpen(true);
       })
       .catch((err: AxiosError) => {
         errorNotification(err.message);
@@ -145,80 +149,84 @@ const TranslateTool = ({ enabled }: Props) => {
   }, [textSelection?.toString()]);
 
   return (
-    <div className={enabled ? cx(classes.sticky) : ""}>
-      {enabled ? (
-        <form
-          onSubmit={translateForm.onSubmit((values) => submitTranslate(values))}
-        >
-          <Stack>
-            <TextInput
-              w="100%"
-              label={
-                <>
-                  <Group position="left" spacing={0} noWrap>
-                    <Text fz="xs">
-                      Translate (
-                      <b>
-                        {
-                          prettyTranslateLanguages[
-                            translateForm.values.fromLanguage
-                          ]
-                        }
-                      </b>{" "}
-                      to{" "}
-                      <b>
-                        {
-                          prettyTranslateLanguages[
-                            translateForm.values.toLanguage
-                          ]
-                        }
-                      </b>
-                      )
-                    </Text>
-                    <ActionIcon radius="xl" onClick={toggleLanguageSelect}>
-                      {languageSelectOpen ? (
-                        <IconX size=".8rem" />
-                      ) : (
-                        <IconEdit size=".8rem" />
-                      )}
-                    </ActionIcon>
-                  </Group>
-                  {languageSelectOpen ? (
-                    <>
-                      <Group noWrap>
-                        <Select
-                          data={selectLanguageData}
-                          size="xs"
-                          {...translateForm.getInputProps("fromLanguage")}
-                        />
-                        <IconArrowRight />
-                        <Select
-                          data={selectLanguageData}
-                          size="xs"
-                          {...translateForm.getInputProps("toLanguage")}
-                        />
-                      </Group>
-                      <Space h="xs" />
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                </>
-              }
-              {...translateForm.getInputProps("phrase")}
-              rightSection={
+    <div className={cx(classes.translate)}>
+      <form
+        onSubmit={translateForm.onSubmit((values) => submitTranslate(values))}
+      >
+        <Stack>
+          <TextInput
+            w="100%"
+            label={
+              <>
+                <Group position="left" spacing={0} noWrap>
+                  <Text fz="xs">
+                    Translate (
+                    <b>
+                      {
+                        prettyTranslateLanguages[
+                          translateForm.values.fromLanguage
+                        ]
+                      }
+                    </b>{" "}
+                    to{" "}
+                    <b>
+                      {
+                        prettyTranslateLanguages[
+                          translateForm.values.toLanguage
+                        ]
+                      }
+                    </b>
+                    )
+                  </Text>
+                  <ActionIcon radius="xl" onClick={toggleLanguageSelect}>
+                    {languageSelectOpen ? (
+                      <IconX size=".8rem" />
+                    ) : (
+                      <IconEdit size=".8rem" />
+                    )}
+                  </ActionIcon>
+                </Group>
+                {languageSelectOpen ? (
+                  <>
+                    <Group noWrap>
+                      <Select
+                        data={selectLanguageData}
+                        size="xs"
+                        {...translateForm.getInputProps("fromLanguage")}
+                      />
+                      <IconArrowRight />
+                      <Select
+                        data={selectLanguageData}
+                        size="xs"
+                        {...translateForm.getInputProps("toLanguage")}
+                      />
+                    </Group>
+                    <Space h="xs" />
+                  </>
+                ) : (
+                  <></>
+                )}
+              </>
+            }
+            {...translateForm.getInputProps("phrase")}
+            rightSection={
+              tranlationLoading ? (
+                <Loader size="xs" />
+              ) : (
                 <ActionIcon type="submit">
                   <IconBook2 size="1.5rem" strokeWidth="1" />
                 </ActionIcon>
-              }
-            />
-            {tranlationLoading ? (
-              <Loader />
-            ) : (
-              <>
-                {translationRes === undefined ? (
-                  <></>
-                ) : (
+              )
+            }
+          />
+          <Transition
+            mounted={translationResOpen}
+            transition="scale-y"
+            duration={300}
+          >
+            {(styles) => (
+              <div style={styles}>
+                {translationRes ? (
                   <Box
                     sx={(theme) => ({
                       backgroundColor: theme.colors.dark[7],
@@ -231,13 +239,13 @@ const TranslateTool = ({ enabled }: Props) => {
                           p="xs"
                           className={cx(classes["wrSticky"])}
                         >
-                          <Title order={3}>{translationRes.word}</Title>
+                          <Title order={3}>{translationRes?.word}</Title>
                           <CloseButton
-                            onClick={() => setTranslationRes(undefined)}
+                            onClick={() => setTranslationResOpen(false)}
                           />
                         </Group>
 
-                        {translationRes.translations.length > 0 ? (
+                        {translationRes?.translations.length > 0 ? (
                           <>
                             {translationRes.translations.map((group, index) => (
                               <React.Fragment key={index}>
@@ -248,23 +256,25 @@ const TranslateTool = ({ enabled }: Props) => {
                                 {group.entries.map((entry, index) => (
                                   <React.Fragment key={index}>
                                     <Divider variant="dashed" />
-                                    <Grid key={index} p="xs">
+                                    <Grid key={index} p="xs" w="100%">
                                       <Grid.Col span={6}>
                                         {entry.from_word.source}
                                       </Grid.Col>
                                       <Grid.Col span={6}>
-                                        {entry.context}
-                                      </Grid.Col>
-                                      <Grid.Col span={6}>
-                                        {entry.to_word.map((word) =>
-                                          word.notes ? `(${word.notes}) ` : ""
-                                        )}
-                                      </Grid.Col>
-                                      <Grid.Col span={6}>
                                         {entry.to_word
-                                          .map((word) => word.meaning)
+                                          .map(
+                                            (word) =>
+                                              word.meaning +
+                                              (word.notes
+                                                ? ` (${word.notes})`
+                                                : "")
+                                          )
                                           .join(", ")}
                                       </Grid.Col>
+                                      <Grid.Col span={12}>
+                                        {entry.context}
+                                      </Grid.Col>
+                                      <Grid.Col span={6}></Grid.Col>
                                       <Grid.Col span={12}>
                                         <Text
                                           className={cx(
@@ -300,14 +310,14 @@ const TranslateTool = ({ enabled }: Props) => {
                       </Stack>
                     </ScrollArea>
                   </Box>
+                ) : (
+                  <></>
                 )}
-              </>
+              </div>
             )}
-          </Stack>
-        </form>
-      ) : (
-        <></>
-      )}
+          </Transition>
+        </Stack>
+      </form>
     </div>
   );
 };
