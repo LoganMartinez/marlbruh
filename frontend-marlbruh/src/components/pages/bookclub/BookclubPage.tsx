@@ -23,6 +23,7 @@ export async function splitChapter(
   offscreen.className = "offscreenDiv";
   document.body.appendChild(offscreen);
   let offscreenRect = offscreen.getBoundingClientRect();
+  let offscreenStyle = window.getComputedStyle(offscreen);
   let pages = [] as string[];
   const htmlRegex =
     /(?<before>[^\<]*)(((\<(?<elem>[^ ]+)( (?<style>[^\>]+))?\>(?<innerhtml>.*?)\<\/\k<elem>\>)|((?<selfClosingElem>\<[^(\/|\>)]+\/\>)))(?<after>.*))?/s;
@@ -30,9 +31,15 @@ export async function splitChapter(
   let content = chapterContent;
 
   const pageTooBig = (section: string) => {
-    offscreen.innerHTML = `<style>${css}</style>${section}`;
+    offscreen.innerHTML = `<style>${css}</style><div>.</div>${section}`;
     offscreenRect = offscreen.getBoundingClientRect();
-    const ret = offscreenRect.height > px(pageHeight);
+    offscreenStyle = window.getComputedStyle(offscreen);
+    console.log(offscreenStyle.marginTop);
+    const margins =
+      parseFloat(offscreenStyle.marginTop) +
+      parseFloat(offscreenStyle.marginBottom);
+    console.log(margins);
+    const ret = offscreenRect.height + margins > px(pageHeight);
     return ret;
   };
 
@@ -105,7 +112,8 @@ export async function splitChapter(
     const [remainingContent, page] = calculatePage(
       content,
       "",
-      `<style>${css}</style>`
+      `<style>${css}</style>
+      `
     );
     if (remainingContent === content) {
       isDone = true;
@@ -121,8 +129,7 @@ export async function splitChapter(
   while (!isDone) {
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
-
-  offscreen.innerHTML = "";
+  offscreen.remove();
   offscreen.style.display = "none";
 
   return pages.map((page, index) => (
