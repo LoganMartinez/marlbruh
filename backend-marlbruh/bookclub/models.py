@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Book(models.Model):
@@ -43,4 +44,6 @@ class BookUserRelation(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     lastChapterComplete = models.IntegerField(default=-1)
     bookmarkedChapter = models.IntegerField(default=-1)
-    bookmarkedPage = models.IntegerField(default=-1)
+    bookmarkedPage = models.FloatField(
+        default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
+    )
