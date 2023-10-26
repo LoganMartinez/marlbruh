@@ -68,12 +68,12 @@ class PostBookclubReplySerializer(serializers.Serializer):
 class PutBookclubUserRelationSerialzier(serializers.Serializer):
     lastChapterComplete = serializers.IntegerField(required=False)
     bookmarkedChapter = serializers.IntegerField(required=False)
-    bookmarkedPage = serializers.FloatField(required=False)
+    bookmarkedPage = serializers.FloatField(required=False, allow_null=True)
 
     def validate(self, data):
         if len(data.keys()) == 0:
             raise serializers.ValidationError("Must include at least one field")
-        if "bookmarkedPage" and (
+        if data["bookmarkedPage"] and (
             data["bookmarkedPage"] < 0 or data["bookmarkedPage"] > 1
         ):
             raise serializers.ValidationError("Bookmarked page must be between 0 and 1")

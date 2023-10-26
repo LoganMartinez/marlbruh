@@ -45,5 +45,8 @@ class BookUserRelation(models.Model):
     lastChapterComplete = models.IntegerField(default=-1)
     bookmarkedChapter = models.IntegerField(default=-1)
     bookmarkedPage = models.FloatField(
-        default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
+        default=0.0,
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
+        blank=True,
+        null=True,
     )
