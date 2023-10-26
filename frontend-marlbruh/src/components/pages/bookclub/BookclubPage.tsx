@@ -34,11 +34,9 @@ export async function splitChapter(
     offscreen.innerHTML = `<style>${css}</style><div>.</div>${section}`;
     offscreenRect = offscreen.getBoundingClientRect();
     offscreenStyle = window.getComputedStyle(offscreen);
-    console.log(offscreenStyle.marginTop);
     const margins =
       parseFloat(offscreenStyle.marginTop) +
       parseFloat(offscreenStyle.marginBottom);
-    console.log(margins);
     const ret = offscreenRect.height + margins > px(pageHeight);
     return ret;
   };
