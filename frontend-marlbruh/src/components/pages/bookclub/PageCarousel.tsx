@@ -28,7 +28,7 @@ type Props = {
   css: string;
   width: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  startPage: number;
+  startPagePercent: number;
   setNumPages: React.Dispatch<React.SetStateAction<number>>;
   height: number;
 };
@@ -38,7 +38,7 @@ const PageCarousel = ({
   css,
   width,
   setCurrentPage,
-  startPage,
+  startPagePercent,
   setNumPages,
   height,
 }: Props) => {
@@ -46,7 +46,6 @@ const PageCarousel = ({
   const [pages, setPages] = useState([] as JSX.Element[]);
   const [chapterLoading, setChapterLoading] = useState(true);
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    startIndex: startPage,
     watchDrag: false,
   });
   const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
@@ -62,20 +61,28 @@ const PageCarousel = ({
     }
   }, [emblaApi]);
 
-  const onInit = useCallback(() => {}, []);
+  const setInitial = (slide: number) => {
+    if (emblaApi) {
+      emblaApi.scrollTo(slide);
+    }
+  };
 
+  const onInit = useCallback(() => {}, []);
   const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
     const page = emblaApi.selectedScrollSnap();
-    setCurrentPage(page);
+    if (pages.length > 0) {
+      setCurrentPage(page / pages.length);
+    }
     setPrevBtnDisabled(!emblaApi.canScrollPrev());
     setNextBtnDisabled(!emblaApi.canScrollNext());
-  }, []);
+  }, [pages]);
 
   useEffect(() => {
     if (!emblaApi) return;
     emblaApi.on("reInit", onInit);
     emblaApi.on("reInit", onSelect);
     emblaApi.on("select", onSelect);
+    setInitial(Math.floor(startPagePercent * pages.length))
   }, [emblaApi, onInit, onSelect]);
 
   let cssWithoutBodyMargins = css;
@@ -100,9 +107,10 @@ const PageCarousel = ({
       );
       setPages(pgs);
       setNumPages(pgs.length);
+
       setChapterLoading(false);
-      setNextBtnDisabled(startPage == pgs.length - 1);
-      setPrevBtnDisabled(startPage == 0);
+      setNextBtnDisabled(startPagePercent === 1);
+      setPrevBtnDisabled(startPagePercent === 0);
     }
     updatePages();
   }, [chapterContent]);
