@@ -1,7 +1,7 @@
 # marlbruh
 
 ## Welcome to Marlbruh
-This project is a website I made for my me and my housemates. It includes many apps such as:
+This project is a website I made for my me and my housemates. You can visit it [here](http://marlbruh.com). It includes many apps such as:
 
 ### Chore Page
 - Allows creation and allocation of chores to users
