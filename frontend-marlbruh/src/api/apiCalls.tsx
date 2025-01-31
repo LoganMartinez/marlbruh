@@ -116,8 +116,8 @@ export function updateChore(
   );
 }
 
-export function getPiclePosts(token: string) {
-  return apiGet(`picle/`, token);
+export function getPiclePosts(token: string, page: number) {
+  return apiGet(`picle/`, token, { page: page.toString() });
 }
 
 export function createPiclePost(

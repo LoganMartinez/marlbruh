@@ -1,11 +1,16 @@
 import axios, { AxiosError } from "axios";
 import { API_URL } from "../utilities/constants";
 
-export const apiGet = (path: string, token?: string) => {
+export const apiGet = (
+  path: string,
+  token?: string,
+  query?: Record<string, string>
+) => {
   return axios.get(`${API_URL}/${path}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    params: query,
   });
 };
 
@@ -49,7 +54,7 @@ export const apiPut = (
 ) => {
   const authHeader = token ? { Authorization: `Bearer ${token}` } : null;
   const url = `${API_URL}/${path}`;
-  let cleanedUpBody = {} as Record<string, any>;
+  const cleanedUpBody = {} as Record<string, any>;
   Object.keys(body).forEach((key) => {
     if (body[key] !== undefined) {
       cleanedUpBody[key] = body[key];

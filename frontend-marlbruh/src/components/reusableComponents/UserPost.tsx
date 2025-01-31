@@ -16,23 +16,26 @@ import { useAuth } from "../../authentication/AuthContext";
 import { useElementSize } from "@mantine/hooks";
 import LikeList from "./LikeList";
 import CommentList from "./CommentList";
+import { likePiclePost } from "../../api/apiCalls";
+import { errorNotification } from "../../utilities/helperFunctions";
+import { AxiosError } from "axios";
 
 type Props = {
+  id: number;
   author: User;
   likes: User[];
   caption: string;
-  toggleLike: () => void;
   comments: PicleComment[];
   submitComment: (values: SubmitCommentForm) => void;
   toggleCommentLike: (commentId: number) => void;
 } & PropsWithChildren;
 
 const UserPost = ({
+  id,
   children,
   author,
   likes,
   caption,
-  toggleLike,
   comments,
   submitComment,
   toggleCommentLike,
@@ -40,6 +43,21 @@ const UserPost = ({
   const { ref: sizeRef, height: postHeight } = useElementSize();
   const [currentView, setCurrentView] = useState("post" as PostView);
   const auth = useAuth();
+  const [liked, setLiked] = useState(
+    likes.some((user) => user.userId === auth.currentUser.userId)
+  );
+  const [numLikes, setNumLikes] = useState(likes.length);
+
+  const toggleLike = () => {
+    const l = liked;
+    setLiked(!l);
+    setNumLikes((n) => (l ? n - 1 : n + 1));
+    likePiclePost(id, auth.authToken).catch((err: AxiosError) => {
+      errorNotification(`failed to update like on post: ${err.message}`);
+      setLiked(l);
+      setNumLikes((n) => (l ? n + 1 : n - 1));
+    });
+  };
 
   return (
     <>
@@ -74,9 +92,7 @@ const UserPost = ({
                 <PicleUserText user={author} content={caption} />
                 <Stack spacing={0} align="center">
                   <ActionIcon onClick={toggleLike}>
-                    {likes.some(
-                      (user) => user.userId === auth.currentUser.userId
-                    ) ? (
+                    {liked ? (
                       <Box
                         style={{
                           color:
@@ -90,7 +106,7 @@ const UserPost = ({
                     )}
                   </ActionIcon>
                   <UnstyledButton onClick={() => setCurrentView("likes")}>
-                    <Text>{likes.length}</Text>
+                    <Text>{numLikes}</Text>
                   </UnstyledButton>
 
                   <ActionIcon onClick={() => setCurrentView("comments")}>
