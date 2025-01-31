@@ -260,8 +260,8 @@ export function wrTranslate(
 
 export function bookmarkPage(
   bookId: number,
-  bookmarkedChapter: number,
-  bookmarkedPage: number,
+  bookmarkedChapter: number | null,
+  bookmarkedPage: number | null,
   token: string
 ) {
   return apiPut(

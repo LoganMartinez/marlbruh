@@ -16,8 +16,19 @@ class PiclePostView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request):
-        posts = models.PiclePost.objects.all()
-        serializer = serializers.PiclePostSerializer(posts, many=True)
+        page_number_str = request.GET.get("page", "0")
+        try:
+            page_number = int(page_number_str)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        page_size = request.GET.get("page-size", 6)
+        posts = list(models.PiclePost.objects.all())
+        posts.reverse()
+        posts_page = posts[
+            page_number * page_size : page_number * page_size + page_size
+        ]
+        serializer = serializers.PiclePostSerializer(posts_page, many=True)
         return Response(serializer.data)
 
     def post(self, request):

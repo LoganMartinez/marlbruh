@@ -67,9 +67,8 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
   );
   const { ref: sizeRef, width } = useElementSize();
   const [currentPage, setCurrentPage] = useState(
-    Math.max(userRelation.bookmarkedPage, 0)
+    userRelation.bookmarkedPage === null ? 0 : userRelation.bookmarkedPage
   );
-  const [startPage, setStartPage] = useState(0);
   const [numPages, setNumPages] = useState(0);
   // get chapter
   useEffect(() => {
@@ -78,9 +77,8 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
         if (chapter?.id !== ch.id) {
           const sp =
             selectedChapterNo === userRelation.bookmarkedChapter
-              ? userRelation.bookmarkedPage
+              ? userRelation.bookmarkedPage || 0
               : 0;
-          setStartPage(sp);
           setChapter(ch);
           setCurrentPage(sp);
         }
@@ -92,7 +90,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
 
   const toggleBookmark = (on: Boolean) => {
     const chapterNo = on ? selectedChapterNo : -1;
-    const pageNo = on ? currentPage : -1;
+    const pageNo = on ? currentPage : null;
     bookmarkPage(book.id, chapterNo, pageNo, auth.authToken)
       .then(() => {
         setRelationChanged(true);
@@ -121,7 +119,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
               <Group position="center">
                 <Progress
                   w="90%"
-                  value={(currentPage / (numPages - 1)) * 100}
+                  value={currentPage * 100}
                 />
               </Group>
             </Grid.Col>
@@ -192,7 +190,7 @@ const FullBookView = ({ book, userRelation, setRelationChanged }: Props) => {
             css={book.cssStyles}
             width={fsActive ? windowWidth : width}
             setCurrentPage={setCurrentPage}
-            startPage={startPage}
+            startPagePercent={currentPage}
             setNumPages={setNumPages}
             height={windowHeight}
           />
