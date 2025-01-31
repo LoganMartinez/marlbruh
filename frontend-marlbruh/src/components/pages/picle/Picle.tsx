@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Center,
   Group,
   Loader,
   SimpleGrid,
@@ -22,19 +23,41 @@ const Pickle = () => {
   const [allPosts, setAllPosts] = useState([] as PiclePost[]);
   const [postsUpdated, setPostsUpdated] = useState(true);
   const [createModalOpen, createModalOpenHandlers] = useDisclosure(false);
+  const [loading, setLoading] = useState(true);
+  const [nextPage, setNextPage] = useState(0);
 
   useEffect(() => {
     if (postsUpdated) {
-      getPiclePosts(auth.authToken)
+      getPiclePosts(auth.authToken, 0)
         .then(({ data: posts }) => {
-          setAllPosts(posts.reverse());
+          setAllPosts(posts);
+          setNextPage(1);
         })
         .catch((err: AxiosError) => {
           errorNotification(err.message);
         })
-        .finally(() => setPostsUpdated(false));
+        .finally(() => {
+          setPostsUpdated(false);
+          setLoading(false);
+        });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postsUpdated]);
+
+  const loadMore = () => {
+    setLoading(true);
+    getPiclePosts(auth.authToken, nextPage)
+      .then(({ data: posts }) => {
+        setAllPosts((prev) => prev.concat(posts));
+        setNextPage((prev) => prev + 1);
+      })
+      .catch((err: AxiosError) => {
+        errorNotification(`error loading posts ${err.message}`);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <>
@@ -51,6 +74,7 @@ const Pickle = () => {
             <IconPlus />
           </ActionIcon>
         </Group>
+
         <SimpleGrid
           cols={3}
           breakpoints={[
@@ -59,19 +83,19 @@ const Pickle = () => {
             { maxWidth: "36rem", cols: 1, spacing: "sm" },
           ]}
         >
-          {postsUpdated ? (
-            <Loader />
-          ) : (
-            allPosts.map((post) => (
-              <PiclePost
-                post={post}
-                key={post.id}
-                postsUpdated={postsUpdated}
-                setPostsUpdated={setPostsUpdated}
-              />
-            ))
-          )}
+          {allPosts.map((post, i) => (
+            <PiclePost
+              post={post}
+              key={post.id}
+              onEnterScreen={i === allPosts.length - 1 ? loadMore : () => {}}
+            />
+          ))}
         </SimpleGrid>
+        {loading && (
+          <Center>
+            <Loader />
+          </Center>
+        )}
       </Stack>
     </>
   );

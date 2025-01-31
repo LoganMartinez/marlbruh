@@ -4,33 +4,26 @@ import {
   createComment,
   getComments,
   likePicleComment,
-  likePiclePost,
 } from "../../../api/apiCalls";
 import { AxiosError } from "axios";
 import { errorNotification } from "../../../utilities/helperFunctions";
 import { useEffect, useState } from "react";
 import UserPost from "../../reusableComponents/UserPost";
+import { useIntersection } from "@mantine/hooks";
 
 type Props = {
   post: PiclePost;
-  postsUpdated: boolean;
-  setPostsUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+  onEnterScreen: () => void;
 };
 
-const PiclePost = ({ post, postsUpdated, setPostsUpdated }: Props) => {
+const PiclePost = ({ post, onEnterScreen }: Props) => {
+  const [hasEnteredScreen, setHasEnteredScreen] = useState(false);
   const auth = useAuth();
   const [comments, setComments] = useState([] as PicleComment[]);
   const [commentsUpdated, setCommentsUpdated] = useState(true);
-
-  const toggleLike = () => {
-    likePiclePost(post.id, auth.authToken)
-      .then(() => {
-        setPostsUpdated(true);
-      })
-      .catch((err: AxiosError) => {
-        errorNotification(err.message);
-      });
-  };
+  const { ref, entry } = useIntersection({
+    threshold: 1,
+  });
 
   const toggleCommentLike = (commentId: number) => {
     likePicleComment(commentId, auth.authToken)
@@ -59,28 +52,32 @@ const PiclePost = ({ post, postsUpdated, setPostsUpdated }: Props) => {
         setCommentsUpdated(false);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commentsUpdated]);
 
   useEffect(() => {
-    if (postsUpdated) {
-      setCommentsUpdated(true);
+    if (!hasEnteredScreen && entry?.isIntersecting) {
+      onEnterScreen();
+      setHasEnteredScreen(true);
     }
-  }, [postsUpdated]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry]);
 
   return (
-    <>
+    <div>
+      <div ref={ref} />
       <UserPost
+        id={post.id}
         author={post.author}
         caption={post.caption}
         likes={post.likes}
-        toggleLike={toggleLike}
         comments={comments}
         submitComment={submitComment}
         toggleCommentLike={toggleCommentLike}
       >
         <Image radius="xl" src={post.content} />
       </UserPost>
-    </>
+    </div>
   );
 };
 
