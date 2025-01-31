@@ -27,4 +27,5 @@ urlpatterns = [
     path("api/picle/", include("picle.urls")),
     path("api/bookclub/", include("bookclub.urls")),
     path("api/translator/", include("translator.urls")),
+    path("api/txtMsgClassifier/", include("txtMsgClassifier.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

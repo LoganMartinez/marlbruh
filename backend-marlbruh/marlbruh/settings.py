@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "picle.apps.PicleConfig",
     "bookclub.apps.BookclubConfig",
     "translator.apps.TranslatorConfig",
+    "txtMsgClassifier.apps.txtMsgClassifierConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
