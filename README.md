@@ -32,4 +32,5 @@ This project is a website I made for my me and my housemates. You can visit it [
 - source ./venv/bin/activate
 - python3 -m pip install -r requirements.txt
 - python3 manage.py migrate
+- python3 manage.py createcachetable
 - python3 manage.py runserver
