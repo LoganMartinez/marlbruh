@@ -6,6 +6,8 @@
     > python manage.py makemigrations <appname>
   -  apply changes to db:
     > python manage.py migrate
+  - apply cache table
+    > python manage.py createcachetable
 
 -- Get a closer look at what's happening during migrations: 
   - show sql code of a given migration 
